@@ -1,6 +1,6 @@
 package com.forrestgof.jobscanner.jobposting.controller.dto;
 
-import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,7 +18,7 @@ public class JobPreviewDto {
 	String companyThumbnail;
 	int salary;
 	String platform;
-	LocalDateTime expiredAt;
+	String expiredAt;
 	List<String> stacks;
 
 	public JobPreviewDto(JobPosting jobPosting) {
@@ -28,7 +28,7 @@ public class JobPreviewDto {
 		companyThumbnail = jobPosting.getCompany().getThumbnailUrl();
 		salary = jobPosting.getSalary();
 		platform = jobPosting.getPlatform();
-		expiredAt = jobPosting.getExpiredAt();
+		expiredAt = jobPosting.getExpiredAt().format(DateTimeFormatter.ISO_LOCAL_DATE);;
 		stacks = jobPosting.getJobStacks().stream()
 			.map(JobStack::getTechStack)
 			.map(TechStack::getName)

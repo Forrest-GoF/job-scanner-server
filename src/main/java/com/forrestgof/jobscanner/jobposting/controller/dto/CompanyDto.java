@@ -1,6 +1,6 @@
 package com.forrestgof.jobscanner.jobposting.controller.dto;
 
-import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import com.forrestgof.jobscanner.jobposting.domain.Company;
 
@@ -11,7 +11,7 @@ public class CompanyDto {
 	String name;
 	int employees;
 	int averageSalary;
-	LocalDateTime registrationDate;
+	String registrationDate;
 	String thumbnailUrl;
 	String companyLocation;
 
@@ -19,7 +19,7 @@ public class CompanyDto {
 		name = company.getName();
 		employees = company.getEmployees();
 		averageSalary = company.getAverageSalary();
-		registrationDate = company.getRegistrationDate();
+		registrationDate = company.getRegistrationDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
 		thumbnailUrl = company.getThumbnailUrl();
 		companyLocation = company.getCompanyLocation();
 	}
