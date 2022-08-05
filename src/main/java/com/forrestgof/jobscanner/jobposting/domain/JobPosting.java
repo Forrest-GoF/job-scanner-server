@@ -52,7 +52,12 @@ public class JobPosting {
 	private int salary;
 	private String education;
 	private String career;
+
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "job_detail_id")
 	private JobDetail jobDetail;
+
+	@OneToMany(mappedBy = "job_id")
 	private List<JobStack> jobStacks = new ArrayList<>();
 
 }
