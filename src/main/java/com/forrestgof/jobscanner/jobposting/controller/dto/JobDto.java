@@ -1,6 +1,6 @@
 package com.forrestgof.jobscanner.jobposting.controller.dto;
 
-import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import com.forrestgof.jobscanner.jobposting.domain.JobPosting;
 
@@ -12,8 +12,8 @@ public class JobDto {
 	String title;
 	CompanyDto company;
 	String location;
-	LocalDateTime postedAt;
-	LocalDateTime expiredAt;
+	String postedAt;
+	String expiredAt;
 	String platform;
 	String applyUrl;
 	String type;
@@ -27,8 +27,8 @@ public class JobDto {
 		title = jobPosting.getTitle();
 		company = new CompanyDto(jobPosting.getCompany());
 		location = jobPosting.getLocation();
-		postedAt = jobPosting.getPostedAt();
-		expiredAt = jobPosting.getExpiredAt();
+		postedAt = jobPosting.getPostedAt().format(DateTimeFormatter.ISO_LOCAL_DATE);;
+		expiredAt = jobPosting.getExpiredAt().format(DateTimeFormatter.ISO_LOCAL_DATE);;
 		platform = jobPosting.getPlatform();
 		applyUrl = jobPosting.getApplyUrl();
 		type = jobPosting.getType();
