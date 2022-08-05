@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class JobDetail {
 
@@ -41,4 +40,16 @@ public class JobDetail {
 
 	@Column(columnDefinition = "TEXT")
 	private String mainTask;
+
+	@Builder
+	public JobDetail(String summary, String introduction, String qualification, String preferential,
+		String procedure, String benefit, String mainTask) {
+		this.summary = summary;
+		this.introduction = introduction;
+		this.qualification = qualification;
+		this.preferential = preferential;
+		this.procedure = procedure;
+		this.benefit = benefit;
+		this.mainTask = mainTask;
+	}
 }
