@@ -8,10 +8,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class JobStack {
 
 	@Id
@@ -27,4 +30,8 @@ public class JobStack {
 	@JoinColumn(name = "stack_id")
 	private TechStack techStack;
 
+	public JobStack(JobPosting jobPosting, TechStack techStack) {
+		this.jobPosting = jobPosting;
+		this.techStack = techStack;
+	}
 }
