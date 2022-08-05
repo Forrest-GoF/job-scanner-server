@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Builder
 @Table(name = "JOB")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class JobPosting {
@@ -57,7 +56,25 @@ public class JobPosting {
 	@JoinColumn(name = "job_detail_id")
 	private JobDetail jobDetail;
 
-	@OneToMany(mappedBy = "job_id")
+	@OneToMany(mappedBy = "jobPosting")
 	private List<JobStack> jobStacks = new ArrayList<>();
 
+	@Builder
+	public JobPosting(String googleKey, String title, Company company, String location, LocalDateTime postedAt,
+		LocalDateTime expiredAt, String platform, String applyUrl, String type, int salary, String education,
+		String career, JobDetail jobDetail) {
+		this.googleKey = googleKey;
+		this.title = title;
+		this.company = company;
+		this.location = location;
+		this.postedAt = postedAt;
+		this.expiredAt = expiredAt;
+		this.platform = platform;
+		this.applyUrl = applyUrl;
+		this.type = type;
+		this.salary = salary;
+		this.education = education;
+		this.career = career;
+		this.jobDetail = jobDetail;
+	}
 }

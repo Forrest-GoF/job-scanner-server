@@ -11,11 +11,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Company {
 
@@ -34,4 +32,16 @@ public class Company {
 	private LocalDateTime registrationDate;
 	private String thumbnailUrl;
 	private String companyLocation;
+
+	@Builder
+	public Company(int registrationNum, String name, int employees, int averageSalary,
+		LocalDateTime registrationDate, String thumbnailUrl, String companyLocation) {
+		this.registrationNum = registrationNum;
+		this.name = name;
+		this.employees = employees;
+		this.averageSalary = averageSalary;
+		this.registrationDate = registrationDate;
+		this.thumbnailUrl = thumbnailUrl;
+		this.companyLocation = companyLocation;
+	}
 }
