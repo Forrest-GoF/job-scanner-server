@@ -2,12 +2,14 @@ package com.forrestgof.jobscanner.auth.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.forrestgof.jobscanner.auth.dto.ApiResponse;
 import com.forrestgof.jobscanner.auth.dto.AuthRequest;
 import com.forrestgof.jobscanner.auth.dto.AuthResponse;
 import com.forrestgof.jobscanner.auth.jwt.AuthToken;
@@ -30,27 +32,24 @@ public class AuthController {
 	private final AuthService authService;
 
 	@PostMapping("/kakao")
-	public AuthResponse kakaoAuthRequest(@RequestBody AuthRequest authRequest) {
-		//TODO 상태코드 전송 추가
-		return kakaoAuthService.login(authRequest);
+	public ResponseEntity<AuthResponse> kakaoAuthRequest(@RequestBody AuthRequest authRequest) {
+		return ApiResponse.success(kakaoAuthService.login(authRequest));
 	}
 
 	@GetMapping("/refresh")
-	public AuthResponse refreshToken(HttpServletRequest request) {
+	public ResponseEntity<AuthResponse> refreshToken(HttpServletRequest request) {
 		String appToken = JwtHeaderUtil.getAccessToken(request);
 		log.trace(appToken);
 		AuthToken authToken = authTokenProvider.convertAuthToken(appToken);
 		if (!authToken.validate()) { // 형식에 맞지 않는 token
-			//TODO 상태코드 전송 추가
-			return AuthResponse.builder().build();
+			return ApiResponse.forbidden(null);
 		}
 
 		AuthResponse authResponse = authService.updateToken(authToken);
 		if (authResponse == null) { // token 만료
-			//TODO 상태코드 전송 추가
-			return AuthResponse.builder().build();
+			return ApiResponse.forbidden(null);
 		}
 
-		return authResponse;
+		return ApiResponse.success(authResponse);
 	}
 }
