@@ -3,10 +3,14 @@ package com.forrestgof.jobscanner.auth.jwt;
 import java.security.Key;
 import java.util.Date;
 
+import com.forrestgof.jobscanner.auth.enumerate.RoleType;
+
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Getter
 public class AuthToken {
 
@@ -15,7 +19,10 @@ public class AuthToken {
 
 	private static final String AUTHORITIES_KEY = "role";
 
-	public AuthToken(String socialId, String role, Date expiry, Key key) {
+	public AuthToken(String socialId, RoleType roleType, Date expiry, Key key) {
+		String role = roleType.toString();
+		log.trace(role);
+
 		this.key = key;
 		this.token = createAuthToken(socialId, role, expiry);
 	}
