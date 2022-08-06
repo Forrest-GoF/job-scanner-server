@@ -19,12 +19,13 @@ public class AuthTokenProvider {
 	private String secretKey = "0123456789012345678901234567890123456789";
 	private final Key key = Keys.hmacShaKeyFor(secretKey.getBytes());
 
-	public AuthToken createToken(String id, RoleType roleType, String expiry) {
+	public AuthToken createToken(Long id, RoleType roleType, String expiry) {
+		String strId = id.toString();
 		Date expiryDate = new Date(System.currentTimeMillis() + Long.parseLong(expiry));
-		return new AuthToken(id, roleType, expiryDate, key);
+		return new AuthToken(strId, roleType, expiryDate, key);
 	}
 
-	public AuthToken createUserAppToken(String id) {
+	public AuthToken createUserAppToken(Long id) {
 		return createToken(id, RoleType.USER, expiry);
 	}
 }
