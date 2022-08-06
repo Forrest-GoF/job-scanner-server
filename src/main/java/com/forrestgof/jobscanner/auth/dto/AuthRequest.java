@@ -1,8 +1,8 @@
 package com.forrestgof.jobscanner.auth.dto;
 
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class AuthRequest {
 
 	private String accessToken;

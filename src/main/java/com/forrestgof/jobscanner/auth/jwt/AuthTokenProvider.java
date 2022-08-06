@@ -10,8 +10,10 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class AuthTokenProvider {
 
+	//TODO @Value 적용하기
 	private String expiry = "100000";
 
+	//TODO @Value 적용하기
 	private String secretKey = "0123456789012345678901234567890123456789";
 	private final Key key = Keys.hmacShaKeyFor(secretKey.getBytes());
 
@@ -21,6 +23,7 @@ public class AuthTokenProvider {
 	}
 
 	public AuthToken createUserAppToken(String id) {
+		//TODO enum 적용하기
 		String role = "USER";
 		return createToken(id, role, expiry);
 	}

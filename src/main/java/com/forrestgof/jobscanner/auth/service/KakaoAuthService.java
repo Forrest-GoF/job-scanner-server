@@ -2,8 +2,10 @@ package com.forrestgof.jobscanner.auth.service;
 
 import org.springframework.stereotype.Service;
 
+import com.forrestgof.jobscanner.auth.client.ClientKakao;
 import com.forrestgof.jobscanner.auth.dto.AuthRequest;
 import com.forrestgof.jobscanner.auth.dto.AuthResponse;
+import com.forrestgof.jobscanner.auth.dto.KakaoUserResponse;
 import com.forrestgof.jobscanner.auth.jwt.AuthToken;
 import com.forrestgof.jobscanner.auth.jwt.AuthTokenProvider;
 
@@ -15,17 +17,18 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class KakaoAuthService {
 
+	private final ClientKakao clientKakao;
 	private final AuthTokenProvider authTokenProvider;
 
 	public AuthResponse login(AuthRequest authRequest) {
-		log.trace("authRequest={}", authRequest);
-		String socialId = "This is socialId";
-
-		AuthResponse authResponse = new AuthResponse();
+		KakaoUserResponse kakaoUserResponse = clientKakao.getUserData(authRequest.getAccessToken());
+		log.trace("kakaoUserResponse={}", kakaoUserResponse.toString());
+		String socialId = String.valueOf(kakaoUserResponse.getId());
 
 		AuthToken appToken = authTokenProvider.createUserAppToken(socialId);
 
-		authResponse.setAppToken(appToken.getToken());
-		return authResponse;
+		return AuthResponse.builder()
+			.appToken(appToken.getToken())
+			.build();
 	}
 }
