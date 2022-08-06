@@ -24,14 +24,12 @@ public class KakaoAuthService {
 
 	public AuthResponse login(AuthRequest authRequest) {
 		KakaoUserResponse kakaoUserResponse = clientKakao.getUserData(authRequest.getAccessToken());
-		log.trace("kakaoUserResponse={}", kakaoUserResponse.toString());
 
-		Long kakaoId = kakaoUserResponse.getId();
+		String kakaoId = kakaoUserResponse.getId().toString();
 
 		if (memoryKakaoRepsitory.findById(kakaoId).isEmpty()) {
 			memoryKakaoRepsitory.save(kakaoUserResponse);
 		}
-		log.trace("kakaoUserResponse={}", memoryKakaoRepsitory.findById(kakaoId));
 
 		AuthToken appToken = authTokenProvider.createUserAppToken(kakaoId);
 

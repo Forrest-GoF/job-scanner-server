@@ -15,7 +15,7 @@ import lombok.ToString;
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class KakaoUserResponse {
 
-	private Long id;
+	private String id;
 	private Properties properties;
 	private KakaoAccount kakaoAccount;
 
