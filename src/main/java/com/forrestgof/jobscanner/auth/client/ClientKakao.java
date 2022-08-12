@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.forrestgof.jobscanner.auth.dto.KakaoUserResponse;
-import com.forrestgof.jobscanner.auth.exception.TokenValidFailedException;
+import com.forrestgof.jobscanner.auth.exception.InvalidTokenException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,12 +25,12 @@ public class ClientKakao {
 				.headers(h -> h.setBearerAuth(accessToken))
 				.retrieve()
 				.onStatus(HttpStatus::is4xxClientError, response
-					-> Mono.error(new TokenValidFailedException("Social Access Token is unauthorized")))
+					-> Mono.error(new InvalidTokenException("Social Access Token is unauthorized")))
 				.onStatus(HttpStatus::is5xxServerError, response
-					-> Mono.error(new TokenValidFailedException("Internal Server Error")))
+					-> Mono.error(new InvalidTokenException("Internal Server Error")))
 				.bodyToMono(KakaoUserResponse.class)
 				.block();
-		} catch (TokenValidFailedException e) {
+		} catch (InvalidTokenException e) {
 			return null;
 		}
 	}

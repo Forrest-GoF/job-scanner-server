@@ -38,5 +38,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			filterChain.doFilter(request, response);
 		}
 
+		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 	}
 }

@@ -15,7 +15,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import com.forrestgof.jobscanner.auth.enumerate.RoleType;
-import com.forrestgof.jobscanner.auth.exception.TokenValidFailedException;
+import com.forrestgof.jobscanner.auth.exception.InvalidTokenException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.security.Keys;
@@ -40,21 +40,23 @@ public class AuthTokenProvider {
 		this.refreshKey = Keys.hmacShaKeyFor(refreshSecretKey.getBytes());
 	}
 
-	public AuthToken createToken(String id, RoleType roleType, String appTokenExpiry, String refreshTokenExpiry) {
+	public AuthToken createToken(String appTokenUuid, String refreshTokenUuid, RoleType roleType,
+		String appTokenExpiry, String refreshTokenExpiry) {
+
 		Date appTokenExpiryDate = new Date(System.currentTimeMillis() + Long.parseLong(appTokenExpiry));
 		Date refreshTokenExpiryDate = new Date(System.currentTimeMillis() + Long.parseLong(refreshTokenExpiry));
-		return new AuthToken(id, roleType, appTokenExpiryDate, refreshTokenExpiryDate, appKey, refreshKey);
+		return new AuthToken(appTokenUuid, refreshTokenUuid, roleType, appTokenExpiryDate, refreshTokenExpiryDate,
+			appKey, refreshKey);
 	}
 
-	public AuthToken createUserAppTokens(String id) {
-		return createToken(id, RoleType.USER, appTokenExpiry, refreshTokenExpiry);
+	public AuthToken createUserAuthToken(String appTokenUuid, String refreshTokenUuid) {
+		return createToken(appTokenUuid, refreshTokenUuid, RoleType.USER, appTokenExpiry, refreshTokenExpiry);
 	}
 
 	public AuthToken convertAuthToken(String appToken, String refreshToken) {
 		return new AuthToken(appToken, refreshToken, appKey, refreshKey);
 	}
 
-	//TODO JWT 필터 doFilterInternal()에서 에러나서 임시로 만듬
 	public AuthToken convertAuthToken(String appToken) {
 		return new AuthToken(appToken, appToken, appKey, refreshKey);
 	}
@@ -69,11 +71,11 @@ public class AuthTokenProvider {
 					.map(SimpleGrantedAuthority::new)
 					.collect(Collectors.toList());
 
-			User pricipal = new User(claims.getSubject(), "", authorities);
+			User pricipal = new User(claims.get("jti", String.class), "", authorities);
 
 			return new UsernamePasswordAuthenticationToken(pricipal, authToken, authorities);
 		} else {
-			throw new TokenValidFailedException();
+			throw new InvalidTokenException();
 		}
 	}
 }

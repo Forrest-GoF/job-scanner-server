@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.forrestgof.jobscanner.auth.dto.ApiResponse;
 import com.forrestgof.jobscanner.auth.dto.AuthRequest;
 import com.forrestgof.jobscanner.auth.dto.AuthResponse;
+import com.forrestgof.jobscanner.auth.exception.InvalidTokenException;
 import com.forrestgof.jobscanner.auth.jwt.AuthToken;
 import com.forrestgof.jobscanner.auth.jwt.AuthTokenProvider;
 import com.forrestgof.jobscanner.auth.jwt.JwtHeaderUtil;
 import com.forrestgof.jobscanner.auth.service.AuthService;
 import com.forrestgof.jobscanner.auth.service.KakaoAuthService;
+import com.forrestgof.jobscanner.member.exception.NotFoundMemberException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,15 +37,20 @@ public class AuthController {
 
 	@GetMapping("/kakao")
 	public ResponseEntity<AuthResponse> kakaoAuthRequest(HttpServletRequest request, HttpServletResponse response) {
-
 		String accessToken = JwtHeaderUtil.getAccessToken(request);
-		AuthResponse appTokens = kakaoAuthService.login(new AuthRequest(accessToken));
-		if (appTokens == null) {
+		AuthResponse appTokens;
+
+		try {
+			appTokens = kakaoAuthService.login(new AuthRequest(accessToken));
+		} catch (InvalidTokenException e) {
 			return ApiResponse.forbidden(null);
+		} catch (NotFoundMemberException e) {
+			return ApiResponse.fail(null);
 		}
 
 		response.setHeader("app-token", appTokens.getAppToken());
 		response.setHeader("refresh-token", appTokens.getRefreshToken());
+
 		return ApiResponse.success(null);
 	}
 

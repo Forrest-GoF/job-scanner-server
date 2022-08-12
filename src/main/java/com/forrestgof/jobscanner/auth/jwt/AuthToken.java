@@ -11,6 +11,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,8 @@ public class AuthToken {
 
 	private static final String AUTHORITIES_KEY = "role";
 
-	public AuthToken(String socialId, RoleType roleType,
+	public AuthToken(String appTokenUuid, String refreshTokenUuid,
+		RoleType roleType,
 		Date appTokenExpiry, Date refreshTokenExpiry,
 		Key appKey, Key refreshKey) {
 
@@ -35,24 +37,15 @@ public class AuthToken {
 
 		this.appKey = appKey;
 		this.refreshKey = refreshKey;
-		this.appToken = createAppToken(socialId, role, appTokenExpiry);
-		this.refreshToken = createRefreshToken(role, refreshTokenExpiry);
+		this.appToken = createToken(appTokenUuid, role, this.appKey, appTokenExpiry);
+		this.refreshToken = createToken(refreshTokenUuid, role, this.refreshKey, refreshTokenExpiry);
 	}
 
-	//TODO app 토큰에 유저 정보 대신 UUID 담기
-	private String createAppToken(String socialId, String role, Date expiry) {
+	private String createToken(String uuid, String role, Key key, Date expiry) {
 		return Jwts.builder()
-			.setSubject(socialId) //토큰 제목 설정
-			.claim(AUTHORITIES_KEY, role) //사용자 정의 클레임
-			.signWith(appKey, SignatureAlgorithm.HS256) //암호화 복호화 Key
-			.setExpiration(expiry) //토큰 만료 시간 설정
-			.compact(); //토큰 생성
-	}
-
-	private String createRefreshToken(String role, Date expiry) {
-		return Jwts.builder()
+			.claim("jti", uuid)
 			.claim(AUTHORITIES_KEY, role)
-			.signWith(refreshKey, SignatureAlgorithm.HS256)
+			.signWith(key, SignatureAlgorithm.HS256)
 			.setExpiration(expiry)
 			.compact();
 	}
@@ -101,6 +94,9 @@ public class AuthToken {
 			log.info("Expired JWT token.");
 		} catch (UnsupportedJwtException e) {
 			log.info("Unsupported JWT token.");
+		} catch (SignatureException e) {
+			log.info(
+				"JWT signature does not match locally computed signature. JWT validity cannot be asserted and should not be trusted.");
 		} catch (IllegalArgumentException e) {
 			log.info("JWT token compact of handler are invalid.");
 		}
