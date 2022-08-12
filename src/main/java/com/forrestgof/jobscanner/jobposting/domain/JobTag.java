@@ -15,11 +15,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class JobStack {
+public class JobTag {
 
 	@Id
 	@GeneratedValue
-	@Column(name = "job_stack_id")
+	@Column(name = "job_tag_id")
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -27,11 +27,11 @@ public class JobStack {
 	private JobPosting jobPosting;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "stack_id")
-	private TechStack techStack;
+	@JoinColumn(name = "tag_id")
+	private Tag tag;
 
-	public JobStack(JobPosting jobPosting, TechStack techStack) {
+	public JobTag(JobPosting jobPosting, Tag tag) {
 		this.jobPosting = jobPosting;
-		this.techStack = techStack;
+		this.tag = tag;
 	}
 }
