@@ -25,10 +25,10 @@ public class JobPostingApiController {
 
 	private final JobPostingService jobPostingService;
 
-	@GetMapping("/joblist")
+	@GetMapping("/api/jobs")
 	@ResponseBody
 	public Result getFilterJobs(
-		@RequestParam(required = false) Map<String, Object> params
+		@RequestParam(required = false) Map<String, String> params
 	) {
 		List<JobPosting> all = jobPostingService.findFilterJobs(params);
 		List<JobPreviewDto> previewDtos = all.stream()
@@ -38,7 +38,7 @@ public class JobPostingApiController {
 		return new Result(previewDtos, previewDtos.size());
 	}
 
-	@GetMapping("/job/{id}")
+	@GetMapping("api/jobs/{id}")
 	@ResponseBody
 	public JobDto getJob(
 		@PathVariable Long id
