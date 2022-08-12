@@ -15,7 +15,6 @@ public class JobDetailDto {
 	String mainTask;
 
 	public JobDetailDto(JobDetail jobDetail) {
-		summary = jobDetail.getSummary();
 		introduction = jobDetail.getIntroduction();
 		qualification = jobDetail.getQualification();
 		preferential = jobDetail.getPreferential();

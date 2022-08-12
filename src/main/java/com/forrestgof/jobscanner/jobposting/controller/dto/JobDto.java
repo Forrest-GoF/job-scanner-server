@@ -1,8 +1,11 @@
 package com.forrestgof.jobscanner.jobposting.controller.dto;
 
-import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.forrestgof.jobscanner.jobposting.domain.JobPosting;
+import com.forrestgof.jobscanner.jobposting.domain.JobTag;
+import com.forrestgof.jobscanner.jobposting.domain.Tag;
 
 import lombok.Data;
 
@@ -17,9 +20,10 @@ public class JobDto {
 	String platform;
 	String applyUrl;
 	String type;
-	int salary;
+	String salary;
 	String education;
 	String career;
+	List<String> tags;
 	JobDetailDto jobDetail;
 
 	public JobDto(JobPosting jobPosting) {
@@ -27,14 +31,20 @@ public class JobDto {
 		title = jobPosting.getTitle();
 		company = new CompanyDto(jobPosting.getCompany());
 		location = jobPosting.getLocation();
-		postedAt = jobPosting.getPostedAt().format(DateTimeFormatter.ISO_LOCAL_DATE);;
-		expiredAt = jobPosting.getExpiredAt().format(DateTimeFormatter.ISO_LOCAL_DATE);;
+		if (jobPosting.getPostedAt() != null)
+			postedAt = jobPosting.getPostedAt().toString();
+		if (jobPosting.getExpiredAt() != null)
+			expiredAt = jobPosting.getExpiredAt().toString();
 		platform = jobPosting.getPlatform();
 		applyUrl = jobPosting.getApplyUrl();
-		type = jobPosting.getType();
+		type = jobPosting.getType().getName();
 		salary = jobPosting.getSalary();
 		education = jobPosting.getEducation();
 		career = jobPosting.getCareer();
+		tags = jobPosting.getJobTags().stream()
+			.map(JobTag::getTag)
+			.map(Tag::getName)
+			.collect(Collectors.toList());
 		jobDetail = new JobDetailDto(jobPosting.getJobDetail());
 	}
 }

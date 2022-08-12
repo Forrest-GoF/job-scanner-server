@@ -1,8 +1,6 @@
 package com.forrestgof.jobscanner.jobposting.controller.dto;
 
-import java.time.format.DateTimeFormatter;
-
-import com.forrestgof.jobscanner.jobposting.domain.Company;
+import com.forrestgof.jobscanner.company.domain.Company;
 
 import lombok.Data;
 
@@ -10,7 +8,7 @@ import lombok.Data;
 public class CompanyDto {
 	String name;
 	int employees;
-	int averageSalary;
+	String averageSalary;
 	String registrationDate;
 	String thumbnailUrl;
 	String companyLocation;
@@ -18,9 +16,11 @@ public class CompanyDto {
 	public CompanyDto(Company company) {
 		name = company.getName();
 		employees = company.getEmployees();
-		averageSalary = company.getAverageSalary();
-		registrationDate = company.getRegistrationDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+		if (company.getAverageSalary() > 0)
+			averageSalary = String.valueOf(company.getAverageSalary());
+		if (company.getRegistrationDate() != null)
+			registrationDate = company.getRegistrationDate().toString();
 		thumbnailUrl = company.getThumbnailUrl();
-		companyLocation = company.getCompanyLocation();
+		companyLocation = company.getAddress();
 	}
 }
