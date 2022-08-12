@@ -1,79 +1,63 @@
 package com.forrestgof.jobscanner.auth.service;
 
-import java.util.UUID;
-
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
-import com.forrestgof.jobscanner.auth.ClientKakao;
-import com.forrestgof.jobscanner.auth.dto.AuthRequest;
 import com.forrestgof.jobscanner.auth.dto.AuthResponse;
-import com.forrestgof.jobscanner.auth.jwt.AuthToken;
+import com.forrestgof.jobscanner.auth.dto.KakaoUserResponse;
 import com.forrestgof.jobscanner.auth.jwt.AuthTokenProvider;
 import com.forrestgof.jobscanner.common.exception.CustomException;
 import com.forrestgof.jobscanner.common.exception.ErrorCode;
-import com.forrestgof.jobscanner.member.domain.Member;
+import com.forrestgof.jobscanner.member.dto.MemberResponse;
 import com.forrestgof.jobscanner.member.service.MemberService;
-import com.forrestgof.jobscanner.session.domain.Session;
-import com.forrestgof.jobscanner.session.repository.SessionRepository;
+import com.forrestgof.jobscanner.session.service.SessionService;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
-public class KakaoAuthService {
+public class KakaoAuthService extends AuthService {
 
-	private final ClientKakao clientKakao;
-	private final AuthTokenProvider authTokenProvider;
-	private final MemberService memberService;
-	private final SessionRepository sessionRepository;
-
-	public AuthResponse login(AuthRequest authRequest) {
-		String kakaoAccessToken = authRequest.getAccessToken();
-		validateToken(kakaoAccessToken);
-		String email = getEmail(kakaoAccessToken);
-
-		//임의로 회원가입은 되어 있다고 가정
-		Member member = Member.builder()
-			.email(email)
-			.build();
-		memberService.join(member);
-
-		checkJoinedMember(email);
-		member = memberService.findByEmail(email);
-		String appTokenUuid = UUID.randomUUID().toString();
-		String refreshTokenUuid = UUID.randomUUID().toString();
-		Session session = Session.builder()
-			.member(member)
-			.appTokenUuid(appTokenUuid)
-			.refreshTokenUuid(refreshTokenUuid)
-			.build();
-		sessionRepository.save(session);
-
-		AuthToken authToken = authTokenProvider.createUserAuthToken(appTokenUuid, refreshTokenUuid);
-
-		return AuthResponse.builder()
-			.appToken(authToken.getAppToken())
-			.refreshToken(authToken.getRefreshToken())
-			.build();
+	private KakaoAuthService(
+		WebClient webClient,
+		AuthTokenProvider authTokenProvider,
+		MemberService memberService,
+		SessionService sessionService) {
+		super(webClient, authTokenProvider, memberService, sessionService);
 	}
 
-	private void validateToken(String kakaoAccessToken) {
-		if (clientKakao.getUserData(kakaoAccessToken) == null) {
-			throw new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION);
-		}
+	@Override
+	protected KakaoUserResponse getUserResponse(String accessToken) {
+		return webClient.get()
+			.uri("https://kapi.kakao.com/v2/user/me")
+			.headers(h -> h.setBearerAuth(accessToken))
+			.retrieve()
+			.onStatus(HttpStatus::is4xxClientError, response
+				-> Mono.error(
+				new CustomException("Social Access Token is unauthorized", ErrorCode.INVALID_TOKEN_EXCEPTION)))
+			.onStatus(HttpStatus::is5xxServerError, response
+				-> Mono.error(new CustomException("Internal Server Error", ErrorCode.INVALID_TOKEN_EXCEPTION)))
+			.bodyToMono(KakaoUserResponse.class)
+			.block();
 	}
 
-	private String getEmail(String kakaoAccessToken) {
-		return clientKakao.getUserData(kakaoAccessToken)
-			.getKakaoAccount()
-			.getEmail();
+	@Override
+	protected String getEmail(String accessToken) {
+		KakaoUserResponse kakaoUserResponse = getUserResponse(accessToken);
+		return kakaoUserResponse.getKakaoAccount().getEmail();
 	}
 
-	private void checkJoinedMember(String email) {
-		if (!memberService.existsByEmail(email)) {
-			throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
-		}
+	@Override
+	public MemberResponse signup(String accessToken) {
+		String email = getEmail(accessToken);
+		return super.signupByEmail(email);
+	}
+
+	@Override
+	public AuthResponse login(String accessToken) {
+		String email = getEmail(accessToken);
+		return super.loginByEmail(email);
 	}
 }

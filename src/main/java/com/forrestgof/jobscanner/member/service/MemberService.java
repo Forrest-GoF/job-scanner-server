@@ -18,12 +18,11 @@ public class MemberService {
 	private final SessionRepository sessionRepository;
 
 	public Long join(Member member) {
+		if (memberRepository.existsByEmail(member.getEmail())) {
+			throw new CustomException(ErrorCode.ALREADY_EXIST_MEMBER);
+		}
 		Member findMember = memberRepository.save(member);
 		return findMember.getId();
-	}
-
-	public boolean existsByEmail(String email) {
-		return memberRepository.existsByEmail(email);
 	}
 
 	public Member findByEmail(String email) {

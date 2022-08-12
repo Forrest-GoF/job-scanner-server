@@ -1,45 +1,58 @@
 package com.forrestgof.jobscanner.auth.service;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.forrestgof.jobscanner.auth.dto.AuthResponse;
 import com.forrestgof.jobscanner.auth.jwt.AuthToken;
 import com.forrestgof.jobscanner.auth.jwt.AuthTokenProvider;
+import com.forrestgof.jobscanner.member.domain.Member;
+import com.forrestgof.jobscanner.member.dto.MemberResponse;
+import com.forrestgof.jobscanner.member.service.MemberService;
+import com.forrestgof.jobscanner.session.service.SessionService;
 
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public abstract class AuthService<T> {
 
+	protected final WebClient webClient;
 	private final AuthTokenProvider authTokenProvider;
+	private final MemberService memberService;
 	private final SessionService sessionService;
 
-	public AuthResponse updateToken(AuthToken authToken) {
-		Claims appClaims = authToken.getAppTokenClaims();
-		if (appClaims == null) {
-			appClaims = authToken.getExpiredAppTokenClaims();
-		}
+	protected abstract T getUserResponse(String accessToken);
 
-		Claims refreshCllaims = authToken.getRefreshTokenClaims();
-		if (refreshCllaims == null) {
-			return null;
-		}
+	protected abstract String getEmail(String accessToken);
 
-		String appTokenUuid = appClaims.get("jti", String.class);
-		String refreshTokenUuid = refreshCllaims.get("jti", String.class);
+	protected abstract MemberResponse signup(String accessToken);
 
-		if (!sessionService.isValidAppTokenWithRefreshToken(appTokenUuid, refreshTokenUuid)) {
-			return null;
-		}
+	protected abstract AuthResponse login(String accessToken);
 
-		AuthToken newAppToken = authTokenProvider.createUserAuthToken(appTokenUuid, refreshTokenUuid);
+	protected MemberResponse signupByEmail(String email) {
+		Member member = Member.builder()
+			.email(email)
+			.build();
+		memberService.join(member);
+		return MemberResponse.of(member);
+	}
+
+	protected AuthResponse loginByEmail(String email) {
+		String appTokenUuid = UUID.randomUUID().toString();
+		String refreshTokenUuid = UUID.randomUUID().toString();
+
+		AuthToken authToken = authTokenProvider.createUserAuthToken(appTokenUuid, refreshTokenUuid);
+
+		sessionService.saveWithAllArgument(email, appTokenUuid, refreshTokenUuid);
 
 		return AuthResponse.builder()
-			.appToken(newAppToken.getAppToken())
+			.appToken(authToken.getAppToken())
+			.refreshToken(authToken.getRefreshToken())
 			.build();
 	}
 }
