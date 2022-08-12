@@ -38,7 +38,7 @@ public class DefaultJobPostingService implements JobPostingService {
 
 	@Override
 	public List<JobPosting> findFilterJobs(Map<String, String> params) {
-		return null;
+		return jobPostingRepository.findAll();
 	}
 
 	@Override
