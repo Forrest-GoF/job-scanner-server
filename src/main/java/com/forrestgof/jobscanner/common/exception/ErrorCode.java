@@ -15,10 +15,11 @@ public enum ErrorCode {
 	EXPIRED_CODE(HttpStatus.valueOf(400), "Expired Code"),
 
 	//AUTH
-	INVALID_TOKEN_EXCEPTION(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
+	INVALID_TOKEN_EXCEPTION(HttpStatus.UNAUTHORIZED, "Invalid token"),
 
 	// MEMBER
-	NOT_FOUND_MEMBER(HttpStatus.BAD_REQUEST, "가입되지 않은 계정입니다.");
+	NOT_FOUND_MEMBER(HttpStatus.UNAUTHORIZED, "Unsigned account"),
+	ALREADY_EXIST_MEMBER(HttpStatus.CONFLICT, "Already joined member");
 
 	private final HttpStatus status;
 	private final String message;

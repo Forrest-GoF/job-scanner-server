@@ -50,11 +50,11 @@ public class AuthToken {
 			.compact();
 	}
 
-	public boolean validateApp() {
+	public boolean isValidApp() {
 		return this.getAppTokenClaims() != null;
 	}
 
-	public boolean validateRefresh() {
+	public boolean isValidRefresh() {
 		return this.getRefreshTokenClaims() != null;
 	}
 

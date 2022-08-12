@@ -64,7 +64,7 @@ public class AuthTokenProvider {
 
 	public Authentication getAuthentication(AuthToken authToken) {
 
-		if (authToken.validateApp()) {
+		if (authToken.isValidApp()) {
 
 			Claims claims = authToken.getAppTokenClaims();
 			Collection<? extends GrantedAuthority> authorities =
@@ -75,8 +75,8 @@ public class AuthTokenProvider {
 			User pricipal = new User(claims.get("jti", String.class), "", authorities);
 
 			return new UsernamePasswordAuthenticationToken(pricipal, authToken, authorities);
-		} else {
-			throw new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION);
 		}
+
+		throw new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION);
 	}
 }

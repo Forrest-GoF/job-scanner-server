@@ -57,7 +57,7 @@ public class AuthController {
 
 		AuthToken authToken = authTokenProvider.convertAuthToken(appToken, refreshToken);
 
-		if (!authToken.validateRefresh()) {
+		if (!authToken.isValidRefresh()) {
 			return ApiResponse.toResponseEntity(ErrorCode.INVALID_TOKEN_EXCEPTION);
 		}
 
