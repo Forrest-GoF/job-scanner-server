@@ -23,8 +23,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-		// web.ignoring().antMatchers("/", "/job/**", "/joblist/**");
-		web.ignoring().antMatchers("/", "/job/**", "/joblist/**", "/auth/**");
+		web.ignoring().antMatchers("/", "/api", "/api/jobs/**", "/api/auth/**");
 	}
 
 	@Override
