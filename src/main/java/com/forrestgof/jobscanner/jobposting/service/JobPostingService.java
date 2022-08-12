@@ -6,7 +6,15 @@ import java.util.Map;
 import com.forrestgof.jobscanner.jobposting.domain.JobPosting;
 
 public interface JobPostingService {
-	JobPosting findOne(Long id);
+
+	JobPosting save(JobPosting jobPosting);
+
 	List<JobPosting> findAll();
-	List<JobPosting> findFilterJobs(Map<String, Object> params);
+
+	JobPosting findOne(Long id);
+
+	List<JobPosting> findFilterJobs(Map<String, String> params);
+
+	boolean existsByGoogleKey(String googleKey);
+
 }
