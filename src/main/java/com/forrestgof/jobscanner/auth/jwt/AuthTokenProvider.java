@@ -15,7 +15,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import com.forrestgof.jobscanner.auth.RoleType;
-import com.forrestgof.jobscanner.auth.exception.InvalidTokenException;
+import com.forrestgof.jobscanner.common.exception.CustomException;
+import com.forrestgof.jobscanner.common.exception.ErrorCode;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.security.Keys;
@@ -75,7 +76,7 @@ public class AuthTokenProvider {
 
 			return new UsernamePasswordAuthenticationToken(pricipal, authToken, authorities);
 		} else {
-			throw new InvalidTokenException();
+			throw new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION);
 		}
 	}
 }

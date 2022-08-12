@@ -6,21 +6,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.forrestgof.jobscanner.auth.dto.ApiResponse;
 import com.forrestgof.jobscanner.auth.dto.AuthRequest;
 import com.forrestgof.jobscanner.auth.dto.AuthResponse;
-import com.forrestgof.jobscanner.auth.exception.InvalidTokenException;
 import com.forrestgof.jobscanner.auth.jwt.AuthToken;
 import com.forrestgof.jobscanner.auth.jwt.AuthTokenProvider;
 import com.forrestgof.jobscanner.auth.jwt.JwtHeaderUtil;
 import com.forrestgof.jobscanner.auth.service.AuthService;
 import com.forrestgof.jobscanner.auth.service.KakaoAuthService;
-import com.forrestgof.jobscanner.member.exception.NotFoundMemberException;
+import com.forrestgof.jobscanner.common.dto.ApiResponse;
+import com.forrestgof.jobscanner.common.exception.CustomException;
+import com.forrestgof.jobscanner.common.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,44 +35,37 @@ public class AuthController {
 	private final AuthTokenProvider authTokenProvider;
 	private final AuthService authService;
 
-	@GetMapping("/kakao")
-	public ResponseEntity<AuthResponse> kakaoAuthRequest(HttpServletRequest request, HttpServletResponse response) {
+	@PostMapping("/login/kakao")
+	public ResponseEntity<ApiResponse> kakaoAuthRequest(HttpServletRequest request) {
 		String accessToken = JwtHeaderUtil.getAccessToken(request);
-		AuthResponse appTokens;
 
 		try {
-			appTokens = kakaoAuthService.login(new AuthRequest(accessToken));
-		} catch (InvalidTokenException e) {
-			return ApiResponse.forbidden(null);
-		} catch (NotFoundMemberException e) {
-			return ApiResponse.fail(null);
+			return ApiResponse.toResponseEntity(kakaoAuthService.login(new AuthRequest((accessToken))));
+		} catch (CustomException e) {
+			return ApiResponse.toResponseEntity(e.getErrorCode());
 		}
-
-		response.setHeader("app-token", appTokens.getAppToken());
-		response.setHeader("refresh-token", appTokens.getRefreshToken());
-
-		return ApiResponse.success(null);
 	}
 
-	@GetMapping("/refresh")
-	public ResponseEntity<AuthResponse> refreshToken(
+	@PostMapping("/refresh/kakao")
+	public ResponseEntity<ApiResponse> refreshToken(
 		@RequestHeader Map<String, String> header,
 		HttpServletResponse response) {
 
-		String appToken = header.get("app-token");
+		String TOKEN_PREFIX = "Bearer ";
+		String appToken = header.get("authorization").substring(TOKEN_PREFIX.length());
 		String refreshToken = header.get("refresh-token");
 
 		AuthToken authToken = authTokenProvider.convertAuthToken(appToken, refreshToken);
+
 		if (!authToken.validateRefresh()) {
-			return ApiResponse.forbidden(null);
+			return ApiResponse.toResponseEntity(ErrorCode.INVALID_TOKEN_EXCEPTION);
 		}
 
 		AuthResponse authResponse = authService.updateToken(authToken);
 		if (authResponse == null) {
-			return ApiResponse.forbidden(null);
+			return ApiResponse.toResponseEntity(ErrorCode.INVALID_TOKEN_EXCEPTION);
 		}
 
-		response.setHeader("appToken", authResponse.getAppToken());
-		return ApiResponse.success(null);
+		return ApiResponse.toResponseEntity(authResponse);
 	}
 }

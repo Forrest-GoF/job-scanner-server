@@ -7,11 +7,11 @@ import org.springframework.stereotype.Service;
 import com.forrestgof.jobscanner.auth.ClientKakao;
 import com.forrestgof.jobscanner.auth.dto.AuthRequest;
 import com.forrestgof.jobscanner.auth.dto.AuthResponse;
-import com.forrestgof.jobscanner.auth.exception.InvalidTokenException;
 import com.forrestgof.jobscanner.auth.jwt.AuthToken;
 import com.forrestgof.jobscanner.auth.jwt.AuthTokenProvider;
+import com.forrestgof.jobscanner.common.exception.CustomException;
+import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.member.domain.Member;
-import com.forrestgof.jobscanner.member.exception.NotFoundMemberException;
 import com.forrestgof.jobscanner.member.service.MemberService;
 import com.forrestgof.jobscanner.session.domain.Session;
 import com.forrestgof.jobscanner.session.repository.SessionRepository;
@@ -61,7 +61,7 @@ public class KakaoAuthService {
 
 	private void validateToken(String kakaoAccessToken) {
 		if (clientKakao.getUserData(kakaoAccessToken) == null) {
-			throw new InvalidTokenException();
+			throw new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION);
 		}
 	}
 
@@ -73,7 +73,7 @@ public class KakaoAuthService {
 
 	private void checkJoinedMember(String email) {
 		if (!memberService.existsByEmail(email)) {
-			throw new NotFoundMemberException();
+			throw new CustomException(ErrorCode.NOT_FOUND_MEMBER);
 		}
 	}
 }
