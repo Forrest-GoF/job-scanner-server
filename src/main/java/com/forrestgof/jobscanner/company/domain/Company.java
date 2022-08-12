@@ -1,6 +1,6 @@
-package com.forrestgof.jobscanner.jobposting.domain;
+package com.forrestgof.jobscanner.company.domain;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,26 +22,27 @@ public class Company {
 	@Column(name = "company_id")
 	private Long id;
 
-	private int registrationNum;
+	@Column(unique = true)
+	private String npsKey;
 
-	@Column(name = "company_name")
+	@Column(name = "company_name", unique = true)
 	private String name;
 
 	private int employees;
 	private int averageSalary;
-	private LocalDateTime registrationDate;
+	private LocalDate registrationDate;
 	private String thumbnailUrl;
-	private String companyLocation;
+	private String address;
 
 	@Builder
-	public Company(int registrationNum, String name, int employees, int averageSalary,
-		LocalDateTime registrationDate, String thumbnailUrl, String companyLocation) {
-		this.registrationNum = registrationNum;
+	public Company(String npsKey, String name, int employees, int averageSalary,
+		LocalDate registrationDate, String thumbnailUrl, String address) {
+		this.npsKey = npsKey;
 		this.name = name;
 		this.employees = employees;
 		this.averageSalary = averageSalary;
 		this.registrationDate = registrationDate;
 		this.thumbnailUrl = thumbnailUrl;
-		this.companyLocation = companyLocation;
+		this.address = address;
 	}
 }
