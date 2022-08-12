@@ -1,27 +1,17 @@
 package com.forrestgof.jobscanner.jobposting.domain;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.Embeddable;
 
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Embeddable
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class JobDetail {
-
-	@Id
-	@GeneratedValue
-	@Column(name = "job_detail_id")
-	private Long id;
-
-	@Column(columnDefinition = "TEXT")
-	private String summary;
 
 	@Column(columnDefinition = "TEXT")
 	private String introduction;
@@ -42,9 +32,8 @@ public class JobDetail {
 	private String mainTask;
 
 	@Builder
-	public JobDetail(String summary, String introduction, String qualification, String preferential,
+	public JobDetail(String introduction, String qualification, String preferential,
 		String procedure, String benefit, String mainTask) {
-		this.summary = summary;
 		this.introduction = introduction;
 		this.qualification = qualification;
 		this.preferential = preferential;
