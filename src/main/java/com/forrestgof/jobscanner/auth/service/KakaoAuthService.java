@@ -24,6 +24,9 @@ public class KakaoAuthService {
 
 	public AuthResponse login(AuthRequest authRequest) {
 		KakaoUserResponse kakaoUserResponse = clientKakao.getUserData(authRequest.getAccessToken());
+		if (kakaoUserResponse == null) {
+			return null;
+		}
 
 		String kakaoId = kakaoUserResponse.getId().toString();
 
@@ -31,10 +34,11 @@ public class KakaoAuthService {
 			memoryKakaoRepsitory.save(kakaoUserResponse);
 		}
 
-		AuthToken appToken = authTokenProvider.createUserAppToken(kakaoId);
+		AuthToken appTokens = authTokenProvider.createUserAppTokens(kakaoId);
 
 		return AuthResponse.builder()
-			.appToken(appToken.getToken())
+			.appToken(appTokens.getAppToken())
+			.refreshToken(appTokens.getRefreshToken())
 			.build();
 	}
 }

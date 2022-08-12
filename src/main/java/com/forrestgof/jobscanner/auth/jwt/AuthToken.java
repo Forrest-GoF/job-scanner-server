@@ -20,33 +20,73 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class AuthToken {
 
-	private final String token;
-	private final Key key;
+	private final String appToken;
+	private final String refreshToken;
+	private final Key appKey;
+	private final Key refreshKey;
 
 	private static final String AUTHORITIES_KEY = "role";
 
-	public AuthToken(String socialId, RoleType roleType, Date expiry, Key key) {
-		String role = roleType.toString();
-		log.trace(role);
+	public AuthToken(String socialId, RoleType roleType,
+		Date appTokenExpiry, Date refreshTokenExpiry,
+		Key appKey, Key refreshKey) {
 
-		this.key = key;
-		this.token = createAuthToken(socialId, role, expiry);
+		String role = roleType.toString();
+
+		this.appKey = appKey;
+		this.refreshKey = refreshKey;
+		this.appToken = createAppToken(socialId, role, appTokenExpiry);
+		this.refreshToken = createRefreshToken(role, refreshTokenExpiry);
 	}
 
-	private String createAuthToken(String socialId, String role, Date expiry) {
+	//TODO app 토큰에 유저 정보 대신 UUID 담기
+	private String createAppToken(String socialId, String role, Date expiry) {
 		return Jwts.builder()
 			.setSubject(socialId) //토큰 제목 설정
 			.claim(AUTHORITIES_KEY, role) //사용자 정의 클레임
-			.signWith(key, SignatureAlgorithm.HS256) //암호화 복호화 Key
+			.signWith(appKey, SignatureAlgorithm.HS256) //암호화 복호화 Key
 			.setExpiration(expiry) //토큰 만료 시간 설정
 			.compact(); //토큰 생성
 	}
 
-	public boolean validate() {
-		return this.getTokenClaims() != null;
+	private String createRefreshToken(String role, Date expiry) {
+		return Jwts.builder()
+			.claim(AUTHORITIES_KEY, role)
+			.signWith(refreshKey, SignatureAlgorithm.HS256)
+			.setExpiration(expiry)
+			.compact();
 	}
 
-	public Claims getTokenClaims() {
+	public boolean validateApp() {
+		return this.getAppTokenClaims() != null;
+	}
+
+	public boolean validateRefresh() {
+		return this.getRefreshTokenClaims() != null;
+	}
+
+	public Claims getAppTokenClaims() {
+		return getTokenClaims(this.appToken, this.appKey);
+	}
+
+	public Claims getExpiredAppTokenClaims() {
+		try {
+			Jwts.parserBuilder()
+				.setSigningKey(this.appKey)
+				.build()
+				.parseClaimsJws(this.appToken)
+				.getBody();
+		} catch (ExpiredJwtException e) {
+			return e.getClaims();
+		}
+		return null;
+	}
+
+	public Claims getRefreshTokenClaims() {
+		return getTokenClaims(this.refreshToken, this.refreshKey);
+	}
+
+	private Claims getTokenClaims(String token, Key key) {
 		try {
 			return Jwts.parserBuilder()
 				.setSigningKey(key)

@@ -8,8 +8,10 @@ import com.forrestgof.jobscanner.auth.dto.KakaoUserResponse;
 import com.forrestgof.jobscanner.auth.exception.TokenValidFailedException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ClientKakao {
@@ -17,8 +19,8 @@ public class ClientKakao {
 	private final WebClient webClient;
 
 	public KakaoUserResponse getUserData(String accessToken) {
-		return
-			webClient.get()
+		try {
+			return webClient.get()
 				.uri("https://kapi.kakao.com/v2/user/me")
 				.headers(h -> h.setBearerAuth(accessToken))
 				.retrieve()
@@ -28,5 +30,8 @@ public class ClientKakao {
 					-> Mono.error(new TokenValidFailedException("Internal Server Error")))
 				.bodyToMono(KakaoUserResponse.class)
 				.block();
+		} catch (TokenValidFailedException e) {
+			return null;
+		}
 	}
 }

@@ -23,34 +23,47 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class AuthTokenProvider {
 
-	@Value("${app.auth.token-expiry}")
-	private String expiry;
+	@Value("${app.auth.app-token-expiry}")
+	private String appTokenExpiry;
+	@Value("${app.auth.refresh-token-expiry}")
+	private String refreshTokenExpiry;
 
-	private final Key key;
+	private final Key appKey;
+	private final Key refreshKey;
 	private static final String AUTHORITIES_KEY = "role";
 
-	public AuthTokenProvider(@Value("${app.auth.token-secret}") String secretKey) {
-		this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+	public AuthTokenProvider(
+		@Value("${app.auth.app-token-secret}") String appSecretKey,
+		@Value("${app.auth.refresh-token-secret}") String refreshSecretKey) {
+
+		this.appKey = Keys.hmacShaKeyFor(appSecretKey.getBytes());
+		this.refreshKey = Keys.hmacShaKeyFor(refreshSecretKey.getBytes());
 	}
 
-	public AuthToken createToken(String id, RoleType roleType, String expiry) {
-		Date expiryDate = new Date(System.currentTimeMillis() + Long.parseLong(expiry));
-		return new AuthToken(id, roleType, expiryDate, key);
+	public AuthToken createToken(String id, RoleType roleType, String appTokenExpiry, String refreshTokenExpiry) {
+		Date appTokenExpiryDate = new Date(System.currentTimeMillis() + Long.parseLong(appTokenExpiry));
+		Date refreshTokenExpiryDate = new Date(System.currentTimeMillis() + Long.parseLong(refreshTokenExpiry));
+		return new AuthToken(id, roleType, appTokenExpiryDate, refreshTokenExpiryDate, appKey, refreshKey);
 	}
 
-	public AuthToken createUserAppToken(String id) {
-		return createToken(id, RoleType.USER, expiry);
+	public AuthToken createUserAppTokens(String id) {
+		return createToken(id, RoleType.USER, appTokenExpiry, refreshTokenExpiry);
 	}
 
-	public AuthToken convertAuthToken(String token) {
-		return new AuthToken(token, key);
+	public AuthToken convertAuthToken(String appToken, String refreshToken) {
+		return new AuthToken(appToken, refreshToken, appKey, refreshKey);
+	}
+
+	//TODO JWT 필터 doFilterInternal()에서 에러나서 임시로 만듬
+	public AuthToken convertAuthToken(String appToken) {
+		return new AuthToken(appToken, appToken, appKey, refreshKey);
 	}
 
 	public Authentication getAuthentication(AuthToken authToken) {
 
-		if (authToken.validate()) {
+		if (authToken.validateApp()) {
 
-			Claims claims = authToken.getTokenClaims();
+			Claims claims = authToken.getAppTokenClaims();
 			Collection<? extends GrantedAuthority> authorities =
 				Arrays.stream(new String[] {claims.get(AUTHORITIES_KEY).toString()})
 					.map(SimpleGrantedAuthority::new)
