@@ -22,7 +22,7 @@ public class JobDetail {
 	@Column(columnDefinition = "TEXT")
 	private String preferential;
 
-	@Column(columnDefinition = "TEXT")
+	@Column(name = "procedures", columnDefinition = "TEXT")
 	private String procedure;
 
 	@Column(columnDefinition = "TEXT")
