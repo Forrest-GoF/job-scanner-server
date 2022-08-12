@@ -18,6 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.forrestgof.jobscanner.common.entity.BaseTimeEntity;
 import com.forrestgof.jobscanner.company.domain.Company;
 
 import lombok.AccessLevel;
@@ -29,7 +30,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "JOB")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class JobPosting {
+public class JobPosting extends BaseTimeEntity {
 
 	@Id
 	@GeneratedValue

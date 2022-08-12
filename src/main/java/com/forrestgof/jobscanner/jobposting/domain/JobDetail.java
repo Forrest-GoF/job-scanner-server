@@ -3,6 +3,8 @@ package com.forrestgof.jobscanner.jobposting.domain;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
+import com.forrestgof.jobscanner.common.entity.BaseTimeEntity;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
