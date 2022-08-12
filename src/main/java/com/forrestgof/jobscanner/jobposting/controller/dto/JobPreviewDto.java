@@ -1,12 +1,11 @@
 package com.forrestgof.jobscanner.jobposting.controller.dto;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.forrestgof.jobscanner.jobposting.domain.JobPosting;
-import com.forrestgof.jobscanner.jobposting.domain.JobStack;
-import com.forrestgof.jobscanner.jobposting.domain.TechStack;
+import com.forrestgof.jobscanner.jobposting.domain.JobTag;
+import com.forrestgof.jobscanner.jobposting.domain.Tag;
 
 import lombok.Data;
 
@@ -16,10 +15,10 @@ public class JobPreviewDto {
 	String title;
 	String companyName;
 	String companyThumbnail;
-	int salary;
+	String salary;
 	String platform;
 	String expiredAt;
-	List<String> stacks;
+	List<String> tags;
 
 	public JobPreviewDto(JobPosting jobPosting) {
 		id = jobPosting.getId();
@@ -28,10 +27,11 @@ public class JobPreviewDto {
 		companyThumbnail = jobPosting.getCompany().getThumbnailUrl();
 		salary = jobPosting.getSalary();
 		platform = jobPosting.getPlatform();
-		expiredAt = jobPosting.getExpiredAt().format(DateTimeFormatter.ISO_LOCAL_DATE);;
-		stacks = jobPosting.getJobStacks().stream()
-			.map(JobStack::getTechStack)
-			.map(TechStack::getName)
+		if (jobPosting.getExpiredAt() != null)
+			expiredAt = jobPosting.getExpiredAt().toString();
+		tags = jobPosting.getJobTags().stream()
+			.map(JobTag::getTag)
+			.map(Tag::getName)
 			.collect(Collectors.toList());
 	}
 }
