@@ -13,18 +13,17 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "stack")
-public class TechStack {
+public class Tag {
 
 	@Id
 	@GeneratedValue
-	@Column(name = "stack_id")
+	@Column(name = "tag_id")
 	private Long id;
 
-	@Column(name = "stack_name")
+	@Column(name = "tag_name", unique = true)
 	private String name;
 
-	public TechStack(String name) {
+	public Tag(String name) {
 		this.name = name;
 	}
 }

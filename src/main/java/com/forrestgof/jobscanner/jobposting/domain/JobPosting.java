@@ -1,19 +1,24 @@
 package com.forrestgof.jobscanner.jobposting.domain;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import com.forrestgof.jobscanner.company.domain.Company;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -31,6 +36,7 @@ public class JobPosting {
 	@Column(name = "job_id")
 	private Long id;
 
+	@Column(unique = true)
 	private String googleKey;
 
 	@Column(name = "job_title")
@@ -43,26 +49,37 @@ public class JobPosting {
 	@Column(name = "job_location")
 	private String location;
 
-	private LocalDateTime postedAt;
-	private LocalDateTime expiredAt;
+	private LocalDate postedAt;
+	private LocalDate expiredAt;
 	private String platform;
+
+	@Column(columnDefinition = "TEXT")
 	private String applyUrl;
-	private String type;
-	private int salary;
+
+	@Enumerated(value = EnumType.STRING)
+	private JobType type;
+
+	private String salary;
 	private String education;
 	private String career;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "job_detail_id")
+	@Column(columnDefinition = "TEXT")
+	private String summary;
+
+	@Embedded
 	private JobDetail jobDetail;
 
 	@OneToMany(mappedBy = "jobPosting")
-	private List<JobStack> jobStacks = new ArrayList<>();
+	private List<JobTag> jobTags = new ArrayList<>();
+
+	public void addJobTag(JobTag jobTag) {
+		jobTags.add(jobTag);
+	}
 
 	@Builder
-	public JobPosting(String googleKey, String title, Company company, String location, LocalDateTime postedAt,
-		LocalDateTime expiredAt, String platform, String applyUrl, String type, int salary, String education,
-		String career, JobDetail jobDetail) {
+	public JobPosting(String googleKey, String title, Company company, String location, LocalDate postedAt,
+		LocalDate expiredAt, String platform, String applyUrl, JobType type, String salary, String education,
+		String career, String summary, JobDetail jobDetail) {
 		this.googleKey = googleKey;
 		this.title = title;
 		this.company = company;
@@ -75,6 +92,7 @@ public class JobPosting {
 		this.salary = salary;
 		this.education = education;
 		this.career = career;
+		this.summary = summary;
 		this.jobDetail = jobDetail;
 	}
 }
