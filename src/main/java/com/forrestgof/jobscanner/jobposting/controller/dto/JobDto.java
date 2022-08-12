@@ -1,7 +1,5 @@
 package com.forrestgof.jobscanner.jobposting.controller.dto;
 
-import java.time.format.DateTimeFormatter;
-
 import com.forrestgof.jobscanner.jobposting.domain.JobPosting;
 
 import lombok.Data;
@@ -17,7 +15,7 @@ public class JobDto {
 	String platform;
 	String applyUrl;
 	String type;
-	int salary;
+	String salary;
 	String education;
 	String career;
 	JobDetailDto jobDetail;
@@ -27,14 +25,17 @@ public class JobDto {
 		title = jobPosting.getTitle();
 		company = new CompanyDto(jobPosting.getCompany());
 		location = jobPosting.getLocation();
-		postedAt = jobPosting.getPostedAt().format(DateTimeFormatter.ISO_LOCAL_DATE);;
-		expiredAt = jobPosting.getExpiredAt().format(DateTimeFormatter.ISO_LOCAL_DATE);;
+		if (jobPosting.getPostedAt() != null)
+			postedAt = jobPosting.getPostedAt().toString();
+		if (jobPosting.getExpiredAt() != null)
+			expiredAt = jobPosting.getExpiredAt().toString();
 		platform = jobPosting.getPlatform();
 		applyUrl = jobPosting.getApplyUrl();
-		type = jobPosting.getType();
+		type = jobPosting.getType().getName();
 		salary = jobPosting.getSalary();
 		education = jobPosting.getEducation();
 		career = jobPosting.getCareer();
-		jobDetail = new JobDetailDto(jobPosting.getJobDetail());
+		if (jobPosting.getJobDetail() != null)
+			jobDetail = new JobDetailDto(jobPosting.getJobDetail());
 	}
 }
