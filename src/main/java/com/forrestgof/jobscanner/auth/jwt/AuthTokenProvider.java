@@ -14,7 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
-import com.forrestgof.jobscanner.auth.enumerate.RoleType;
+import com.forrestgof.jobscanner.auth.RoleType;
 import com.forrestgof.jobscanner.auth.exception.InvalidTokenException;
 
 import io.jsonwebtoken.Claims;

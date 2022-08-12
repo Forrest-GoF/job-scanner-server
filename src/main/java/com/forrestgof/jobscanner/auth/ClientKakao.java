@@ -1,4 +1,4 @@
-package com.forrestgof.jobscanner.auth.client;
+package com.forrestgof.jobscanner.auth;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;

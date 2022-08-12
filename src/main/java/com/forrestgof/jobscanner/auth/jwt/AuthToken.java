@@ -3,7 +3,7 @@ package com.forrestgof.jobscanner.auth.jwt;
 import java.security.Key;
 import java.util.Date;
 
-import com.forrestgof.jobscanner.auth.enumerate.RoleType;
+import com.forrestgof.jobscanner.auth.RoleType;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

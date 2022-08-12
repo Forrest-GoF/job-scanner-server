@@ -1,4 +1,4 @@
-package com.forrestgof.jobscanner.auth.enumerate;
+package com.forrestgof.jobscanner.auth;
 
 import java.util.Arrays;
 

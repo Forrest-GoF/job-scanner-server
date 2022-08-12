@@ -1,4 +1,4 @@
-package com.forrestgof.jobscanner.auth.config;
+package com.forrestgof.jobscanner.common.config;
 
 import java.util.concurrent.TimeUnit;
 

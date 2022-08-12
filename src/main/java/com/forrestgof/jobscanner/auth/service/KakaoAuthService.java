@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.forrestgof.jobscanner.auth.client.ClientKakao;
+import com.forrestgof.jobscanner.auth.ClientKakao;
 import com.forrestgof.jobscanner.auth.dto.AuthRequest;
 import com.forrestgof.jobscanner.auth.dto.AuthResponse;
 import com.forrestgof.jobscanner.auth.exception.InvalidTokenException;
