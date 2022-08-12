@@ -25,7 +25,7 @@ class BatchUtilsTest {
 	public void batchCrawlingTest() throws Exception {
 	    //given
 		List<String> searchKeywords = new ArrayList<>();
-		searchKeywords.add("스프링백엔드개발자");
+		searchKeywords.add("개발");
 
 		//when
 		batchUtils.batchCrawling(searchKeywords);
