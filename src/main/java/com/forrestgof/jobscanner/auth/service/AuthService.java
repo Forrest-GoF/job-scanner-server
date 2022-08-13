@@ -46,9 +46,9 @@ public abstract class AuthService<T> {
 		String appTokenUuid = UUID.randomUUID().toString();
 		String refreshTokenUuid = UUID.randomUUID().toString();
 
-		AuthToken authToken = authTokenProvider.createUserAuthToken(appTokenUuid, refreshTokenUuid);
-
 		sessionService.saveWithAllArgument(email, appTokenUuid, refreshTokenUuid);
+
+		AuthToken authToken = authTokenProvider.createUserAuthToken(appTokenUuid, refreshTokenUuid);
 
 		return AuthResponse.builder()
 			.appToken(authToken.getAppToken())

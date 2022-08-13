@@ -15,8 +15,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import com.forrestgof.jobscanner.auth.RoleType;
-import com.forrestgof.jobscanner.common.exception.CustomException;
-import com.forrestgof.jobscanner.common.exception.ErrorCode;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.security.Keys;
@@ -47,36 +45,31 @@ public class AuthTokenProvider {
 		Date appTokenExpiryDate = new Date(System.currentTimeMillis() + Long.parseLong(appTokenExpiry));
 		Date refreshTokenExpiryDate = new Date(System.currentTimeMillis() + Long.parseLong(refreshTokenExpiry));
 		return new AuthToken(appTokenUuid, refreshTokenUuid, roleType, appTokenExpiryDate, refreshTokenExpiryDate,
-			appKey, refreshKey);
+			this.appKey, this.refreshKey);
 	}
 
 	public AuthToken createUserAuthToken(String appTokenUuid, String refreshTokenUuid) {
-		return createToken(appTokenUuid, refreshTokenUuid, RoleType.USER, appTokenExpiry, refreshTokenExpiry);
+		return createToken(appTokenUuid, refreshTokenUuid, RoleType.USER, this.appTokenExpiry, this.refreshTokenExpiry);
 	}
 
 	public AuthToken convertAuthToken(String appToken, String refreshToken) {
-		return new AuthToken(appToken, refreshToken, appKey, refreshKey);
+		return new AuthToken(appToken, refreshToken, this.appKey, this.refreshKey);
 	}
 
 	public AuthToken convertAuthToken(String appToken) {
-		return new AuthToken(appToken, appToken, appKey, refreshKey);
+		return new AuthToken(appToken, appToken, this.appKey, this.refreshKey);
 	}
 
 	public Authentication getAuthentication(AuthToken authToken) {
 
-		if (authToken.isValidApp()) {
+		Claims claims = authToken.getAppTokenClaims();
+		Collection<? extends GrantedAuthority> authorities =
+			Arrays.stream(new String[] {claims.get(AUTHORITIES_KEY).toString()})
+				.map(SimpleGrantedAuthority::new)
+				.collect(Collectors.toList());
 
-			Claims claims = authToken.getAppTokenClaims();
-			Collection<? extends GrantedAuthority> authorities =
-				Arrays.stream(new String[] {claims.get(AUTHORITIES_KEY).toString()})
-					.map(SimpleGrantedAuthority::new)
-					.collect(Collectors.toList());
+		User principal = new User(claims.get("jti", String.class), "", authorities);
 
-			User pricipal = new User(claims.get("jti", String.class), "", authorities);
-
-			return new UsernamePasswordAuthenticationToken(pricipal, authToken, authorities);
-		}
-
-		throw new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION);
+		return new UsernamePasswordAuthenticationToken(principal, authToken, authorities);
 	}
 }

@@ -11,6 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.forrestgof.jobscanner.common.exception.CustomException;
+
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -24,20 +26,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 
-		final String authorizationHeader = request.getHeader("Authorization");
+		try {
+			String accessToken = JwtHeaderUtil.getAccessToken(request);
+			AuthToken token = tokenProvider.convertAuthToken(accessToken);
 
-		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-			String tokenStr = JwtHeaderUtil.getAccessToken(request);
-			AuthToken token = tokenProvider.convertAuthToken(tokenStr);
-
-			if (token.isValidApp()) {
-				Authentication authentication = tokenProvider.getAuthentication(token);
-				SecurityContextHolder.getContext().setAuthentication(authentication);
-			}
+			Authentication authentication = tokenProvider.getAuthentication(token);
+			SecurityContextHolder.getContext().setAuthentication(authentication);
 
 			filterChain.doFilter(request, response);
+		} catch (CustomException e) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		} catch (Exception e) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
-
-		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 	}
 }

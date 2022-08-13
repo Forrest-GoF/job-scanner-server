@@ -2,6 +2,8 @@ package com.forrestgof.jobscanner.session.service;
 
 import org.springframework.stereotype.Service;
 
+import com.forrestgof.jobscanner.common.exception.CustomException;
+import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.member.domain.Member;
 import com.forrestgof.jobscanner.member.service.MemberService;
 import com.forrestgof.jobscanner.session.domain.Session;
@@ -26,7 +28,9 @@ public class SessionService {
 		return sessionRepository.save(session);
 	}
 
-	public boolean isValidAppTokenWithRefreshToken(String appTokenUuid, String refreshTokenUuid) {
-		return sessionRepository.existsByAppTokenUuidAndRefreshTokenUuid(appTokenUuid, refreshTokenUuid);
+	public void validateAppTokenWithRefreshToken(String appTokenUuid, String refreshTokenUuid) {
+		if (!sessionRepository.existsByAppTokenUuidAndRefreshTokenUuid(appTokenUuid, refreshTokenUuid)) {
+			throw new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION);
+		}
 	}
 }

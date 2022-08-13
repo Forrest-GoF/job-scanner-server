@@ -4,14 +4,14 @@ import java.security.Key;
 import java.util.Date;
 
 import com.forrestgof.jobscanner.auth.RoleType;
+import com.forrestgof.jobscanner.common.exception.CustomException;
+import com.forrestgof.jobscanner.common.exception.ErrorCode;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.UnsupportedJwtException;
-import io.jsonwebtoken.security.SignatureException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,29 +50,22 @@ public class AuthToken {
 			.compact();
 	}
 
-	public boolean isValidApp() {
-		return this.getAppTokenClaims() != null;
-	}
-
-	public boolean isValidRefresh() {
-		return this.getRefreshTokenClaims() != null;
-	}
-
 	public Claims getAppTokenClaims() {
 		return getTokenClaims(this.appToken, this.appKey);
 	}
 
 	public Claims getExpiredAppTokenClaims() {
 		try {
-			Jwts.parserBuilder()
+			return Jwts.parserBuilder()
 				.setSigningKey(this.appKey)
 				.build()
 				.parseClaimsJws(this.appToken)
 				.getBody();
 		} catch (ExpiredJwtException e) {
 			return e.getClaims();
+		} catch (SecurityException | JwtException | IllegalArgumentException e) {
+			throw new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION);
 		}
-		return null;
 	}
 
 	public Claims getRefreshTokenClaims() {
@@ -86,20 +79,8 @@ public class AuthToken {
 				.build()
 				.parseClaimsJws(token)
 				.getBody();
-		} catch (SecurityException e) {
-			log.info("Invalid JWT signature.");
-		} catch (MalformedJwtException e) {
-			log.info("Invalid JWT token.");
-		} catch (ExpiredJwtException e) {
-			log.info("Expired JWT token.");
-		} catch (UnsupportedJwtException e) {
-			log.info("Unsupported JWT token.");
-		} catch (SignatureException e) {
-			log.info(
-				"JWT signature does not match locally computed signature. JWT validity cannot be asserted and should not be trusted.");
-		} catch (IllegalArgumentException e) {
-			log.info("JWT token compact of handler are invalid.");
+		} catch (SecurityException | JwtException | IllegalArgumentException e) {
+			throw new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION);
 		}
-		return null;
 	}
 }

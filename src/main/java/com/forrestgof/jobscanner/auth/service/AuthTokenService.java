@@ -18,22 +18,13 @@ public class AuthTokenService {
 	private final SessionService sessionService;
 
 	public AuthResponse updateToken(AuthToken authToken) {
-		Claims appClaims = authToken.getAppTokenClaims();
-		if (appClaims == null) {
-			appClaims = authToken.getExpiredAppTokenClaims();
-		}
-
-		Claims refreshCllaims = authToken.getRefreshTokenClaims();
-		if (refreshCllaims == null) {
-			return null;
-		}
+		Claims appClaims = authToken.getExpiredAppTokenClaims();
+		Claims refreshClaims = authToken.getRefreshTokenClaims();
 
 		String appTokenUuid = appClaims.get("jti", String.class);
-		String refreshTokenUuid = refreshCllaims.get("jti", String.class);
+		String refreshTokenUuid = refreshClaims.get("jti", String.class);
 
-		if (!sessionService.isValidAppTokenWithRefreshToken(appTokenUuid, refreshTokenUuid)) {
-			return null;
-		}
+		sessionService.validateAppTokenWithRefreshToken(appTokenUuid, refreshTokenUuid);
 
 		AuthToken newAppToken = authTokenProvider.createUserAuthToken(appTokenUuid, refreshTokenUuid);
 

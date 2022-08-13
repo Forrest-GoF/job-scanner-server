@@ -50,36 +50,4 @@ public class ApiResponse<T> {
 				.error(ErrorResponse.of(e))
 				.build());
 	}
-
-	// public static <T> ResponseEntity<ApiResponse> toResponseEntity() {
-	// 	return ResponseEntity.status(HttpStatus.OK)
-	// 		.body(ApiResponse.builder()
-	// 			.success(true)
-	// 			.build());
-	// }
-	//
-	// public static <T> ResponseEntity<ApiResponse> toResponseEntity(T data) {
-	// 	return ResponseEntity.status(HttpStatus.OK)
-	// 		.body(ApiResponse.builder()
-	// 			.success(true)
-	// 			.data(data)
-	// 			.build());
-	// }
-	//
-	// public static <T> ResponseEntity<ApiResponse> toResponseEntity(HttpStatus httpStatus, T data) {
-	// 	return ResponseEntity.status(httpStatus)
-	// 		.body(ApiResponse.builder()
-	// 			.success(true)
-	// 			.data(data)
-	// 			.build());
-	// }
-	//
-	// public static <T> ResponseEntity toResponseEntity(ErrorCode e) {
-	// 	return ResponseEntity.status(e.getStatus())
-	// 		.body(ApiResponse.builder()
-	// 			.success(false)
-	// 			.data(null)
-	// 			.error(ErrorResponse.of(e))
-	// 			.build());
-	// }
 }
