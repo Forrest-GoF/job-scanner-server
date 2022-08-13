@@ -4,19 +4,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.forrestgof.jobscanner.common.dto.ApiResponse;
+import com.forrestgof.jobscanner.common.util.CustomResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(CustomException.class)
-	public ResponseEntity<ApiResponse> customExceptionHandle(CustomException e) {
-		return ApiResponse.toResponseEntity(e.getErrorCode());
+	public ResponseEntity customExceptionHandle(CustomException e) {
+		return CustomResponse.error(e.getErrorCode());
 	}
 
 	@ExceptionHandler
-	public ResponseEntity<ApiResponse> unexpectedExceptionHandle(Exception e) {
-		CustomException customException = new CustomException(e.getMessage(), ErrorCode.UNEXPECTED_EXCEPTION);
-		return ApiResponse.toResponseEntity(customException.getErrorCode());
+	public ResponseEntity unexpectedExceptionHandle(Exception e) {
+		return CustomResponse.error(ErrorCode.UNEXPECTED_EXCEPTION);
 	}
 }
