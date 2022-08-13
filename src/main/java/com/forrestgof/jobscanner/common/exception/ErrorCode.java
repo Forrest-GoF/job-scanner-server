@@ -22,6 +22,9 @@ public enum ErrorCode {
 	NOT_FOUND_MEMBER(HttpStatus.UNAUTHORIZED, "Unsigned account"),
 	ALREADY_EXIST_MEMBER(HttpStatus.CONFLICT, "Already joined member");
 
+	// MEMBER
+	NOT_FOUND_MEMBER(HttpStatus.BAD_REQUEST, "조회된 회원이 없습니다.");
+
 	private final HttpStatus status;
 	private final String message;
 }
