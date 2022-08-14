@@ -11,6 +11,7 @@ import com.forrestgof.jobscanner.auth.jwt.AuthTokenProvider;
 import com.forrestgof.jobscanner.member.domain.Member;
 import com.forrestgof.jobscanner.member.dto.MemberResponse;
 import com.forrestgof.jobscanner.member.service.MemberService;
+import com.forrestgof.jobscanner.session.domain.Session;
 import com.forrestgof.jobscanner.session.service.SessionService;
 
 import lombok.RequiredArgsConstructor;
@@ -38,15 +39,22 @@ public abstract class AuthService<T> {
 		Member member = Member.builder()
 			.email(email)
 			.build();
-		memberService.join(member);
+		memberService.save(member);
 		return MemberResponse.of(member);
 	}
 
 	protected AuthResponse loginByEmail(String email) {
+
 		String appTokenUuid = UUID.randomUUID().toString();
 		String refreshTokenUuid = UUID.randomUUID().toString();
 
-		sessionService.saveWithAllArgument(email, appTokenUuid, refreshTokenUuid);
+		Member member = memberService.findByEmail(email);
+		Session session = Session.builder()
+			.member(member)
+			.appTokenUuid(appTokenUuid)
+			.refreshTokenUuid(refreshTokenUuid)
+			.build();
+		sessionService.save(session);
 
 		AuthToken authToken = authTokenProvider.createUserAuthToken(appTokenUuid, refreshTokenUuid);
 

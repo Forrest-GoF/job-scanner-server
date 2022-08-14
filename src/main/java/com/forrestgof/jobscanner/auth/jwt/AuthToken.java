@@ -54,7 +54,7 @@ public class AuthToken {
 		return getTokenClaims(this.appToken, this.appKey);
 	}
 
-	public Claims getExpiredAppTokenClaims() {
+	public Claims getAppTokenClaimsIncludingExpired() {
 		try {
 			return Jwts.parserBuilder()
 				.setSigningKey(this.appKey)
