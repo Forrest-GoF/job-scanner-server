@@ -4,13 +4,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.forrestgof.jobscanner.auth.dto.AuthResponse;
+import com.forrestgof.jobscanner.auth.dto.AuthLoginResponse;
 import com.forrestgof.jobscanner.auth.dto.KakaoUserResponse;
 import com.forrestgof.jobscanner.auth.jwt.AuthTokenProvider;
 import com.forrestgof.jobscanner.common.exception.CustomException;
 import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.member.domain.Member;
-import com.forrestgof.jobscanner.member.dto.MemberResponse;
 import com.forrestgof.jobscanner.member.service.MemberService;
 import com.forrestgof.jobscanner.session.service.SessionService;
 
@@ -57,12 +56,12 @@ public class KakaoAuthService extends AuthService {
 			.build();
 	}
 
-	public MemberResponse signup(String accessToken) {
+	public void signup(String accessToken) {
 		Member member = getMemberFromAccessToken(accessToken);
-		return super.signupByMember(member);
+		super.signupByMember(member);
 	}
 
-	public AuthResponse login(String accessToken) {
+	public AuthLoginResponse login(String accessToken) {
 		Member member = getMemberFromAccessToken(accessToken);
 		return super.loginByEmail(member.getEmail());
 	}

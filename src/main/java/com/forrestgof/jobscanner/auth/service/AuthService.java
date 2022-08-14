@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.forrestgof.jobscanner.auth.dto.AuthResponse;
+import com.forrestgof.jobscanner.auth.dto.AuthLoginResponse;
 import com.forrestgof.jobscanner.auth.jwt.AuthToken;
 import com.forrestgof.jobscanner.auth.jwt.AuthTokenProvider;
 import com.forrestgof.jobscanner.member.domain.Member;
@@ -29,16 +29,15 @@ public abstract class AuthService {
 
 	protected abstract Member getMemberFromAccessToken(String accessToken);
 
-	protected abstract MemberResponse signup(String accessToken);
+	protected abstract void signup(String accessToken);
 
-	protected abstract AuthResponse login(String accessToken);
+	protected abstract AuthLoginResponse login(String accessToken);
 
-	protected MemberResponse signupByMember(Member member) {
+	protected void signupByMember(Member member) {
 		memberService.save(member);
-		return MemberResponse.of(member);
 	}
 
-	protected AuthResponse loginByEmail(String email) {
+	protected AuthLoginResponse loginByEmail(String email) {
 		Member findMember = memberService.findByEmail(email);
 		String appTokenUuid = UUID.randomUUID().toString();
 		String refreshTokenUuid = UUID.randomUUID().toString();
@@ -52,7 +51,8 @@ public abstract class AuthService {
 
 		AuthToken authToken = authTokenProvider.createUserAuthToken(appTokenUuid, refreshTokenUuid);
 
-		return AuthResponse.builder()
+		return AuthLoginResponse.builder()
+			.memberResponse(MemberResponse.of(findMember))
 			.appToken(authToken.getAppToken())
 			.refreshToken(authToken.getRefreshToken())
 			.build();

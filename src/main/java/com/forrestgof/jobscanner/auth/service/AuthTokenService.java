@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.forrestgof.jobscanner.auth.dto.AuthResponse;
+import com.forrestgof.jobscanner.auth.dto.AuthRefreshResponse;
 import com.forrestgof.jobscanner.auth.jwt.AuthToken;
 import com.forrestgof.jobscanner.auth.jwt.AuthTokenProvider;
 import com.forrestgof.jobscanner.common.exception.CustomException;
@@ -25,12 +25,12 @@ public class AuthTokenService {
 	private final AuthTokenProvider authTokenProvider;
 	private final SessionService sessionService;
 
-	public AuthResponse refreshAuthToken(AuthToken authToken) {
+	public AuthRefreshResponse refreshAuthToken(AuthToken authToken) {
 		validateAuthToken(authToken);
 		AuthToken newAuthToken = createAuthToken();
 		saveAuthToken(newAuthToken, authToken);
 		deleteAuthToken(authToken);
-		return AuthResponse.builder()
+		return AuthRefreshResponse.builder()
 			.appToken(newAuthToken.getAppToken())
 			.build();
 	}

@@ -11,9 +11,10 @@ import lombok.Data;
 public class MemberResponse {
 
 	private String email;
+	private String nickname;
 	private String imageUrl;
 
 	public static MemberResponse of(Member member) {
-		return new MemberResponse(member.getEmail(), member.getImageUrl());
+		return new MemberResponse(member.getEmail(), member.getNickname(), member.getImageUrl());
 	}
 }
