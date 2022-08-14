@@ -15,7 +15,8 @@ public enum ErrorCode {
 	EXPIRED_CODE(HttpStatus.valueOf(400), "Expired Code"),
 
 	// MEMBER
-	NOT_FOUND_MEMBER(HttpStatus.BAD_REQUEST, "조회된 회원이 없습니다.");
+	NOT_FOUND_MEMBER(HttpStatus.UNAUTHORIZED, "Unsigned account"),
+	ALREADY_EXIST_MEMBER(HttpStatus.CONFLICT, "Already joined member");
 
 	private final HttpStatus status;
 	private final String message;
