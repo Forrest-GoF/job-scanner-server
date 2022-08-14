@@ -14,6 +14,9 @@ public enum ErrorCode {
 	RESOURCE_NOT_FOUND(HttpStatus.valueOf(204), "Resource not found"),
 	EXPIRED_CODE(HttpStatus.valueOf(400), "Expired Code"),
 
+	//AUTH
+	INVALID_TOKEN_EXCEPTION(HttpStatus.UNAUTHORIZED, "Invalid token"),
+
 	// MEMBER
 	NOT_FOUND_MEMBER(HttpStatus.UNAUTHORIZED, "Unsigned account"),
 	ALREADY_EXIST_MEMBER(HttpStatus.CONFLICT, "Already joined member");
