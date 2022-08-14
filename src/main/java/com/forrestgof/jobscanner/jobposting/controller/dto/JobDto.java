@@ -1,6 +1,11 @@
 package com.forrestgof.jobscanner.jobposting.controller.dto;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.forrestgof.jobscanner.jobposting.domain.JobPosting;
+import com.forrestgof.jobscanner.jobposting.domain.JobTag;
+import com.forrestgof.jobscanner.jobposting.domain.Tag;
 
 import lombok.Data;
 
@@ -18,6 +23,7 @@ public class JobDto {
 	String salary;
 	String education;
 	String career;
+	List<String> tags;
 	JobDetailDto jobDetail;
 
 	public JobDto(JobPosting jobPosting) {
@@ -35,6 +41,10 @@ public class JobDto {
 		salary = jobPosting.getSalary();
 		education = jobPosting.getEducation();
 		career = jobPosting.getCareer();
+		tags = jobPosting.getJobTags().stream()
+			.map(JobTag::getTag)
+			.map(Tag::getName)
+			.collect(Collectors.toList());
 		if (jobPosting.getJobDetail() != null)
 			jobDetail = new JobDetailDto(jobPosting.getJobDetail());
 	}
