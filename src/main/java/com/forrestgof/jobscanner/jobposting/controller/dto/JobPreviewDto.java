@@ -18,7 +18,7 @@ public class JobPreviewDto {
 	String salary;
 	String platform;
 	String expiredAt;
-	List<String> stacks;
+	List<String> tags;
 
 	public JobPreviewDto(JobPosting jobPosting) {
 		id = jobPosting.getId();
@@ -29,7 +29,7 @@ public class JobPreviewDto {
 		platform = jobPosting.getPlatform();
 		if (jobPosting.getExpiredAt() != null)
 			expiredAt = jobPosting.getExpiredAt().toString();
-		stacks = jobPosting.getJobTags().stream()
+		tags = jobPosting.getJobTags().stream()
 			.map(JobTag::getTag)
 			.map(Tag::getName)
 			.collect(Collectors.toList());
