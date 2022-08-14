@@ -9,6 +9,7 @@ import com.forrestgof.jobscanner.auth.dto.KakaoUserResponse;
 import com.forrestgof.jobscanner.auth.jwt.AuthTokenProvider;
 import com.forrestgof.jobscanner.common.exception.CustomException;
 import com.forrestgof.jobscanner.common.exception.ErrorCode;
+import com.forrestgof.jobscanner.member.domain.Member;
 import com.forrestgof.jobscanner.member.dto.MemberResponse;
 import com.forrestgof.jobscanner.member.service.MemberService;
 import com.forrestgof.jobscanner.session.service.SessionService;
@@ -29,8 +30,8 @@ public class KakaoAuthService extends AuthService {
 	}
 
 	@Override
-	protected KakaoUserResponse getUserResponse(String accessToken) {
-		return webClient.get()
+	protected Member getMemberFromAccessToken(String accessToken) {
+		KakaoUserResponse kakaoUserResponse = webClient.get()
 			.uri("https://kapi.kakao.com/v2/user/me")
 			.headers(h -> h.setBearerAuth(accessToken))
 			.retrieve()
@@ -41,23 +42,28 @@ public class KakaoAuthService extends AuthService {
 				-> Mono.error(new CustomException("Internal Server Error", ErrorCode.INVALID_TOKEN_EXCEPTION)))
 			.bodyToMono(KakaoUserResponse.class)
 			.block();
+
+		String email = kakaoUserResponse.getKakaoAccount().getEmail();
+		String nickname = kakaoUserResponse.getProperties().getNickname();
+		String imageUrl = kakaoUserResponse.getProperties().getProfileImage();
+		if (email == null || nickname == null) {
+			throw new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION);
+		}
+
+		return Member.builder()
+			.email(email)
+			.nickname(nickname)
+			.imageUrl(imageUrl)
+			.build();
 	}
 
-	@Override
-	protected String getEmail(String accessToken) {
-		KakaoUserResponse kakaoUserResponse = getUserResponse(accessToken);
-		return kakaoUserResponse.getKakaoAccount().getEmail();
-	}
-
-	@Override
 	public MemberResponse signup(String accessToken) {
-		String email = getEmail(accessToken);
-		return super.signupByEmail(email);
+		Member member = getMemberFromAccessToken(accessToken);
+		return super.signupByMember(member);
 	}
 
-	@Override
 	public AuthResponse login(String accessToken) {
-		String email = getEmail(accessToken);
-		return super.loginByEmail(email);
+		Member member = getMemberFromAccessToken(accessToken);
+		return super.loginByEmail(member.getEmail());
 	}
 }

@@ -20,37 +20,31 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public abstract class AuthService<T> {
+public abstract class AuthService {
 
 	protected final WebClient webClient;
 	private final AuthTokenProvider authTokenProvider;
 	private final MemberService memberService;
 	private final SessionService sessionService;
 
-	protected abstract T getUserResponse(String accessToken);
-
-	protected abstract String getEmail(String accessToken);
+	protected abstract Member getMemberFromAccessToken(String accessToken);
 
 	protected abstract MemberResponse signup(String accessToken);
 
 	protected abstract AuthResponse login(String accessToken);
 
-	protected MemberResponse signupByEmail(String email) {
-		Member member = Member.builder()
-			.email(email)
-			.build();
+	protected MemberResponse signupByMember(Member member) {
 		memberService.save(member);
 		return MemberResponse.of(member);
 	}
 
 	protected AuthResponse loginByEmail(String email) {
-
+		Member findMember = memberService.findByEmail(email);
 		String appTokenUuid = UUID.randomUUID().toString();
 		String refreshTokenUuid = UUID.randomUUID().toString();
 
-		Member member = memberService.findByEmail(email);
 		Session session = Session.builder()
-			.member(member)
+			.member(findMember)
 			.appTokenUuid(appTokenUuid)
 			.refreshTokenUuid(refreshTokenUuid)
 			.build();

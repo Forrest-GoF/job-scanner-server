@@ -22,11 +22,14 @@ public class Member {
 	@Column(unique = true)
 	private String email;
 
+	private String nickname;
+	
 	private String imageUrl;
 
 	@Builder
-	public Member(String email, String imageUrl) {
+	public Member(String email, String nickname, String imageUrl) {
 		this.email = email;
+		this.nickname = nickname;
 		this.imageUrl = imageUrl;
 	}
 }
