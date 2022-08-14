@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source:  /
-    destination: /home/ubuntu/github_action
+    destination: /home/ubuntu/app
     overwrite: yes
 
 permissions:
@@ -12,7 +12,11 @@ permissions:
     group: ubuntu
 
 hooks:
+  AfterInstall:
+    - location: scripts/stop.sh
+      timeout: 60
+      runas: ubuntu
   ApplicationStart:
-    - location: scripts/gh_deploy.sh
+    - location: scripts/start.sh
       timeout: 60
       runas: ubuntu
