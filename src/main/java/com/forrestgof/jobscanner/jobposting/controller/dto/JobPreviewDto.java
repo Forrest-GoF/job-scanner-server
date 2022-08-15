@@ -17,6 +17,7 @@ public class JobPreviewDto {
 	String companyThumbnail;
 	String salary;
 	String platform;
+	String postedAt;
 	String expiredAt;
 	List<String> tags;
 
@@ -27,6 +28,8 @@ public class JobPreviewDto {
 		companyThumbnail = jobPosting.getCompany().getThumbnailUrl();
 		salary = jobPosting.getSalary();
 		platform = jobPosting.getPlatform();
+		if (jobPosting.getPostedAt() != null)
+			postedAt = jobPosting.getPostedAt().toString();
 		if (jobPosting.getExpiredAt() != null)
 			expiredAt = jobPosting.getExpiredAt().toString();
 		tags = jobPosting.getJobTags().stream()
