@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,12 +23,13 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequestMapping("/jobs")
 @RequiredArgsConstructor
 public class JobPostingApiController {
 
 	private final JobPostingService jobPostingService;
 
-	@GetMapping("/api/jobs")
+	@GetMapping("")
 	@ResponseBody
 	public ResponseEntity<Result> getFilterJobs(
 		@RequestParam(required = false) Map<String, String> params
@@ -40,7 +42,7 @@ public class JobPostingApiController {
 		return CustomResponse.success(new Result(previewDtos, previewDtos.size()));
 	}
 
-	@GetMapping("api/jobs/{id}")
+	@GetMapping("/{id}")
 	@ResponseBody
 	public ResponseEntity<JobDto> getJob(
 		@PathVariable Long id
