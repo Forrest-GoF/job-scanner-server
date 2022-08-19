@@ -1,4 +1,4 @@
-package com.forrestgof.jobscanner.auth.dto;
+package com.forrestgof.jobscanner.session.dto;
 
 import com.forrestgof.jobscanner.member.dto.MemberResponse;
 
@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class AuthLoginResponse {
+public class LoginResponse {
 
 	private MemberResponse memberResponse;
 	private String appToken;

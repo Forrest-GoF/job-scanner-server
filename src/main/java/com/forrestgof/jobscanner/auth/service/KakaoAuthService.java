@@ -4,32 +4,27 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.forrestgof.jobscanner.auth.dto.AuthLoginResponse;
 import com.forrestgof.jobscanner.auth.dto.KakaoUserResponse;
-import com.forrestgof.jobscanner.auth.jwt.AuthTokenProvider;
 import com.forrestgof.jobscanner.common.exception.CustomException;
 import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.member.domain.Member;
 import com.forrestgof.jobscanner.member.service.MemberService;
+import com.forrestgof.jobscanner.session.dto.LoginResponse;
 import com.forrestgof.jobscanner.session.service.SessionService;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
-@Slf4j
 @Service
-public class KakaoAuthService extends AuthService {
+@RequiredArgsConstructor
+public class KakaoAuthService implements AuthService {
 
-	private KakaoAuthService(
-		WebClient webClient,
-		AuthTokenProvider authTokenProvider,
-		MemberService memberService,
-		SessionService sessionService) {
-		super(webClient, authTokenProvider, memberService, sessionService);
-	}
+	private final WebClient webClient;
+	private final MemberService memberService;
+	private final SessionService sessionService;
 
 	@Override
-	protected Member getMemberFromAccessToken(String accessToken) {
+	public Member getMemberFromAccessToken(String accessToken) {
 		KakaoUserResponse kakaoUserResponse = webClient.get()
 			.uri("https://kapi.kakao.com/v2/user/me")
 			.headers(h -> h.setBearerAuth(accessToken))
@@ -56,13 +51,15 @@ public class KakaoAuthService extends AuthService {
 			.build();
 	}
 
+	@Override
 	public void signup(String accessToken) {
 		Member member = getMemberFromAccessToken(accessToken);
-		super.signupByMember(member);
+		memberService.join(member);
 	}
 
-	public AuthLoginResponse login(String accessToken) {
-		Member member = getMemberFromAccessToken(accessToken);
-		return super.loginByEmail(member.getEmail());
+	@Override
+	public LoginResponse login(String accessToken) {
+		String email = getMemberFromAccessToken(accessToken).getEmail();
+		return sessionService.login(email);
 	}
 }

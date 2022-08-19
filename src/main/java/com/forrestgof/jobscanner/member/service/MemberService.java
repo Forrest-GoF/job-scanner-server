@@ -18,7 +18,7 @@ public class MemberService {
 	private final MemberRepository memberRepository;
 
 	@Transactional
-	public Long save(Member member) {
+	public Long join(Member member) {
 		if (memberRepository.existsByEmail(member.getEmail())) {
 			throw new CustomException(ErrorCode.ALREADY_EXIST_MEMBER);
 		}
