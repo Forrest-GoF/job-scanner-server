@@ -40,7 +40,7 @@ public class NpsDetailDto {
 			.toFormatter();
 
 		return Company.builder()
-			.key(key)
+			.uniqueKey(key)
 			.name(name)
 			.registrationNumber(Integer.parseInt(registrationNumber))
 			.updatedAt(LocalDate.parse(updatedAt, monthFormatter))

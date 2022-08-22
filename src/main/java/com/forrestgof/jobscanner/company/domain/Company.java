@@ -32,7 +32,7 @@ public class Company extends BaseTimeEntity {
 	private LocalDate updatedAt;	//NPS 데이터 갱신일자
 
 	@Column(unique = true)
-	private String key;	//등록이름+사업자번호
+	private String uniqueKey;	//등록이름+사업자번호
 
 	@Column(unique = true)
 	private String googleName;
@@ -59,14 +59,14 @@ public class Company extends BaseTimeEntity {
 	private RegistrationStatus registrationStatus;
 
 	@Builder
-	public Company(String npsSequence, int registrationNumber, LocalDate updatedAt, String key, String googleName,
+	public Company(String npsSequence, int registrationNumber, LocalDate updatedAt, String uniqueKey, String googleName,
 		String thumbnailUrl, String name, LocalDate foundingDate, int employeeCount, long paidPension,
 		long averageAnnualSalary, String address, int countyCode, int cityCode, int townCode,
 		RegistrationType registrationType, RegistrationStatus registrationStatus) {
 		this.npsSequence = npsSequence;
 		this.registrationNumber = registrationNumber;
 		this.updatedAt = updatedAt;
-		this.key = key;
+		this.uniqueKey = uniqueKey;
 		this.googleName = googleName;
 		this.thumbnailUrl = thumbnailUrl;
 		this.name = name;
