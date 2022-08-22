@@ -36,8 +36,13 @@ public class CrawlingDataParser {
 	private final PlatformJobCrawler platformJobCrawler;
 
 	public JobPosting saveGoogleJob(GoogleJobDto googleJobDto) {
+		String companyName = googleJobDto.getCompanyName();
 
-		Company company = parseCompany(googleJobDto.getCompanyName(), googleJobDto.getThumbnail());
+		if (!companyService.existsByGoogleName(companyName)) {
+			companyService.createFromGoogleJob(googleJobDto);
+		}
+
+		Company company = companyService.findByGoogleName(companyName);
 		LocalDate postedAt = parsePostedAt(googleJobDto.getPostedAt());
 		JobType jobType = JobType.of(googleJobDto.getType());
 
@@ -91,21 +96,6 @@ public class CrawlingDataParser {
 			.forEach(saveJobPosting::addJobTag);
 
 		return saveJobPosting;
-	}
-
-	private Company parseCompany(String companyName, String thumbnail) {
-		companyName = companyName.replace(" ", "");	//공백 제거
-
-		try {
-			return companyService.findByName(companyName);
-		} catch (Exception e) {
-			Company company = Company.builder()
-				.name(companyName)
-				.thumbnailUrl(thumbnail)
-				.build();
-
-			return companyService.save(company);
-		}
 	}
 
 	private Tag parseTag(String name) {
