@@ -1,14 +1,19 @@
 package com.forrestgof.jobscanner.company.service;
 
+import java.util.Optional;
+
 import com.forrestgof.jobscanner.company.domain.Company;
+import com.forrestgof.jobscanner.jobposting.util.dto.GoogleJobDto;
 
 public interface CompanyService {
 
-	Company save(Company company);
+	Long createFromGoogleJob(GoogleJobDto googleJobDto);
 
 	Company findOne(Long id);
 
-	Company findByName(String name);
+	Company findByGoogleName(String googleName);
 
-	boolean existsByName(String name);
+	Optional<Company> getCompanyFromNps(String companyName);
+
+	boolean existsByGoogleName(String googleName);
 }
