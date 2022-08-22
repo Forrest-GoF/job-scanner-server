@@ -1,5 +1,7 @@
 package com.forrestgof.jobscanner.jobposting.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,10 @@ public class TagService {
 
 	public Tag findByName(String name) {
 		return tagRepository.findByName(name).orElseThrow();
+	}
+
+	public List<Tag> findAll() {
+		return tagRepository.findAll();
 	}
 
 	public boolean existsByName(String name) {
