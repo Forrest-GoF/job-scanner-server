@@ -7,8 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import com.forrestgof.jobscanner.common.exception.CustomException;
-import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.common.exception.NotFoundException;
 import com.forrestgof.jobscanner.company.domain.Company;
 import com.forrestgof.jobscanner.company.repository.CompanyRepository;
@@ -40,9 +38,12 @@ public class DefaultCompanyService implements CompanyService {
 			.orElse(createDefaultCompany(googleName));
 		company.setThumbnailUrl(googleJobDto.getThumbnail());
 
-		return companyRepository
-			.save(company)
-			.getId();
+		Optional<Company> byUniqueKey = companyRepository.findByUniqueKey(company.getUniqueKey());
+		if (byUniqueKey.isPresent())
+			return byUniqueKey.get().getId();
+		else {
+			return companyRepository.save(company).getId();
+		}
 	}
 
 	@Override
