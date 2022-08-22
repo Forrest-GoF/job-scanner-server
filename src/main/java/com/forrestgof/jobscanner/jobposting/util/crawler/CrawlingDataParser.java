@@ -37,12 +37,14 @@ public class CrawlingDataParser {
 
 	public JobPosting saveGoogleJob(GoogleJobDto googleJobDto) {
 		String companyName = googleJobDto.getCompanyName();
-
+		Long companyId;
 		if (!companyService.existsByGoogleName(companyName)) {
-			companyService.createFromGoogleJob(googleJobDto);
+			companyId = companyService.createFromGoogleJob(googleJobDto);
+		} else {
+			companyId = companyService.findByGoogleName(companyName).getId();
 		}
 
-		Company company = companyService.findByGoogleName(companyName);
+		Company company = companyService.findOne(companyId);
 		LocalDate postedAt = parsePostedAt(googleJobDto.getPostedAt());
 		JobType jobType = JobType.of(googleJobDto.getType());
 
