@@ -8,7 +8,7 @@ import com.forrestgof.jobscanner.company.domain.Company;
 
 public interface CompanyRepository extends JpaRepository<Company, Long> {
 
-	Optional<Company> findByName(String name);
+	Optional<Company> findByGoogleName(String googleName);
 
-	boolean existsByName(String name);
+	boolean existsByGoogleName(String googleName);
 }
