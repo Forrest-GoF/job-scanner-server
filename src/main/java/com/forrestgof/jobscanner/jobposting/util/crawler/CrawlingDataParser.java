@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -13,7 +12,6 @@ import com.forrestgof.jobscanner.company.domain.Company;
 import com.forrestgof.jobscanner.company.service.CompanyService;
 import com.forrestgof.jobscanner.jobposting.domain.JobDetail;
 import com.forrestgof.jobscanner.jobposting.domain.JobPosting;
-import com.forrestgof.jobscanner.jobposting.domain.JobPosting.JobPostingBuilder;
 import com.forrestgof.jobscanner.jobposting.domain.JobTag;
 import com.forrestgof.jobscanner.jobposting.domain.JobType;
 import com.forrestgof.jobscanner.jobposting.domain.Tag;
@@ -48,7 +46,7 @@ public class CrawlingDataParser {
 		LocalDate postedAt = parsePostedAt(googleJobDto.getPostedAt());
 		JobType jobType = JobType.of(googleJobDto.getType());
 
-		JobPostingBuilder jobPostingBuilder = JobPosting.builder()
+		JobPosting jobPosting = JobPosting.builder()
 			.applyUrl(googleJobDto.getApplyUrl())
 			.company(company)
 			.summary(googleJobDto.getDescription())
@@ -58,20 +56,21 @@ public class CrawlingDataParser {
 			.salary(googleJobDto.getSalary())
 			.postedAt(postedAt)
 			.title(googleJobDto.getTitle())
-			.type(jobType);
+			.type(jobType)
+			.build();
 
 		Optional<Platform> optionalPlatform = Platform.of(googleJobDto.getPlatform());
 
 		if (optionalPlatform.isEmpty()) {
-			return jobPostingService.save(jobPostingBuilder.build());
+			return jobPostingService.save(jobPosting);
 		}
 
 		Platform platform = optionalPlatform.get();
 		PlatformJobDto platformJobDto = platformJobCrawler.callCrawler(platform, googleJobDto.getApplyUrl());
-		return parsePlatformJob(jobPostingBuilder, platformJobDto);
+		return parsePlatformJob(jobPosting, platformJobDto);
 	}
 
-	private JobPosting parsePlatformJob(JobPostingBuilder jobPostingBuilder, PlatformJobDto platformJobDto) {
+	private JobPosting parsePlatformJob(JobPosting jobPosting, PlatformJobDto platformJobDto) {
 		LocalDate expiredAt = parseExpiredAt(platformJobDto.getDeadline());
 		List<String> stacks = platformJobDto.getStacks();
 
@@ -83,11 +82,9 @@ public class CrawlingDataParser {
 			.qualification(platformJobDto.getQualification())
 			.build();
 
-		JobPosting jobPosting = jobPostingBuilder
-			.location(platformJobDto.getLocation())
-			.expiredAt(expiredAt)
-			.jobDetail(jobDetail)
-			.build();
+		jobPosting.setLocation(platformJobDto.getLocation());
+		jobPosting.setExpiredAt(expiredAt);
+		jobPosting.setJobDetail(jobDetail);
 
 		JobPosting saveJobPosting = jobPostingService.save(jobPosting);
 

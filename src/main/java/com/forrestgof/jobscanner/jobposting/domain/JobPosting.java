@@ -96,4 +96,17 @@ public class JobPosting extends BaseTimeEntity {
 		this.summary = summary;
 		this.jobDetail = jobDetail;
 	}
+
+	public void setExpiredAt(LocalDate expiredAt) {
+		this.expiredAt = expiredAt;
+	}
+
+	public void setJobDetail(JobDetail jobDetail) {
+		this.jobDetail = jobDetail;
+	}
+
+	public void setLocation(String location) {
+
+		this.location = location;
+	}
 }
