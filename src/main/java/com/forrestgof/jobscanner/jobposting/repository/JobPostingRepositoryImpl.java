@@ -44,10 +44,11 @@ public class JobPostingRepositoryImpl implements JobPostingRepositoryCustom {
 	private JPAQuery<JobPosting> createQueryByCondition(JobSearchCondition condition) {
 		return queryFactory
 			.selectFrom(jobPosting)
-			.leftJoin(jobPosting.company, company)
-			.join(jobPosting.jobTags, jobTag)
-			.join(jobTag.tag, tag)
-			.where(employeesGoe(condition.getMinEmployees()),
+			.join(jobPosting.company, company)
+			.leftJoin(jobPosting.jobTags, jobTag)
+			.leftJoin(jobTag.tag, tag)
+			.where(
+				employeesGoe(condition.getMinEmployees()),
 				salaryGoe(condition.getMinSalary()),
 				tagIn(condition.getTags()),
 				jobTypeIn(condition.getJobType()))
