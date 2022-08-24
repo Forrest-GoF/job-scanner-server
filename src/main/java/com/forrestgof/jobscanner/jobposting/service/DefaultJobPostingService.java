@@ -6,8 +6,8 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.forrestgof.jobscanner.jobposting.controller.dto.JobSearchCondition;
 import com.forrestgof.jobscanner.jobposting.domain.JobPosting;
-import com.forrestgof.jobscanner.jobposting.repository.JobPostingCustomRepository;
 import com.forrestgof.jobscanner.jobposting.repository.JobPostingRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 public class DefaultJobPostingService implements JobPostingService {
 
 	private final JobPostingRepository jobPostingRepository;
-	private final JobPostingCustomRepository jobPostingCustomRepository;
 
 	@Override
 	@Transactional
@@ -38,8 +37,8 @@ public class DefaultJobPostingService implements JobPostingService {
 	}
 
 	@Override
-	public List<JobPosting> findFilterJobs(Map<String, String> param, List<String> tags) {
-		return jobPostingCustomRepository.findFilterJobs(param, tags);
+	public List<JobPosting> findFilterJobs(JobSearchCondition jobSearchCondition) {
+		return jobPostingRepository.findFilterJobs(jobSearchCondition);
 	}
 
 	@Override
