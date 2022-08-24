@@ -7,5 +7,4 @@ import com.forrestgof.jobscanner.jobposting.domain.JobPosting;
 public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
 
 	boolean existsByGoogleKey(String key);
-
 }

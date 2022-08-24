@@ -13,7 +13,7 @@ public interface JobPostingService {
 
 	JobPosting findOne(Long id);
 
-	List<JobPosting> findFilterJobs(Map<String, String> params);
+	List<JobPosting> findFilterJobs(Map<String, String> params, List<String>tags);
 
 	boolean existsByGoogleKey(String googleKey);
 
