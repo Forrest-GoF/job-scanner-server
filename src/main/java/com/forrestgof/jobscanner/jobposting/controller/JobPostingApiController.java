@@ -32,9 +32,10 @@ public class JobPostingApiController {
 	@GetMapping("")
 	@ResponseBody
 	public ResponseEntity<Result> getFilterJobs(
-		@RequestParam(required = false) Map<String, String> params
+		@RequestParam(required = false) Map<String, String> params,
+		@RequestParam(required = false) List<String> tags
 	) {
-		List<JobPosting> all = jobPostingService.findFilterJobs(params);
+		List<JobPosting> all = jobPostingService.findFilterJobs(params, tags);
 		List<JobPreviewDto> previewDtos = all.stream()
 			.map(JobPreviewDto::new)
 			.collect(Collectors.toList());
