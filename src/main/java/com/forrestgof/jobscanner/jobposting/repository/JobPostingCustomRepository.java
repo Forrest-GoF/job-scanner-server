@@ -22,7 +22,7 @@ public class JobPostingCustomRepository {
 		int page = Integer.parseInt(params.getOrDefault("page", "1"));
 		int size = Integer.parseInt(params.getOrDefault("size", "20"));
 		int employees = Integer.parseInt(params.getOrDefault("minEmployees", "0"));
-		long salary = Long.parseLong(params.getOrDefault("minSalary", "0"));
+		long salary = Long.parseLong(params.getOrDefault("minSalary", "0"))*10000;
 		JobType jobType = JobType.valueOf(params.getOrDefault("type", "FULLTIME"));
 
 		return em.createQuery("select j from JobPosting j" +
