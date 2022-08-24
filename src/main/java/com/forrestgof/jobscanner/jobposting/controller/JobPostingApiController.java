@@ -1,14 +1,12 @@
 package com.forrestgof.jobscanner.jobposting.controller;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -49,10 +47,9 @@ public class JobPostingApiController {
 	}
 
 	private List<JobPreviewDto> parseToDtoList(List<JobPosting> find) {
-		List<JobPreviewDto> previewDtos = find.stream()
+		return find.stream()
 			.map(JobPreviewDto::new)
 			.collect(Collectors.toList());
-		return previewDtos;
 	}
 
 	@Data
