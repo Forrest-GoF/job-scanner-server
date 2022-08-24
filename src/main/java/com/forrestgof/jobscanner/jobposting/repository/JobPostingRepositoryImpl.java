@@ -34,7 +34,7 @@ public class JobPostingRepositoryImpl implements JobPostingRepositoryCustom {
 	public List<JobPosting> findFilterJobs(JobSearchCondition condition) {
 		JPAQuery<JobPosting> query = createQueryByCondition(condition);
 
-		Optional<SortingCondition> optionalSortingCondition = condition.getSoringCondition();
+		Optional<SortingCondition> optionalSortingCondition = condition.getSortingCondition();
 		if (optionalSortingCondition.isPresent())
 			query = orderBy(query, optionalSortingCondition.get());
 

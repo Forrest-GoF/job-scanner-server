@@ -31,7 +31,7 @@ public class JobSearchCondition {
 			.collect(Collectors.toList());
 	}
 
-	public Optional<SortingCondition> getSoringCondition() {
+	public Optional<SortingCondition> getSortingCondition() {
 		if (sortedBy==null) {
 			return Optional.empty();
 		}
