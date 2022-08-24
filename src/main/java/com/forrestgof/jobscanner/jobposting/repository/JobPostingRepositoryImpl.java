@@ -49,12 +49,12 @@ public class JobPostingRepositoryImpl implements JobPostingRepositoryCustom {
 			.leftJoin(jobTag.tag, tag)
 			.where(
 				employeesGoe(condition.getMinEmployees()),
-				salaryGoe(condition.getMinSalary()),
+				salaryGoe(condition.getSalaryUnit()),
 				tagIn(condition.getTags()),
 				jobTypeIn(condition.getJobType()))
 			.distinct()
-			.offset(condition.getOffset())
-			.limit(condition.getLimit());
+			.offset(condition.getPage())
+			.limit(condition.getSize());
 	}
 
 	private BooleanExpression employeesGoe(long employees) {

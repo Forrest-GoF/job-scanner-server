@@ -10,7 +10,7 @@ import lombok.Data;
 
 @Data
 public class JobSearchCondition {
-	private long page = 1;
+	private long page = 0;
 	private long size = 20;
 	private long minEmployees;
 	private long minSalary;
@@ -18,16 +18,8 @@ public class JobSearchCondition {
 	private List<String> tags;
 	private List<String> type;
 
-	public long getMinSalary() {
+	public long getSalaryUnit() {
 		return minSalary*10000;
-	}
-
-	public long getOffset() {
-		return page-1;
-	}
-
-	public long getLimit() {
-		return size;
 	}
 
 	public List<JobType> getJobType() {
