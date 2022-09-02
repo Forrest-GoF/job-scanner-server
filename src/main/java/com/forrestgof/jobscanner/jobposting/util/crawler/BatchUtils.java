@@ -38,7 +38,7 @@ public class BatchUtils {
 	private List<GoogleJobDto> filterNewJob(GoogleCrawlingResponse googleCrawlingResponse) {
 		List<GoogleJobDto> newJobs = new ArrayList<>();
 		googleCrawlingResponse.getData().stream()
-			.filter(Predicate.not(job -> jobPostingService.existsByGoogleKey(job.getKey())))
+			.filter(Predicate.not(job -> jobPostingService.existsByGoogleKey(job.key())))
 			.forEach(newJobs::add);
 		return newJobs;
 	}

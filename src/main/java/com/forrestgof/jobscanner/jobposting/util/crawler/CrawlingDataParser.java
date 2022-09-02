@@ -34,7 +34,7 @@ public class CrawlingDataParser {
 	private final PlatformJobCrawler platformJobCrawler;
 
 	public JobPosting saveGoogleJob(GoogleJobDto googleJobDto) {
-		String companyName = googleJobDto.getCompanyName();
+		String companyName = googleJobDto.companyName();
 		Long companyId;
 		if (!companyService.existsByGoogleName(companyName)) {
 			companyId = companyService.createFromGoogleJob(googleJobDto);
@@ -43,46 +43,46 @@ public class CrawlingDataParser {
 		}
 
 		Company company = companyService.findOne(companyId);
-		LocalDate postedAt = parsePostedAt(googleJobDto.getPostedAt());
-		JobType jobType = JobType.of(googleJobDto.getType());
+		LocalDate postedAt = parsePostedAt(googleJobDto.postedAt());
+		JobType jobType = JobType.of(googleJobDto.type());
 
 		JobPosting jobPosting = JobPosting.builder()
-			.applyUrl(googleJobDto.getApplyUrl())
+			.applyUrl(googleJobDto.applyUrl())
 			.company(company)
-			.summary(googleJobDto.getDescription())
-			.googleKey(googleJobDto.getKey())
-			.location(googleJobDto.getLocation())
-			.platform(googleJobDto.getPlatform())
-			.salary(googleJobDto.getSalary())
+			.summary(googleJobDto.description())
+			.googleKey(googleJobDto.key())
+			.location(googleJobDto.location())
+			.platform(googleJobDto.platform())
+			.salary(googleJobDto.salary())
 			.postedAt(postedAt)
-			.title(googleJobDto.getTitle())
+			.title(googleJobDto.title())
 			.type(jobType)
 			.build();
 
-		Optional<Platform> optionalPlatform = Platform.of(googleJobDto.getPlatform());
+		Optional<Platform> optionalPlatform = Platform.of(googleJobDto.platform());
 
 		if (optionalPlatform.isEmpty()) {
 			return jobPostingService.save(jobPosting);
 		}
 
 		Platform platform = optionalPlatform.get();
-		PlatformJobDto platformJobDto = platformJobCrawler.callCrawler(platform, googleJobDto.getApplyUrl());
+		PlatformJobDto platformJobDto = platformJobCrawler.callCrawler(platform, googleJobDto.applyUrl());
 		return parsePlatformJob(jobPosting, platformJobDto);
 	}
 
 	private JobPosting parsePlatformJob(JobPosting jobPosting, PlatformJobDto platformJobDto) {
-		LocalDate expiredAt = parseExpiredAt(platformJobDto.getDeadline());
-		List<String> stacks = platformJobDto.getStacks();
+		LocalDate expiredAt = parseExpiredAt(platformJobDto.deadline());
+		List<String> stacks = platformJobDto.stacks();
 
 		JobDetail jobDetail = JobDetail.builder()
-			.benefit(platformJobDto.getBenefit())
-			.introduction(platformJobDto.getIntroduction())
-			.mainTask(platformJobDto.getMainTask())
-			.preferential(platformJobDto.getPreferential())
-			.qualification(platformJobDto.getQualification())
+			.benefit(platformJobDto.benefit())
+			.introduction(platformJobDto.introduction())
+			.mainTask(platformJobDto.mainTask())
+			.preferential(platformJobDto.preferential())
+			.qualification(platformJobDto.qualification())
 			.build();
 
-		jobPosting.setLocation(platformJobDto.getLocation());
+		jobPosting.setLocation(platformJobDto.location());
 		jobPosting.setExpiredAt(expiredAt);
 		jobPosting.setJobDetail(jobDetail);
 
