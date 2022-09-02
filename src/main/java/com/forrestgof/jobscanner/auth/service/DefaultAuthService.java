@@ -4,28 +4,51 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.forrestgof.jobscanner.auth.dto.AuthLoginResponse;
 import com.forrestgof.jobscanner.auth.dto.AuthRefreshResponse;
 import com.forrestgof.jobscanner.auth.jwt.AuthToken;
 import com.forrestgof.jobscanner.auth.jwt.AuthTokenProvider;
 import com.forrestgof.jobscanner.common.exception.CustomException;
 import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.member.domain.Member;
+import com.forrestgof.jobscanner.member.dto.MemberResponse;
 import com.forrestgof.jobscanner.session.domain.Session;
 import com.forrestgof.jobscanner.session.service.SessionService;
 
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
-public class AuthTokenService {
+public class DefaultAuthService implements AuthService{
 
-	private final AuthTokenProvider authTokenProvider;
 	private final SessionService sessionService;
+	private final AuthTokenProvider authTokenProvider;
 
-	public AuthRefreshResponse refreshAuthToken(AuthToken authToken) {
+	@Override
+	public AuthLoginResponse login(Member findMember) {
+		String appTokenUuid = UUID.randomUUID().toString();
+		String refreshTokenUuid = UUID.randomUUID().toString();
+
+		Session session = Session.builder()
+			.member(findMember)
+			.appTokenUuid(appTokenUuid)
+			.refreshTokenUuid(refreshTokenUuid)
+			.build();
+		sessionService.save(session);
+
+		AuthToken authToken = authTokenProvider.createUserAuthToken(appTokenUuid, refreshTokenUuid);
+
+		return AuthLoginResponse.builder()
+			.memberResponse(MemberResponse.of(findMember))
+			.appToken(authToken.getAppToken())
+			.refreshToken(authToken.getRefreshToken())
+			.build();
+	}
+
+	@Override
+	public AuthRefreshResponse refreshToken(String appToken, String refreshToken) {
+		AuthToken authToken = authTokenProvider.convertAuthToken(appToken, refreshToken);
 		validateAuthToken(authToken);
 		AuthToken newAuthToken = createAuthToken();
 		saveAuthToken(newAuthToken, authToken);

@@ -9,11 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.forrestgof.jobscanner.auth.dto.AuthLoginResponse;
 import com.forrestgof.jobscanner.auth.dto.AuthRefreshResponse;
-import com.forrestgof.jobscanner.auth.jwt.AuthToken;
-import com.forrestgof.jobscanner.auth.jwt.AuthTokenProvider;
 import com.forrestgof.jobscanner.auth.jwt.JwtHeaderUtil;
-import com.forrestgof.jobscanner.auth.service.AuthTokenService;
-import com.forrestgof.jobscanner.auth.service.KakaoAbstractAuthService;
+import com.forrestgof.jobscanner.auth.service.AuthService;
 import com.forrestgof.jobscanner.auth.social.KakaoTokenValidator;
 import com.forrestgof.jobscanner.common.util.CustomResponse;
 import com.forrestgof.jobscanner.member.domain.Member;
@@ -28,11 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class AuthController {
 
-	private final AuthTokenProvider authTokenProvider;
-	private final AuthTokenService authTokenService;
-	private final KakaoAuthService kakaoAuthService;
-	private final KakaoTokenValidator kakaoTokenValidator;
 	private final MemberService memberService;
+	private final KakaoTokenValidator kakaoTokenValidator;
+	private final AuthService authService;
 
 	@PostMapping("/signup/kakao")
 	public ResponseEntity signup(HttpServletRequest request) {
@@ -45,14 +40,15 @@ public class AuthController {
 	@PostMapping("/login/kakao")
 	public ResponseEntity<AuthLoginResponse> kakaoAuthRequest(HttpServletRequest request) {
 		String accessToken = JwtHeaderUtil.getAccessToken(request);
-		return CustomResponse.success(kakaoAuthService.login(accessToken));
+		Member member = kakaoTokenValidator.getMemberFromAccessToken(accessToken);
+		Member findMember = memberService.findByEmail(member.getEmail());
+		return CustomResponse.success(authService.login(findMember));
 	}
 
 	@PostMapping("/refresh")
 	public ResponseEntity<AuthRefreshResponse> refreshToken(HttpServletRequest request) {
 		String appToken = JwtHeaderUtil.getAccessToken(request);
 		String refreshToken = JwtHeaderUtil.getRefreshToken(request);
-		AuthToken authToken = authTokenProvider.convertAuthToken(appToken, refreshToken);
-		return CustomResponse.success(authTokenService.refreshAuthToken(authToken));
+		return CustomResponse.success(authService.refreshToken(appToken, refreshToken));
 	}
 }
