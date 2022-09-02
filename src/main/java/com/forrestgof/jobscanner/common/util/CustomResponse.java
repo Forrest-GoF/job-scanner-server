@@ -16,6 +16,7 @@ public class CustomResponse {
 	}
 
 	public static ResponseEntity<String> error(ErrorCode e) {
-		return ResponseEntity.status(e.getStatus()).body(e.getMessage());
+		return ResponseEntity.status(e.getStatus())
+			.body(e.getMessage());
 	}
 }
