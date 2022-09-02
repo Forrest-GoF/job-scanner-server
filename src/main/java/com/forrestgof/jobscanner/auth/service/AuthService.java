@@ -6,7 +6,7 @@ import com.forrestgof.jobscanner.member.domain.Member;
 
 public interface AuthService {
 
-	AuthLoginResponse login(Member findMember);
+	AuthLoginResponse signin(Member findMember);
 
 	AuthRefreshResponse refreshToken(String appToken, String refreshToken);
 }

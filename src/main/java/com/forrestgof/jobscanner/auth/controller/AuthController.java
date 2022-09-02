@@ -37,12 +37,12 @@ public class AuthController {
 		return CustomResponse.success();
 	}
 
-	@PostMapping("/login/kakao")
+	@PostMapping("/signin/kakao")
 	public ResponseEntity<AuthLoginResponse> kakaoAuthRequest(HttpServletRequest request) {
 		String accessToken = JwtHeaderUtil.getAccessToken(request);
 		Member member = kakaoTokenValidator.getMemberFromAccessToken(accessToken);
 		Member findMember = memberService.findByEmail(member.getEmail());
-		return CustomResponse.success(authService.login(findMember));
+		return CustomResponse.success(authService.signin(findMember));
 	}
 
 	@PostMapping("/refresh")
