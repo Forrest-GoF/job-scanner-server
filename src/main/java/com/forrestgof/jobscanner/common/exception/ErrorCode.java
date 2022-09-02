@@ -20,7 +20,10 @@ public enum ErrorCode {
 
 	// MEMBER
 	NOT_FOUND_MEMBER(HttpStatus.UNAUTHORIZED, "Unsigned account"),
-	ALREADY_EXIST_MEMBER(HttpStatus.CONFLICT, "Already joined member");
+	ALREADY_EXIST_MEMBER(HttpStatus.CONFLICT, "Already joined member"),
+
+	// Company
+	ALREADY_EXIST_COMPANY(HttpStatus.CONFLICT, "Company is already exits");
 
 	private final HttpStatus status;
 	private final String message;

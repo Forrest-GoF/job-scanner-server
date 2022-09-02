@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import com.forrestgof.jobscanner.common.exception.NotFoundException;
+import com.forrestgof.jobscanner.common.exception.CustomException;
+import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.company.domain.Company;
 import com.forrestgof.jobscanner.company.repository.CompanyRepository;
 import com.forrestgof.jobscanner.company.util.dto.NpsBassDto;
@@ -31,19 +32,15 @@ public class DefaultCompanyService implements CompanyService {
 	public Long createFromGoogleJob(GoogleJobDto googleJobDto) {
 		Assert.notNull(googleJobDto, "Google Job Dto must be provided");
 
-		String googleName = googleJobDto.getCompanyName();
+		String googleName = googleJobDto.companyName();
 		validateCompany(googleName);
 
 		Company company = getCompanyFromNps(googleName)
 			.orElse(createDefaultCompany(googleName));
-		company.setThumbnailUrl(googleJobDto.getThumbnail());
+		company.setThumbnailUrl(googleJobDto.thumbnail());
 
-		Optional<Company> byUniqueKey = companyRepository.findByUniqueKey(company.getUniqueKey());
-		if (byUniqueKey.isPresent())
-			return byUniqueKey.get().getId();
-		else {
-			return companyRepository.save(company).getId();
-		}
+		return companyRepository.findByUniqueKey(company.getUniqueKey())
+			.orElseGet(() -> companyRepository.save(company)).getId();
 	}
 
 	@Override
@@ -54,8 +51,7 @@ public class DefaultCompanyService implements CompanyService {
 	@Override
 	public Company findByGoogleName(String googleName) {
 		return companyRepository.findByGoogleName(googleName)
-			.orElseThrow(
-				() -> new NotFoundException("Company not exist"));
+			.orElseThrow(() -> new CustomException(ErrorCode.ALREADY_EXIST_COMPANY));
 	}
 
 	@Override
@@ -80,7 +76,7 @@ public class DefaultCompanyService implements CompanyService {
 
 	private void validateCompany(String googleName) {
 		if (existsByGoogleName(googleName)) {
-			throw new IllegalStateException("Company is already exits");
+			throw new CustomException(ErrorCode.ALREADY_EXIST_COMPANY);
 		}
 	}
 
