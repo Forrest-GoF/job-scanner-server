@@ -26,7 +26,7 @@ public class DefaultAuthService implements AuthService{
 	private final AuthTokenProvider authTokenProvider;
 
 	@Override
-	public AuthLoginResponse login(Member findMember) {
+	public AuthLoginResponse signin(Member findMember) {
 		String appTokenUuid = UUID.randomUUID().toString();
 		String refreshTokenUuid = UUID.randomUUID().toString();
 
