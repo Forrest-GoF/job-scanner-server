@@ -6,5 +6,5 @@ public interface SocialTokenValidator {
 
 	// String getAccessTokenFromCode(String code);
 
-	Member getMemberFromAccessToken(String accessToken);
+	Member generateMemberFromAccessToken(String accessToken);
 }

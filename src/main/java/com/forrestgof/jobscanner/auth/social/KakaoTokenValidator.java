@@ -16,11 +16,15 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class KakaoTokenValidator implements SocialTokenValidator {
 
-	private final WebClient webClient;
-
 	@Override
-	public Member getMemberFromAccessToken(String accessToken) {
-		KakaoUserResponse kakaoUserResponse = webClient.get()
+	public Member generateMemberFromAccessToken(String accessToken) {
+		KakaoUserResponse kakaoUserResponse = getKakaoUserFromAccessToken(accessToken);
+		return generateMemberFromKakaoUser(kakaoUserResponse);
+	}
+
+	private KakaoUserResponse getKakaoUserFromAccessToken(String accessToken) {
+		return WebClient.create()
+			.get()
 			.uri("https://kapi.kakao.com/v2/user/me")
 			.headers(h -> h.setBearerAuth(accessToken))
 			.retrieve()
@@ -31,7 +35,9 @@ public class KakaoTokenValidator implements SocialTokenValidator {
 				-> Mono.error(new CustomException("Internal Server Error", ErrorCode.INVALID_TOKEN_EXCEPTION)))
 			.bodyToMono(KakaoUserResponse.class)
 			.block();
+	}
 
+	private Member generateMemberFromKakaoUser(KakaoUserResponse kakaoUserResponse) {
 		String email = kakaoUserResponse.getKakaoAccount().getEmail();
 		String nickname = kakaoUserResponse.getProperties().getNickname();
 		String imageUrl = kakaoUserResponse.getProperties().getProfileImage();

@@ -11,7 +11,6 @@ import com.forrestgof.jobscanner.auth.dto.AuthLoginResponse;
 import com.forrestgof.jobscanner.auth.dto.AuthRefreshResponse;
 import com.forrestgof.jobscanner.auth.jwt.JwtHeaderUtil;
 import com.forrestgof.jobscanner.auth.service.AuthService;
-import com.forrestgof.jobscanner.auth.social.KakaoTokenValidator;
 import com.forrestgof.jobscanner.auth.social.SocialTokenValidator;
 import com.forrestgof.jobscanner.common.util.CustomResponse;
 import com.forrestgof.jobscanner.member.domain.Member;
@@ -33,7 +32,7 @@ public class AuthController {
 	@PostMapping("/signup/kakao")
 	public ResponseEntity signup(HttpServletRequest request) {
 		String accessToken = JwtHeaderUtil.getAccessToken(request);
-		Member member = socialTokenValidator.getMemberFromAccessToken(accessToken);
+		Member member = socialTokenValidator.generateMemberFromAccessToken(accessToken);
 		memberService.save(member);
 		return CustomResponse.success();
 	}
@@ -41,7 +40,7 @@ public class AuthController {
 	@PostMapping("/signin/kakao")
 	public ResponseEntity<AuthLoginResponse> kakaoAuthRequest(HttpServletRequest request) {
 		String accessToken = JwtHeaderUtil.getAccessToken(request);
-		Member member = socialTokenValidator.getMemberFromAccessToken(accessToken);
+		Member member = socialTokenValidator.generateMemberFromAccessToken(accessToken);
 		Member findMember = memberService.findByEmail(member.getEmail());
 		return CustomResponse.success(authService.signin(findMember));
 	}
