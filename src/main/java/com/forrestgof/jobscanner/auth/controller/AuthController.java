@@ -12,6 +12,7 @@ import com.forrestgof.jobscanner.auth.dto.AuthRefreshResponse;
 import com.forrestgof.jobscanner.auth.jwt.JwtHeaderUtil;
 import com.forrestgof.jobscanner.auth.service.AuthService;
 import com.forrestgof.jobscanner.auth.social.KakaoTokenValidator;
+import com.forrestgof.jobscanner.auth.social.SocialTokenValidator;
 import com.forrestgof.jobscanner.common.util.CustomResponse;
 import com.forrestgof.jobscanner.member.domain.Member;
 import com.forrestgof.jobscanner.member.service.MemberService;
@@ -26,13 +27,13 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthController {
 
 	private final MemberService memberService;
-	private final KakaoTokenValidator kakaoTokenValidator;
+	private final SocialTokenValidator socialTokenValidator;
 	private final AuthService authService;
 
 	@PostMapping("/signup/kakao")
 	public ResponseEntity signup(HttpServletRequest request) {
 		String accessToken = JwtHeaderUtil.getAccessToken(request);
-		Member member = kakaoTokenValidator.getMemberFromAccessToken(accessToken);
+		Member member = socialTokenValidator.getMemberFromAccessToken(accessToken);
 		memberService.save(member);
 		return CustomResponse.success();
 	}
@@ -40,7 +41,7 @@ public class AuthController {
 	@PostMapping("/signin/kakao")
 	public ResponseEntity<AuthLoginResponse> kakaoAuthRequest(HttpServletRequest request) {
 		String accessToken = JwtHeaderUtil.getAccessToken(request);
-		Member member = kakaoTokenValidator.getMemberFromAccessToken(accessToken);
+		Member member = socialTokenValidator.getMemberFromAccessToken(accessToken);
 		Member findMember = memberService.findByEmail(member.getEmail());
 		return CustomResponse.success(authService.signin(findMember));
 	}
