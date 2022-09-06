@@ -34,8 +34,14 @@ public class JobDetail {
 	private String mainTask;
 
 	@Builder
-	public JobDetail(String introduction, String qualification, String preferential,
-		String procedure, String benefit, String mainTask) {
+	public JobDetail(
+		String introduction,
+		String qualification,
+		String preferential,
+		String procedure,
+		String benefit,
+		String mainTask
+	) {
 		this.introduction = introduction;
 		this.qualification = qualification;
 		this.preferential = preferential;

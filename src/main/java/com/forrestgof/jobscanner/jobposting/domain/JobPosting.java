@@ -78,9 +78,22 @@ public class JobPosting extends BaseTimeEntity {
 	}
 
 	@Builder
-	public JobPosting(String googleKey, String title, Company company, String location, LocalDate postedAt,
-		LocalDate expiredAt, String platform, String applyUrl, JobType type, String salary, String education,
-		String career, String summary, JobDetail jobDetail) {
+	public JobPosting(
+		String googleKey,
+		String title,
+		Company company,
+		String location,
+		LocalDate postedAt,
+		LocalDate expiredAt,
+		String platform,
+		String applyUrl,
+		JobType type,
+		String salary,
+		String education,
+		String career,
+		String summary,
+		JobDetail jobDetail
+	) {
 		this.googleKey = googleKey;
 		this.title = title;
 		this.company = company;
