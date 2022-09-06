@@ -33,7 +33,7 @@ public class JobPostingApiController {
 		return CustomResponse.success(new Result(previewDtos, previewDtos.size()));
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("{id}")
 	public ResponseEntity<JobDto> getJob(
 		@PathVariable Long id
 	) {

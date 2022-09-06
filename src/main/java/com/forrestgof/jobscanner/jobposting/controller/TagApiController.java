@@ -16,7 +16,7 @@ import com.forrestgof.jobscanner.jobposting.service.TagService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/tags")
+@RequestMapping("tags")
 @RequiredArgsConstructor
 public class TagApiController {
 
