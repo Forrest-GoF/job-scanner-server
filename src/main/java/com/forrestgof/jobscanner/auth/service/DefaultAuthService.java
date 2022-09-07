@@ -11,6 +11,7 @@ import com.forrestgof.jobscanner.auth.jwt.AuthTokenProvider;
 import com.forrestgof.jobscanner.common.exception.CustomException;
 import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.member.domain.Member;
+import com.forrestgof.jobscanner.socialmember.domain.SocialMember;
 import com.forrestgof.jobscanner.member.dto.MemberResponse;
 import com.forrestgof.jobscanner.session.domain.Session;
 import com.forrestgof.jobscanner.session.service.SessionService;
@@ -44,6 +45,12 @@ public class DefaultAuthService implements AuthService{
 			.appToken(authToken.getAppToken())
 			.refreshToken(authToken.getRefreshToken())
 			.build();
+	}
+
+	@Override
+	public AuthLoginResponse signin(SocialMember socialMember) {
+		Member member = socialMember.getMember();
+		return signin(member);
 	}
 
 	@Override

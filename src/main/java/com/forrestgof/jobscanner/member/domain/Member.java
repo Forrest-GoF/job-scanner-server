@@ -19,18 +19,27 @@ public class Member extends BaseTimeEntity {
 
 	@Id
 	@GeneratedValue
+	@Column(name = "member_id")
 	private Long id;
 
 	@Column(unique = true)
 	private String email;
+
+	private String password;
 
 	private String nickname;
 
 	private String imageUrl;
 
 	@Builder
-	public Member(String email, String nickname, String imageUrl) {
+	public Member(
+		String email,
+		String password,
+		String nickname,
+		String imageUrl
+	) {
 		this.email = email;
+		this.password = password;
 		this.nickname = nickname;
 		this.imageUrl = imageUrl;
 	}
