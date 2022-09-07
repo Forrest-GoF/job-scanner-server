@@ -2,6 +2,8 @@ package com.forrestgof.jobscanner.socialmember.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -31,16 +33,17 @@ public class SocialMember extends BaseTimeEntity {
 
 	private String email;
 
-	private String type;
+	@Enumerated(value = EnumType.STRING)
+	private SocialType socialType;
 
 	@Builder
 	public SocialMember(
 		Member member,
 		String email,
-		String type
+		SocialType socialType
 	) {
 		this.member = member;
 		this.email = email;
-		this.type = type;
+		this.socialType = socialType;
 	}
 }
