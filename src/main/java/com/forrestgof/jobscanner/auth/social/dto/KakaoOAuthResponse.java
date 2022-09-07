@@ -1,4 +1,4 @@
-package com.forrestgof.jobscanner.auth.dto;
+package com.forrestgof.jobscanner.auth.social.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class OAuthAccessTokenResponse {
+public class KakaoOAuthResponse {
 
 	@JsonProperty("access_token")
 	private String accessToken;

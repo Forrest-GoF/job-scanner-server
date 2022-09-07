@@ -1,4 +1,4 @@
-package com.forrestgof.jobscanner.auth.dto;
+package com.forrestgof.jobscanner.auth.social.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

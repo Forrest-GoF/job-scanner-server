@@ -11,8 +11,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.forrestgof.jobscanner.auth.dto.KakaoUserResponse;
-import com.forrestgof.jobscanner.auth.dto.OAuthAccessTokenResponse;
+import com.forrestgof.jobscanner.auth.social.dto.KakaoOAuthResponse;
+import com.forrestgof.jobscanner.auth.social.dto.KakaoUserResponse;
 import com.forrestgof.jobscanner.common.exception.CustomException;
 import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.member.domain.Member;
@@ -58,7 +58,7 @@ public class KakaoTokenValidator implements SocialTokenValidator {
 				new CustomException("Social Access Token is unauthorized", ErrorCode.INVALID_TOKEN_EXCEPTION)))
 			.onStatus(HttpStatus::is5xxServerError, response
 				-> Mono.error(new CustomException("Internal Server Error", ErrorCode.INVALID_TOKEN_EXCEPTION)))
-			.bodyToMono(OAuthAccessTokenResponse.class)
+			.bodyToMono(KakaoOAuthResponse.class)
 			.block()
 			.getAccessToken();
 	}
