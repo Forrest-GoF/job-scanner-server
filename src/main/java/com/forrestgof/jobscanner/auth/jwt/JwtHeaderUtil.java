@@ -10,6 +10,14 @@ public class JwtHeaderUtil {
 	private final static String HEADER_AUTHORIZATION = "Authorization";
 	private final static String TOKEN_PREFIX = "Bearer ";
 	private final static String HEADER_REFRESH_TOKEN = "refresh-token";
+	private final static String CODE = "code";
+
+	public static String getCode(HttpServletRequest request) {
+		if (request.getHeader(CODE) == null) {
+			throw new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION);
+		}
+		return request.getHeader(CODE);
+	}
 
 	public static String getAccessToken(HttpServletRequest request) {
 		String headerValue = request.getHeader(HEADER_AUTHORIZATION);
