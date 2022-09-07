@@ -19,4 +19,9 @@ public class CustomResponse {
 		return ResponseEntity.status(e.getStatus())
 			.body(e.getMessage());
 	}
+
+	public static ResponseEntity<String> error(String message) {
+		return ResponseEntity.status(HttpStatus.valueOf(400))
+			.body(message);
+	}
 }

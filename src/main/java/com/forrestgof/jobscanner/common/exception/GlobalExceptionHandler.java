@@ -14,6 +14,11 @@ public class GlobalExceptionHandler {
 		return CustomResponse.error(e.getErrorCode());
 	}
 
+	@ExceptionHandler(UndefinedException.class)
+	public ResponseEntity undefinedExceptionHandle(UndefinedException e) {
+		return CustomResponse.error(e.getMessage());
+	}
+
 	@ExceptionHandler
 	public ResponseEntity unexpectedExceptionHandle(Exception e) {
 		return CustomResponse.error(ErrorCode.UNEXPECTED_EXCEPTION);
