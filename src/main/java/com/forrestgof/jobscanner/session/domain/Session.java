@@ -1,7 +1,5 @@
 package com.forrestgof.jobscanner.session.domain;
 
-import java.util.Base64;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -24,6 +22,7 @@ public class Session extends BaseTimeEntity {
 
 	@Id
 	@GeneratedValue
+	@Column(name = "session_id")
 	private Long id;
 
 	@ManyToOne
@@ -36,7 +35,10 @@ public class Session extends BaseTimeEntity {
 	private String refreshTokenUuid;
 
 	@Builder
-	public Session(Member member, String appTokenUuid, String refreshTokenUuid) {
+	public Session(Member member,
+		String appTokenUuid,
+		String refreshTokenUuid
+	) {
 		this.member = member;
 		this.appTokenUuid = appTokenUuid;
 		this.refreshTokenUuid = refreshTokenUuid;
