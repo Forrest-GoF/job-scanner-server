@@ -1,6 +1,6 @@
 package com.forrestgof.jobscanner.auth.controller;
 
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,10 +17,13 @@ import com.forrestgof.jobscanner.auth.jwt.JwtHeaderUtil;
 import com.forrestgof.jobscanner.auth.service.AuthService;
 import com.forrestgof.jobscanner.auth.social.SocialTokenValidator;
 import com.forrestgof.jobscanner.auth.social.SocialTokenValidatorFactory;
+import com.forrestgof.jobscanner.common.exception.CustomException;
+import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.common.util.CustomResponse;
 import com.forrestgof.jobscanner.member.domain.Member;
 import com.forrestgof.jobscanner.member.service.MemberService;
 import com.forrestgof.jobscanner.socialmember.domain.SocialMember;
+import com.forrestgof.jobscanner.socialmember.domain.SocialType;
 import com.forrestgof.jobscanner.socialmember.service.SocialMemberService;
 
 import lombok.RequiredArgsConstructor;
@@ -40,35 +43,38 @@ public class AuthController {
 
 	@PostMapping("signin/{socialType}")
 	public ResponseEntity<AuthLoginResponse> socialSignin(
-		@PathVariable("socialType") String socialType,
+		@PathVariable("socialType") String type,
 		HttpServletRequest request) {
-		HttpStatus httpStatus = HttpStatus.OK;
+		AtomicReference<HttpStatus> httpStatus = new AtomicReference<>(HttpStatus.OK);
+		SocialType socialType = SocialType.getEnum(type);
 		socialTokenValidator = socialTokenValidatorFactory.find(socialType);
 		String code = JwtHeaderUtil.getCode(request);
 		Member member = socialTokenValidator.generateMemberFromCode(code);
-		Optional<SocialMember> findSocialMember = socialMemberService.findByEmailAndType(member.getEmail(), socialType);
-		if (findSocialMember.isEmpty()) {
-			findSocialMember = Optional.ofNullable(socialSignup(member, socialType));
-			httpStatus = HttpStatus.CREATED;
-		}
-		return ResponseEntity.status(httpStatus).body(authService.signin(findSocialMember.get()));
+		SocialMember findSocialMember = socialMemberService.findByEmailAndSocialType(member.getEmail(), socialType)
+			.orElseGet(() -> {
+				httpStatus.set(HttpStatus.CREATED);
+				return socialSignup(member, socialType);
+			});
+		return ResponseEntity.status(httpStatus.get()).body(authService.signin(findSocialMember));
 	}
 
-	private SocialMember socialSignup(Member member, String socialTYpe) {
+	private SocialMember socialSignup(Member member, SocialType socialTYpe) {
 		Member findMember = memberService.findByEmail(member.getEmail())
 			.orElseGet(() -> signup(member));
 		SocialMember socialMember = SocialMember.builder()
 			.member(findMember)
 			.email(member.getEmail())
-			.type(socialTYpe)
+			.socialType(socialTYpe)
 			.build();
 		socialMemberService.save(socialMember);
-		return socialMemberService.findByEmailAndType(socialMember.getEmail(), socialMember.getType()).get();
+		return socialMemberService.findByEmailAndSocialType(socialMember.getEmail(), socialMember.getSocialType())
+			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 	}
 
 	private Member signup(Member member) {
 		memberService.save(member);
-		return memberService.findByEmail(member.getEmail()).get();
+		return memberService.findByEmail(member.getEmail())
+			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 	}
 
 	@PostMapping("refresh")
