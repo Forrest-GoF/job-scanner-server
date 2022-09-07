@@ -17,6 +17,7 @@ public enum ErrorCode {
 
 	//AUTH
 	INVALID_TOKEN_EXCEPTION(HttpStatus.UNAUTHORIZED, "Invalid token"),
+	UNSUPPORTED_SOCIAL_TYPE_EXCEPTION(HttpStatus.BAD_REQUEST, "Unsupported Social Type"),
 
 	// MEMBER
 	NOT_FOUND_MEMBER(HttpStatus.UNAUTHORIZED, "Unsigned account"),
