@@ -1,10 +1,12 @@
 package com.forrestgof.jobscanner.member.service;
 
+import java.util.Optional;
+
 import com.forrestgof.jobscanner.member.domain.Member;
 
 public interface MemberService {
 
 	Long save(Member member);
 
-	Member findByEmail(String email);
+	Optional<Member> findByEmail(String email);
 }

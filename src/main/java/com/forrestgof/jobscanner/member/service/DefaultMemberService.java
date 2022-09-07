@@ -1,5 +1,7 @@
 package com.forrestgof.jobscanner.member.service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,8 +28,7 @@ public class DefaultMemberService implements MemberService{
 		return findMember.getId();
 	}
 
-	public Member findByEmail(String email) {
-		return memberRepository.findByEmail(email)
-			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+	public Optional<Member> findByEmail(String email) {
+		return memberRepository.findByEmail(email);
 	}
 }
