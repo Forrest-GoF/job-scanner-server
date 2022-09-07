@@ -22,9 +22,9 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class AuthTokenProvider {
 
-	@Value("${app.auth.app-token-expiry}")
+	@Value("${auth.jwt.app-token-expiry}")
 	private String appTokenExpiry;
-	@Value("${app.auth.refresh-token-expiry}")
+	@Value("${auth.jwt.refresh-token-expiry}")
 	private String refreshTokenExpiry;
 
 	private final Key appKey;
@@ -32,8 +32,8 @@ public class AuthTokenProvider {
 	private static final String AUTHORITIES_KEY = "role";
 
 	public AuthTokenProvider(
-		@Value("${app.auth.app-token-secret}") String appSecretKey,
-		@Value("${app.auth.refresh-token-secret}") String refreshSecretKey) {
+		@Value("${auth.jwt.app-token-secret}") String appSecretKey,
+		@Value("${auth.jwt.refresh-token-secret}") String refreshSecretKey) {
 
 		this.appKey = Keys.hmacShaKeyFor(appSecretKey.getBytes());
 		this.refreshKey = Keys.hmacShaKeyFor(refreshSecretKey.getBytes());
