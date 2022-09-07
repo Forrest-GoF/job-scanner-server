@@ -12,8 +12,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum SocialType {
 
-	KAKAO("kakao");
-	// GOOGLE("google"),
+	KAKAO("kakao"),
+	GOOGLE("google");
 	// GITHUB("github");
 
 	private final String name;

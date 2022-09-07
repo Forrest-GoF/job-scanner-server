@@ -13,15 +13,15 @@ import lombok.extern.slf4j.Slf4j;
 public class SocialTokenValidatorFactory {
 
 	private final KakaoTokenValidator kakaoTokenValidator;
-	// private final GoogleTokenValidator googleTokenValidator;
+	private final GoogleTokenValidator googleTokenValidator;
 	// private final GithubTokenValidator githubTokenValidator;
 
 	public SocialTokenValidator find(SocialType socialType) {
 		switch (socialType) {
 			case KAKAO:
 				return kakaoTokenValidator;
-			// case GOOGLE:
-			// 	return googleTokenValidator;
+			case GOOGLE:
+				return googleTokenValidator;
 			// case GITHUB:
 			// 	return githubTokenValidator;
 		}
