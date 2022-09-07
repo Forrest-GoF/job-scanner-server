@@ -2,6 +2,8 @@ package com.forrestgof.jobscanner.auth.social;
 
 import org.springframework.stereotype.Component;
 
+import com.forrestgof.jobscanner.socialmember.domain.SocialType;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,9 +16,8 @@ public class SocialTokenValidatorFactory {
 	// private final GoogleTokenValidator googleTokenValidator;
 	// private final GithubTokenValidator githubTokenValidator;
 
-	public SocialTokenValidator find(String socialType) {
-		SocialType type = SocialType.getEnum(socialType);
-		switch (type) {
+	public SocialTokenValidator find(SocialType socialType) {
+		switch (socialType) {
 			case KAKAO:
 				return kakaoTokenValidator;
 			// case GOOGLE:

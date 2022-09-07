@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.forrestgof.jobscanner.common.exception.CustomException;
 import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.socialmember.domain.SocialMember;
+import com.forrestgof.jobscanner.socialmember.domain.SocialType;
 import com.forrestgof.jobscanner.socialmember.repository.SocialMemberRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class DefaultSocialMemberService implements SocialMemberService {
 
 	@Transactional
 	public Long save(SocialMember socialMember) {
-		if (socialMemberRepository.existsByEmailAndType(socialMember.getEmail(), socialMember.getType())) {
+		if (socialMemberRepository.existsByEmailAndSocialType(socialMember.getEmail(), socialMember.getSocialType())) {
 			throw new CustomException(ErrorCode.ALREADY_EXIST_MEMBER);
 		}
 		SocialMember findSocialMember = socialMemberRepository.save(socialMember);
@@ -29,7 +30,7 @@ public class DefaultSocialMemberService implements SocialMemberService {
 	}
 
 	@Override
-	public Optional<SocialMember> findByEmailAndType(String email, String type) {
-		return socialMemberRepository.findByEmailAndType(email, type);
+	public Optional<SocialMember> findByEmailAndSocialType(String email, SocialType socialType) {
+		return socialMemberRepository.findByEmailAndSocialType(email, socialType);
 	}
 }

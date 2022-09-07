@@ -1,4 +1,4 @@
-package com.forrestgof.jobscanner.auth.social;
+package com.forrestgof.jobscanner.socialmember.domain;
 
 import java.util.Arrays;
 
@@ -18,7 +18,7 @@ public enum SocialType {
 
 	private final String name;
 
-	static SocialType getEnum(String inputType) {
+	public static SocialType getEnum(String inputType) {
 		return Arrays.stream(SocialType.values())
 			.filter((socialType -> socialType.getName().equals(inputType)))
 			.findFirst()
