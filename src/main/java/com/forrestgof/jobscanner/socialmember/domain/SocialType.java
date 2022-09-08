@@ -1,6 +1,7 @@
 package com.forrestgof.jobscanner.socialmember.domain;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 import com.forrestgof.jobscanner.common.exception.CustomException;
 import com.forrestgof.jobscanner.common.exception.ErrorCode;
@@ -12,15 +13,13 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum SocialType {
 
-	KAKAO("kakao"),
-	GOOGLE("google"),
-	GITHUB("github");
-
-	private final String name;
+	KAKAO,
+	GOOGLE,
+	GITHUB;
 
 	public static SocialType getEnum(String inputType) {
 		return Arrays.stream(SocialType.values())
-			.filter((socialType -> socialType.getName().equals(inputType)))
+			.filter((socialType -> socialType.name().toLowerCase(Locale.ROOT).equals(inputType)))
 			.findFirst()
 			.orElseThrow(() -> new CustomException(ErrorCode.UNSUPPORTED_SOCIAL_TYPE_EXCEPTION));
 	}
