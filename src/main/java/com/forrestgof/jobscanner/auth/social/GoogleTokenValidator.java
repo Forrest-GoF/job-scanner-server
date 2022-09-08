@@ -1,6 +1,5 @@
 package com.forrestgof.jobscanner.auth.social;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -10,34 +9,33 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.forrestgof.jobscanner.auth.social.dto.GoogleOAuthResponse;
 import com.forrestgof.jobscanner.auth.social.dto.GoogleUserResponse;
+import com.forrestgof.jobscanner.common.config.properties.AuthProperties;
 import com.forrestgof.jobscanner.common.exception.CustomException;
 import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.member.domain.Member;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
-@Slf4j
 @Component
-@RequiredArgsConstructor
 public class GoogleTokenValidator implements SocialTokenValidator {
 
-	@Value("${auth.client.google.token-url}")
-	private String tokenUrl;
-	@Value("${auth.client.google.redirect-url}")
-	private String redirectUrl;
-	@Value("${auth.client.google.client-id}")
-	private String clientId;
-	@Value("${auth.client.google.client-secret}")
-	private String clientSecret;
+	private final String tokenUrl;
+	private final String redirectUrl;
+	private final String clientId;
+	private final String clientSecret;
+
+	public GoogleTokenValidator(AuthProperties authProperties) {
+		AuthProperties.Client.Google googleClient = authProperties.client().google();
+		this.tokenUrl = googleClient.tokenUrl();
+		this.redirectUrl = googleClient.redirectUrl();
+		this.clientId = googleClient.clientId();
+		this.clientSecret = googleClient.clientSecret();
+	}
 
 	@Override
 	public Member generateMemberFromCode(String code) {
 		String accessToken = getIdTokenFromCode(code);
-		log.warn("accessToken=" + accessToken);
 		GoogleUserResponse googleUserResponse = getGoogleUserFromIdToken(accessToken);
-		log.warn("googleUserResponse=" + googleUserResponse);
 		return generateMemberFromGoogleUser(googleUserResponse);
 	}
 
