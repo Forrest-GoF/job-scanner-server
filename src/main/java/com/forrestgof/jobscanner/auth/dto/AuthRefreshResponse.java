@@ -10,7 +10,7 @@ public class AuthRefreshResponse {
 
 	private String appToken;
 
-	public static AuthRefreshResponse of(String appToken) {
+	public static AuthRefreshResponse from(String appToken) {
 		return new AuthRefreshResponse(appToken);
 	}
 }
