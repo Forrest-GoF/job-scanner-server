@@ -17,14 +17,10 @@ public class SocialTokenValidatorFactory {
 	private final GithubTokenValidator githubTokenValidator;
 
 	public SocialTokenValidator find(SocialType socialType) {
-		switch (socialType) {
-			case KAKAO:
-				return kakaoTokenValidator;
-			case GOOGLE:
-				return googleTokenValidator;
-			case GITHUB:
-				return githubTokenValidator;
-		}
-		return null;
+		return switch (socialType) {
+			case KAKAO -> kakaoTokenValidator;
+			case GOOGLE -> googleTokenValidator;
+			case GITHUB -> githubTokenValidator;
+		};
 	}
 }

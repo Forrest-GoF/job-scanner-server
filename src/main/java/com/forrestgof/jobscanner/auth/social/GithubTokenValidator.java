@@ -1,5 +1,7 @@
 package com.forrestgof.jobscanner.auth.social;
 
+import java.util.Objects;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -41,19 +43,19 @@ public class GithubTokenValidator implements SocialTokenValidator {
 	}
 
 	private String getAccessTokenFromCode(String code) {
-		return WebClient.create()
-			.post()
-			.uri(tokenUrl)
-			.accept(MediaType.APPLICATION_JSON)
-			.bodyValue(tokenRequest(code))
-			.retrieve()
-			.onStatus(HttpStatus::is4xxClientError, response
-				-> Mono.error(
-				new CustomException("Social Access Token is unauthorized", ErrorCode.INVALID_TOKEN_EXCEPTION)))
-			.onStatus(HttpStatus::is5xxServerError, response
-				-> Mono.error(new CustomException("Internal Server Error", ErrorCode.INVALID_TOKEN_EXCEPTION)))
-			.bodyToMono(GithubOAuthResponse.class)
-			.block()
+		return Objects.requireNonNull(WebClient.create()
+				.post()
+				.uri(tokenUrl)
+				.accept(MediaType.APPLICATION_JSON)
+				.bodyValue(tokenRequest(code))
+				.retrieve()
+				.onStatus(HttpStatus::is4xxClientError, response
+					-> Mono.error(
+					new CustomException("Social Access Token is unauthorized", ErrorCode.INVALID_TOKEN_EXCEPTION)))
+				.onStatus(HttpStatus::is5xxServerError, response
+					-> Mono.error(new CustomException("Internal Server Error", ErrorCode.INVALID_TOKEN_EXCEPTION)))
+				.bodyToMono(GithubOAuthResponse.class)
+				.block())
 			.getTokenTypeAndAccessToken();
 	}
 

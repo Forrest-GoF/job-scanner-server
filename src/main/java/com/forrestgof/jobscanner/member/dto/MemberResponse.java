@@ -15,6 +15,9 @@ public class MemberResponse {
 	private String imageUrl;
 
 	public static MemberResponse of(Member member) {
-		return new MemberResponse(member.getEmail(), member.getNickname(), member.getImageUrl());
+		return new MemberResponse(
+			member.getEmail(),
+			member.getNickname(),
+			member.getImageUrl());
 	}
 }
