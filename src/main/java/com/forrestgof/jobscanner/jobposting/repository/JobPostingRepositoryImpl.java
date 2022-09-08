@@ -11,8 +11,6 @@ import java.util.Optional;
 
 import javax.persistence.EntityManager;
 
-import com.forrestgof.jobscanner.common.exception.CustomException;
-import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.jobposting.controller.dto.JobSearchCondition;
 import com.forrestgof.jobscanner.jobposting.controller.dto.SortingCondition;
 import com.forrestgof.jobscanner.jobposting.domain.JobPosting;
@@ -48,6 +46,7 @@ public class JobPostingRepositoryImpl implements JobPostingRepositoryCustom {
 			.leftJoin(jobPosting.jobTags, jobTag)
 			.leftJoin(jobTag.tag, tag)
 			.where(
+				notExpired(),
 				employeesGoe(condition.getMinEmployees()),
 				salaryGoe(condition.getSalaryUnit()),
 				tagIn(condition.getTags()),
@@ -55,6 +54,10 @@ public class JobPostingRepositoryImpl implements JobPostingRepositoryCustom {
 			.distinct()
 			.offset(condition.getPage())
 			.limit(condition.getSize());
+	}
+
+	private BooleanExpression notExpired() {
+		return jobPosting.isExpired.not();
 	}
 
 	private BooleanExpression employeesGoe(long employees) {
@@ -81,26 +84,22 @@ public class JobPostingRepositoryImpl implements JobPostingRepositoryCustom {
 
 	private JPAQuery<JobPosting> orderBy(JPAQuery<JobPosting> query,
 		SortingCondition sortingCondition) {
-		switch (sortingCondition) {
-			case POSTED -> {
-				return query.orderBy(
+		return switch (sortingCondition) {
+			case POSTED ->
+				query.orderBy(
 					new CaseBuilder()
 						.when(jobPosting.postedAt.isNull())
 						.then(LocalDate.EPOCH)
 						.otherwise(jobPosting.postedAt)
 						.desc());
-			}
-			case EXPIRED -> {
-				return query.orderBy(
+
+			case EXPIRED ->
+				query.orderBy(
 					new CaseBuilder()
 						.when(jobPosting.expiredAt.isNull())
 						.then(LocalDate.EPOCH)
 						.otherwise(jobPosting.expiredAt)
 						.desc());
-			}
-			default -> {
-				throw new CustomException("sortedBy가 올바르지 않습니다", ErrorCode.INVALID_CODE);
-			}
-		}
+		};
 	}
 }
