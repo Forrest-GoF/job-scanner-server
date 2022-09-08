@@ -59,7 +59,7 @@ public class DefaultAuthService implements AuthService {
 		AuthToken newAuthToken = createAuthToken();
 		saveAuthToken(newAuthToken, authToken);
 		deleteAuthToken(authToken);
-		return AuthRefreshResponse.of(newAuthToken.getAppToken());
+		return AuthRefreshResponse.from(newAuthToken.getAppToken());
 	}
 
 	private void validateAuthToken(AuthToken authToken) {
