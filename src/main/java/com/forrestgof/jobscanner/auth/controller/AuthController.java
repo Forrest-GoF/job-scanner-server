@@ -78,8 +78,8 @@ public class AuthController {
 	}
 
 	private Member signup(Member member) {
-		memberService.save(member);
-		return memberService.findByEmail(member.getEmail())
+		Long memberId = memberService.save(member);
+		return memberService.findOne(memberId)
 			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 	}
 

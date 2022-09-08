@@ -8,5 +8,7 @@ public interface MemberService {
 
 	Long save(Member member);
 
+	Optional<Member> findOne(Long id);
+
 	Optional<Member> findByEmail(String email);
 }

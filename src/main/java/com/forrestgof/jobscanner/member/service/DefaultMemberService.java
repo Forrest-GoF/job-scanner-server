@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class DefaultMemberService implements MemberService{
+public class DefaultMemberService implements MemberService {
 
 	private final MemberRepository memberRepository;
 
@@ -26,6 +26,10 @@ public class DefaultMemberService implements MemberService{
 		}
 		Member findMember = memberRepository.save(member);
 		return findMember.getId();
+	}
+
+	public Optional<Member> findOne(Long id) {
+		return memberRepository.findById(id);
 	}
 
 	public Optional<Member> findByEmail(String email) {
