@@ -3,7 +3,6 @@ package com.forrestgof.jobscanner.auth.social;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -13,27 +12,28 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.forrestgof.jobscanner.auth.social.dto.KakaoOAuthResponse;
 import com.forrestgof.jobscanner.auth.social.dto.KakaoUserResponse;
+import com.forrestgof.jobscanner.common.config.properties.AuthProperties;
 import com.forrestgof.jobscanner.common.exception.CustomException;
 import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.member.domain.Member;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
-@Slf4j
 @Component
-@RequiredArgsConstructor
 public class KakaoTokenValidator implements SocialTokenValidator {
 
-	@Value("${auth.client.kakao.token-url}")
-	private String tokenUrl;
-	@Value("${auth.client.kakao.redirect-url}")
-	private String redirectUrl;
-	@Value("${auth.client.kakao.client-id}")
-	private String clientId; // JavaScript 키
-	@Value("${auth.client.kakao.client-secret}")
-	private String clientSecret;
+	private final String tokenUrl;
+	private final String redirectUrl;
+	private final String clientId; // JavaScript 키
+	private final String clientSecret;
+
+	public KakaoTokenValidator(AuthProperties authProperties) {
+		AuthProperties.Client.Kakao kakaoClient = authProperties.client().kakao();
+		this.tokenUrl = kakaoClient.tokenUrl();
+		this.redirectUrl = kakaoClient.redirectUrl();
+		this.clientId = kakaoClient.clientId();
+		this.clientSecret = kakaoClient.clientSecret();
+	}
 
 	@Override
 	public Member generateMemberFromCode(String code) {
