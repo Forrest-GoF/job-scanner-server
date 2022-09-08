@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 import com.forrestgof.jobscanner.common.exception.CustomException;
 import com.forrestgof.jobscanner.common.exception.ErrorCode;
@@ -15,7 +14,6 @@ import com.forrestgof.jobscanner.company.util.dto.NpsBassDto;
 import com.forrestgof.jobscanner.company.util.dto.NpsBassResponse;
 import com.forrestgof.jobscanner.company.util.dto.NpsDetailDto;
 import com.forrestgof.jobscanner.company.util.nps.NpsApiExplorer;
-import com.forrestgof.jobscanner.jobposting.util.dto.GoogleJobDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,18 +27,18 @@ public class DefaultCompanyService implements CompanyService {
 
 	@Override
 	@Transactional
-	public Long createFromGoogleJob(GoogleJobDto googleJobDto) {
-		Assert.notNull(googleJobDto, "Google Job Dto must be provided");
+	public Company createFrom(String rawName, String thumbnail) {
+		if (existsByGoogleName(rawName)) {
+			throw new CustomException(ErrorCode.ALREADY_EXIST_COMPANY);
+		}
 
-		String googleName = googleJobDto.companyName();
-		validateCompany(googleName);
+		Company company = getCompanyFromNps(rawName)
+			.orElseGet(() -> createDefaultCompany(rawName));
 
-		Company company = getCompanyFromNps(googleName)
-			.orElse(createDefaultCompany(googleName));
-		company.setThumbnailUrl(googleJobDto.thumbnail());
+		company.setThumbnailUrl(thumbnail);
 
 		return companyRepository.findByUniqueKey(company.getUniqueKey())
-			.orElseGet(() -> companyRepository.save(company)).getId();
+			.orElseGet(() -> companyRepository.save(company));
 	}
 
 	@Override
@@ -49,9 +47,8 @@ public class DefaultCompanyService implements CompanyService {
 	}
 
 	@Override
-	public Company findByGoogleName(String googleName) {
-		return companyRepository.findByGoogleName(googleName)
-			.orElseThrow(() -> new CustomException(ErrorCode.ALREADY_EXIST_COMPANY));
+	public Optional<Company> findByRawName(String rawName) {
+		return companyRepository.findByRawName(rawName);
 	}
 
 	@Override
@@ -64,20 +61,14 @@ public class DefaultCompanyService implements CompanyService {
 
 		NpsDetailDto npsDetailDto = getMostRelevantData(response);
 		Company company = npsDetailDto.toCompany();
-		company.setGoogleName(companyName);
+		company.setRawName(companyName);
 
 		return Optional.of(company);
 	}
 
 	@Override
 	public boolean existsByGoogleName(String googleName) {
-		return companyRepository.existsByGoogleName(googleName);
-	}
-
-	private void validateCompany(String googleName) {
-		if (existsByGoogleName(googleName)) {
-			throw new CustomException(ErrorCode.ALREADY_EXIST_COMPANY);
-		}
+		return companyRepository.existsByRawName(googleName);
 	}
 
 	private NpsDetailDto getMostRelevantData(NpsBassResponse response) {
@@ -94,7 +85,7 @@ public class DefaultCompanyService implements CompanyService {
 	private Company createDefaultCompany(String name) {
 		return Company.builder()
 			.name(name)
-			.googleName(name)
+			.rawName(name)
 			.build();
 	}
 }
