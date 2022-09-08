@@ -15,9 +15,9 @@ public enum JobType {
 
 	private final String name;
 
-	public static JobType of(String name) {
+	public static JobType from(String typeNamedKorean) {
 		return Arrays.stream(JobType.values())
-			.filter(r -> r.getName().equals(name))
+			.filter(r -> r.getName().equals(typeNamedKorean))
 			.findFirst()
 			.orElse(null);
 	}

@@ -74,7 +74,7 @@ public class CrawlingDataParser {
 
 	private JobPosting parseJobPosting(GoogleJobDto googleJobDto, Company company) {
 		LocalDate postedAt = parsePostedAt(googleJobDto.postedAt());
-		JobType jobType = JobType.of(googleJobDto.type());
+		JobType jobType = JobType.from(googleJobDto.type());
 
 		return JobPosting.builder()
 			.applyUrl(googleJobDto.applyUrl())
