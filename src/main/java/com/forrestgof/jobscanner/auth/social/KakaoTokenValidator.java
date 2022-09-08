@@ -2,6 +2,7 @@ package com.forrestgof.jobscanner.auth.social;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -43,23 +44,23 @@ public class KakaoTokenValidator implements SocialTokenValidator {
 	}
 
 	private String getAccessTokenFromCode(String code) {
-		return WebClient.create()
-			.post()
-			.uri(tokenUrl)
-			.headers(header -> {
-				header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-				header.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-				header.setAcceptCharset(Collections.singletonList(StandardCharsets.UTF_8));
-			})
-			.bodyValue(tokenRequest(code))
-			.retrieve()
-			.onStatus(HttpStatus::is4xxClientError, response
-				-> Mono.error(
-				new CustomException("Social Access Token is unauthorized", ErrorCode.INVALID_TOKEN_EXCEPTION)))
-			.onStatus(HttpStatus::is5xxServerError, response
-				-> Mono.error(new CustomException("Internal Server Error", ErrorCode.INVALID_TOKEN_EXCEPTION)))
-			.bodyToMono(KakaoOAuthResponse.class)
-			.block()
+		return Objects.requireNonNull(WebClient.create()
+				.post()
+				.uri(tokenUrl)
+				.headers(header -> {
+					header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+					header.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+					header.setAcceptCharset(Collections.singletonList(StandardCharsets.UTF_8));
+				})
+				.bodyValue(tokenRequest(code))
+				.retrieve()
+				.onStatus(HttpStatus::is4xxClientError, response
+					-> Mono.error(
+					new CustomException("Social Access Token is unauthorized", ErrorCode.INVALID_TOKEN_EXCEPTION)))
+				.onStatus(HttpStatus::is5xxServerError, response
+					-> Mono.error(new CustomException("Internal Server Error", ErrorCode.INVALID_TOKEN_EXCEPTION)))
+				.bodyToMono(KakaoOAuthResponse.class)
+				.block())
 			.getAccessToken();
 	}
 

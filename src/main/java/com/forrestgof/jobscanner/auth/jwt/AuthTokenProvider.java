@@ -31,17 +31,23 @@ public class AuthTokenProvider {
 
 	public AuthTokenProvider(AuthProperties authProperties) {
 		AuthProperties.Jwt jwt = authProperties.jwt();
+
 		this.appTokenExpiry = jwt.appTokenExpiry();
 		this.refreshTokenExpiry = jwt.refreshTokenExpiry();
+
 		String appSecretKey = jwt.appTokenSecret();
 		String refreshSecretKey = jwt.refreshTokenSecret();
 		this.appKey = Keys.hmacShaKeyFor(appSecretKey.getBytes());
 		this.refreshKey = Keys.hmacShaKeyFor(refreshSecretKey.getBytes());
 	}
 
-	public AuthToken createToken(String appTokenUuid, String refreshTokenUuid, RoleType roleType,
-		String appTokenExpiry, String refreshTokenExpiry) {
-
+	public AuthToken createToken(
+		String appTokenUuid,
+		String refreshTokenUuid,
+		RoleType roleType,
+		String appTokenExpiry,
+		String refreshTokenExpiry
+	) {
 		Date appTokenExpiryDate = new Date(System.currentTimeMillis() + Long.parseLong(appTokenExpiry));
 		Date refreshTokenExpiryDate = new Date(System.currentTimeMillis() + Long.parseLong(refreshTokenExpiry));
 		return new AuthToken(appTokenUuid, refreshTokenUuid, roleType, appTokenExpiryDate, refreshTokenExpiryDate,
@@ -49,15 +55,28 @@ public class AuthTokenProvider {
 	}
 
 	public AuthToken createUserAuthToken(String appTokenUuid, String refreshTokenUuid) {
-		return createToken(appTokenUuid, refreshTokenUuid, RoleType.USER, this.appTokenExpiry, this.refreshTokenExpiry);
+		return createToken(
+			appTokenUuid,
+			refreshTokenUuid,
+			RoleType.USER,
+			this.appTokenExpiry,
+			this.refreshTokenExpiry);
 	}
 
 	public AuthToken convertAuthToken(String appToken, String refreshToken) {
-		return new AuthToken(appToken, refreshToken, this.appKey, this.refreshKey);
+		return new AuthToken(
+			appToken,
+			refreshToken,
+			this.appKey,
+			this.refreshKey);
 	}
 
 	public AuthToken convertAuthToken(String appToken) {
-		return new AuthToken(appToken, appToken, this.appKey, this.refreshKey);
+		return new AuthToken(
+			appToken,
+			appToken,
+			this.appKey,
+			this.refreshKey);
 	}
 
 	public Authentication getAuthentication(AuthToken authToken) {
@@ -68,8 +87,14 @@ public class AuthTokenProvider {
 				.map(SimpleGrantedAuthority::new)
 				.collect(Collectors.toList());
 
-		User principal = new User(claims.get("jti", String.class), "", authorities);
+		User principal = new User(
+			claims.get("jti", String.class),
+			"",
+			authorities);
 
-		return new UsernamePasswordAuthenticationToken(principal, authToken, authorities);
+		return new UsernamePasswordAuthenticationToken(
+			principal,
+			authToken,
+			authorities);
 	}
 }

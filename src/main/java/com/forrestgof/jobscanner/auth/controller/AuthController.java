@@ -44,28 +44,34 @@ public class AuthController {
 	@PostMapping("signin/{socialType}")
 	public ResponseEntity<AuthLoginResponse> socialSignin(
 		@PathVariable("socialType") String type,
-		HttpServletRequest request) {
+		HttpServletRequest request
+	) {
 		AtomicReference<HttpStatus> httpStatus = new AtomicReference<>(HttpStatus.OK);
 		SocialType socialType = SocialType.getEnum(type);
 		socialTokenValidator = socialTokenValidatorFactory.find(socialType);
+
 		String code = JwtHeaderUtil.getCode(request);
 		Member member = socialTokenValidator.generateMemberFromCode(code);
+
 		SocialMember findSocialMember = socialMemberService.findByEmailAndSocialType(member.getEmail(), socialType)
 			.orElseGet(() -> {
 				httpStatus.set(HttpStatus.CREATED);
 				return socialSignup(member, socialType);
 			});
+
 		return ResponseEntity.status(httpStatus.get()).body(authService.signin(findSocialMember));
 	}
 
 	private SocialMember socialSignup(Member member, SocialType socialTYpe) {
 		Member findMember = memberService.findByEmail(member.getEmail())
 			.orElseGet(() -> signup(member));
+
 		SocialMember socialMember = SocialMember.builder()
 			.member(findMember)
 			.email(member.getEmail())
 			.socialType(socialTYpe)
 			.build();
+
 		socialMemberService.save(socialMember);
 		return socialMemberService.findByEmailAndSocialType(socialMember.getEmail(), socialMember.getSocialType())
 			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
