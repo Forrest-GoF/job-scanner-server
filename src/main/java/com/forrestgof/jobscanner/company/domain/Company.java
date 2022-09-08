@@ -35,7 +35,7 @@ public class Company extends BaseTimeEntity {
 	private String uniqueKey;           //등록이름+사업자번호
 
 	@Column(unique = true)
-	private String googleName;
+	private String rawName;
 	private String thumbnailUrl;
 
 	@Column(name = "company_name", unique = true)
@@ -64,7 +64,7 @@ public class Company extends BaseTimeEntity {
 		int registrationNumber,
 		LocalDate updatedAt,
 		String uniqueKey,
-		String googleName,
+		String rawName,
 		String thumbnailUrl,
 		String name,
 		LocalDate foundingDate,
@@ -82,7 +82,7 @@ public class Company extends BaseTimeEntity {
 		this.registrationNumber = registrationNumber;
 		this.updatedAt = updatedAt;
 		this.uniqueKey = uniqueKey;
-		this.googleName = googleName;
+		this.rawName = rawName;
 		this.thumbnailUrl = thumbnailUrl;
 		this.name = name;
 		this.foundingDate = foundingDate;
@@ -101,7 +101,7 @@ public class Company extends BaseTimeEntity {
 		this.thumbnailUrl = thumbnailUrl;
 	}
 
-	public void setGoogleName(String googleName) {
-		this.googleName = googleName;
+	public void setRawName(String rawName) {
+		this.rawName = rawName;
 	}
 }
