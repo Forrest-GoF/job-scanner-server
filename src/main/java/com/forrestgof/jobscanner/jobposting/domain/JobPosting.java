@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -52,6 +51,7 @@ public class JobPosting extends BaseTimeEntity {
 
 	private LocalDate postedAt;
 	private LocalDate expiredAt;
+	private boolean isExpired;
 	private String platform;
 
 	@Column(columnDefinition = "TEXT")
@@ -85,6 +85,7 @@ public class JobPosting extends BaseTimeEntity {
 		String location,
 		LocalDate postedAt,
 		LocalDate expiredAt,
+		boolean isExpired,
 		String platform,
 		String applyUrl,
 		JobType type,
@@ -99,6 +100,7 @@ public class JobPosting extends BaseTimeEntity {
 		this.company = company;
 		this.location = location;
 		this.postedAt = postedAt;
+		this.isExpired = isExpired;
 		this.expiredAt = expiredAt;
 		this.platform = platform;
 		this.applyUrl = applyUrl;
@@ -110,16 +112,17 @@ public class JobPosting extends BaseTimeEntity {
 		this.jobDetail = jobDetail;
 	}
 
-	public void setExpiredAt(LocalDate expiredAt) {
+	public void updateFromPlatform(
+		String location,
+		LocalDate expiredAt,
+		JobDetail jobDetail
+	) {
 		this.expiredAt = expiredAt;
-	}
-
-	public void setJobDetail(JobDetail jobDetail) {
 		this.jobDetail = jobDetail;
+		this.location = location;
 	}
 
-	public void setLocation(String location) {
-
-		this.location = location;
+	public void expire() {
+		isExpired = true;
 	}
 }
