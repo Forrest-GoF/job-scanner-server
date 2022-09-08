@@ -11,17 +11,17 @@ import com.forrestgof.jobscanner.auth.jwt.AuthTokenProvider;
 import com.forrestgof.jobscanner.common.exception.CustomException;
 import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.member.domain.Member;
-import com.forrestgof.jobscanner.socialmember.domain.SocialMember;
 import com.forrestgof.jobscanner.member.dto.MemberResponse;
 import com.forrestgof.jobscanner.session.domain.Session;
 import com.forrestgof.jobscanner.session.service.SessionService;
+import com.forrestgof.jobscanner.socialmember.domain.SocialMember;
 
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class DefaultAuthService implements AuthService{
+public class DefaultAuthService implements AuthService {
 
 	private final SessionService sessionService;
 	private final AuthTokenProvider authTokenProvider;
@@ -40,11 +40,10 @@ public class DefaultAuthService implements AuthService{
 
 		AuthToken authToken = authTokenProvider.createUserAuthToken(appTokenUuid, refreshTokenUuid);
 
-		return AuthLoginResponse.builder()
-			.memberResponse(MemberResponse.of(findMember))
-			.appToken(authToken.getAppToken())
-			.refreshToken(authToken.getRefreshToken())
-			.build();
+		return AuthLoginResponse.of(
+			MemberResponse.of(findMember),
+			authToken.getAppToken(),
+			authToken.getRefreshToken());
 	}
 
 	@Override
@@ -60,9 +59,7 @@ public class DefaultAuthService implements AuthService{
 		AuthToken newAuthToken = createAuthToken();
 		saveAuthToken(newAuthToken, authToken);
 		deleteAuthToken(authToken);
-		return AuthRefreshResponse.builder()
-			.appToken(newAuthToken.getAppToken())
-			.build();
+		return AuthRefreshResponse.of(newAuthToken.getAppToken());
 	}
 
 	private void validateAuthToken(AuthToken authToken) {

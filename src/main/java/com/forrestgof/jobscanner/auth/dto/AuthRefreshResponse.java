@@ -1,11 +1,16 @@
 package com.forrestgof.jobscanner.auth.dto;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-@Getter
-@Builder
+@Data
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuthRefreshResponse {
 
 	private String appToken;
+
+	public static AuthRefreshResponse of(String appToken) {
+		return new AuthRefreshResponse(appToken);
+	}
 }
