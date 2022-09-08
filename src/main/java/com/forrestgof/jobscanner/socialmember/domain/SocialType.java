@@ -13,8 +13,8 @@ import lombok.Getter;
 public enum SocialType {
 
 	KAKAO("kakao"),
-	GOOGLE("google");
-	// GITHUB("github");
+	GOOGLE("google"),
+	GITHUB("github");
 
 	private final String name;
 
