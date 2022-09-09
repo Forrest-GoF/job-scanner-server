@@ -20,6 +20,7 @@ public class DefaultSocialMemberService implements SocialMemberService {
 
 	private final SocialMemberRepository socialMemberRepository;
 
+	@Override
 	@Transactional
 	public Long save(SocialMember socialMember) {
 		if (socialMemberRepository.existsByEmailAndSocialType(socialMember.getEmail(), socialMember.getSocialType())) {
@@ -27,6 +28,12 @@ public class DefaultSocialMemberService implements SocialMemberService {
 		}
 		SocialMember findSocialMember = socialMemberRepository.save(socialMember);
 		return findSocialMember.getId();
+	}
+
+	@Override
+	public SocialMember findOne(Long id) {
+		return socialMemberRepository.findById(id)
+			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 	}
 
 	@Override

@@ -17,8 +17,6 @@ import com.forrestgof.jobscanner.auth.jwt.JwtHeaderUtil;
 import com.forrestgof.jobscanner.auth.service.AuthService;
 import com.forrestgof.jobscanner.auth.social.SocialTokenValidator;
 import com.forrestgof.jobscanner.auth.social.SocialTokenValidatorFactory;
-import com.forrestgof.jobscanner.common.exception.CustomException;
-import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.common.util.CustomResponse;
 import com.forrestgof.jobscanner.member.domain.Member;
 import com.forrestgof.jobscanner.member.service.MemberService;
@@ -72,15 +70,13 @@ public class AuthController {
 			.socialType(socialTYpe)
 			.build();
 
-		socialMemberService.save(socialMember);
-		return socialMemberService.findByEmailAndSocialType(socialMember.getEmail(), socialMember.getSocialType())
-			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+		Long socialMemberId = socialMemberService.save(socialMember);
+		return socialMemberService.findOne(socialMemberId);
 	}
 
 	private Member signup(Member member) {
 		Long memberId = memberService.save(member);
-		return memberService.findOne(memberId)
-			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+		return memberService.findOne(memberId);
 	}
 
 	@PostMapping("refresh")

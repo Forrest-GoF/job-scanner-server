@@ -9,8 +9,6 @@ import com.forrestgof.jobscanner.socialmember.domain.SocialType;
 
 public interface SocialMemberRepository extends JpaRepository<SocialMember, Long> {
 
-	SocialMember save(SocialMember socialMember);
-
 	Optional<SocialMember> findByEmailAndSocialType(String email, SocialType socialType);
 
 	boolean existsByEmailAndSocialType(String email, SocialType socialType);

@@ -19,6 +19,7 @@ public class DefaultMemberService implements MemberService {
 
 	private final MemberRepository memberRepository;
 
+	@Override
 	@Transactional
 	public Long save(Member member) {
 		if (memberRepository.existsByEmail(member.getEmail())) {
@@ -28,10 +29,13 @@ public class DefaultMemberService implements MemberService {
 		return findMember.getId();
 	}
 
-	public Optional<Member> findOne(Long id) {
-		return memberRepository.findById(id);
+	@Override
+	public Member findOne(Long id) {
+		return memberRepository.findById(id)
+			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
 	}
 
+	@Override
 	public Optional<Member> findByEmail(String email) {
 		return memberRepository.findByEmail(email);
 	}

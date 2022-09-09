@@ -9,5 +9,7 @@ public interface SocialMemberService {
 
 	Long save(SocialMember socialMember);
 
+	SocialMember findOne(Long id);
+
 	Optional<SocialMember> findByEmailAndSocialType(String email, SocialType socialType);
 }
