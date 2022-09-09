@@ -32,11 +32,10 @@ public class JobPostingRepositoryImpl implements JobPostingRepositoryCustom {
 	public List<JobPosting> findFilterJobs(JobSearchCondition condition) {
 		JPAQuery<JobPosting> query = createQueryByCondition(condition);
 
-		Optional<SortingCondition> optionalSortingCondition = condition.getSortingCondition();
-		if (optionalSortingCondition.isPresent())
-			query = orderBy(query, optionalSortingCondition.get());
-
-		return query.fetch();
+		return condition.getSortingCondition()
+			.map(sortingCondition -> orderBy(query, sortingCondition))
+			.orElse(query)
+			.fetch();
 	}
 
 	private JPAQuery<JobPosting> createQueryByCondition(JobSearchCondition condition) {
@@ -57,7 +56,7 @@ public class JobPostingRepositoryImpl implements JobPostingRepositoryCustom {
 	}
 
 	private BooleanExpression notExpired() {
-		return jobPosting.isExpired.not();
+		return jobPosting.isExpired.eq(false);
 	}
 
 	private BooleanExpression employeesGoe(long employees) {
