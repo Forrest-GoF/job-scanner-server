@@ -23,6 +23,7 @@ public class JobDto {
 	String salary;
 	String education;
 	String career;
+	String summary;
 	List<String> tags;
 	JobDetailDto jobDetail;
 
@@ -41,6 +42,7 @@ public class JobDto {
 		salary = jobPosting.getSalary();
 		education = jobPosting.getEducation();
 		career = jobPosting.getCareer();
+		summary = jobPosting.getSummary();
 		tags = jobPosting.getJobTags().stream()
 			.map(JobTag::getTag)
 			.map(Tag::getName)
