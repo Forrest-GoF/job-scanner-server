@@ -74,11 +74,14 @@ public class GoogleTokenValidator implements SocialTokenValidator {
 			.uri("https://oauth2.googleapis.com/tokeninfo",
 				builder -> builder.queryParam("id_token", idToken).build())
 			.retrieve()
-			.onStatus(HttpStatus::is4xxClientError, response
-				-> Mono.error(
-				new CustomException("Social Access Token is unauthorized", ErrorCode.INVALID_TOKEN_EXCEPTION)))
-			.onStatus(HttpStatus::is5xxServerError, response
-				-> Mono.error(new CustomException("Internal Server Error", ErrorCode.INVALID_TOKEN_EXCEPTION)))
+			.onStatus(
+				HttpStatus::is4xxClientError,
+				response
+					-> Mono.error(new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION)))
+			.onStatus(
+				HttpStatus::is5xxServerError,
+				response
+					-> Mono.error(new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION)))
 			.bodyToMono(GoogleUserResponse.class)
 			.block();
 	}
