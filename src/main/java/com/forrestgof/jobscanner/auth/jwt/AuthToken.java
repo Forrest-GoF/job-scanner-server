@@ -28,10 +28,14 @@ public class AuthToken {
 
 	private static final String AUTHORITIES_KEY = "role";
 
-	public AuthToken(String appTokenUuid, String refreshTokenUuid,
+	public AuthToken(
+		String appTokenUuid,
+		String refreshTokenUuid,
 		RoleType roleType,
-		Date appTokenExpiry, Date refreshTokenExpiry,
-		Key appKey, Key refreshKey) {
+		Date appTokenExpiry,
+		Date refreshTokenExpiry,
+		Key appKey,
+		Key refreshKey) {
 
 		String role = roleType.toString();
 
