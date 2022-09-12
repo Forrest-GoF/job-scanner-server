@@ -2,6 +2,7 @@ package com.forrestgof.jobscanner.member.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapsId;
@@ -22,8 +23,8 @@ public class ObjectiveCompany extends BaseTimeEntity {
 	@Column(name = "member_id")
 	private Long id;
 
-	@OneToOne
 	@MapsId
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
 
