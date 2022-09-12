@@ -104,6 +104,7 @@ public class KakaoTokenValidator implements SocialTokenValidator {
 			.email(email)
 			.nickname(nickname)
 			.imageUrl(imageUrl)
+			.isAuthenticatedEmail(true)
 			.build();
 	}
 }
