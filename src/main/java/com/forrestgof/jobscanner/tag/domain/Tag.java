@@ -1,4 +1,4 @@
-package com.forrestgof.jobscanner.jobposting.domain;
+package com.forrestgof.jobscanner.tag.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

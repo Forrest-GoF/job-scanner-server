@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.forrestgof.jobscanner.jobposting.domain.JobPosting;
-import com.forrestgof.jobscanner.jobposting.domain.JobTag;
-import com.forrestgof.jobscanner.jobposting.domain.Tag;
+import com.forrestgof.jobscanner.tag.domain.JobTag;
+import com.forrestgof.jobscanner.tag.domain.Tag;
 
 import lombok.Data;
 
