@@ -19,6 +19,7 @@ import javax.persistence.Table;
 
 import com.forrestgof.jobscanner.common.entity.BaseTimeEntity;
 import com.forrestgof.jobscanner.company.domain.Company;
+import com.forrestgof.jobscanner.tag.domain.JobTag;
 
 import lombok.AccessLevel;
 import lombok.Builder;

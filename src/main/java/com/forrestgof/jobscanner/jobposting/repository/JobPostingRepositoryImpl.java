@@ -2,12 +2,11 @@ package com.forrestgof.jobscanner.jobposting.repository;
 
 import static com.forrestgof.jobscanner.company.domain.QCompany.*;
 import static com.forrestgof.jobscanner.jobposting.domain.QJobPosting.*;
-import static com.forrestgof.jobscanner.jobposting.domain.QJobTag.*;
-import static com.forrestgof.jobscanner.jobposting.domain.QTag.*;
+import static com.forrestgof.jobscanner.tag.domain.QJobTag.*;
+import static com.forrestgof.jobscanner.tag.domain.QTag.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import javax.persistence.EntityManager;
 

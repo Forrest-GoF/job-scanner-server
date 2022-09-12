@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.forrestgof.jobscanner.common.util.CustomResponse;
-import com.forrestgof.jobscanner.jobposting.domain.Tag;
-import com.forrestgof.jobscanner.jobposting.service.TagService;
+import com.forrestgof.jobscanner.tag.domain.Tag;
+import com.forrestgof.jobscanner.tag.service.TagService;
 
 import lombok.RequiredArgsConstructor;
 

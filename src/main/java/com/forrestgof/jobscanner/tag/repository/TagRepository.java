@@ -1,10 +1,10 @@
-package com.forrestgof.jobscanner.jobposting.repository;
+package com.forrestgof.jobscanner.tag.repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.forrestgof.jobscanner.jobposting.domain.Tag;
+import com.forrestgof.jobscanner.tag.domain.Tag;
 
 public interface TagRepository extends JpaRepository<Tag, Long> {
 

@@ -1,4 +1,4 @@
-package com.forrestgof.jobscanner.member.domain;
+package com.forrestgof.jobscanner.tag.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -8,7 +8,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.forrestgof.jobscanner.common.entity.BaseTimeEntity;
-import com.forrestgof.jobscanner.jobposting.domain.Tag;
+import com.forrestgof.jobscanner.member.domain.Member;
 
 import lombok.AccessLevel;
 import lombok.Getter;
