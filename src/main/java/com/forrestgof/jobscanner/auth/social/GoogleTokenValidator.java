@@ -98,6 +98,7 @@ public class GoogleTokenValidator implements SocialTokenValidator {
 			.email(email)
 			.nickname(nickname)
 			.imageUrl(imageUrl)
+			.isAuthenticatedEmail(true)
 			.build();
 	}
 }
