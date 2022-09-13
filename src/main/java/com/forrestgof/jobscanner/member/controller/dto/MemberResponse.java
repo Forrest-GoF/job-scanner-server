@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 public class MemberResponse {
 
 	private String email;
-	private String password;
 	private String nickname;
 	private String imageUrl;
 
@@ -30,7 +29,6 @@ public class MemberResponse {
 
 	public void updateMember(Member member) {
 		this.email = member.getEmail();
-		this.password = member.getPassword();
 		this.nickname = member.getNickname();
 		this.imageUrl = member.getImageUrl();
 	}
