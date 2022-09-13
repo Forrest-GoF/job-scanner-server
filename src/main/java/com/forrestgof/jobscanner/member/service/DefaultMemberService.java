@@ -49,17 +49,27 @@ public class DefaultMemberService implements MemberService {
 
 	@Override
 	public Member signUp(MemberSignUpDto memberSignUpDto) {
-		Member member = memberSignUpDto.toEntity();
-		member.encodePassword(passwordEncoder);
+		Member member = Member.builder()
+			.email(memberSignUpDto.email())
+			.password(passwordEncoder.encode(memberSignUpDto.password()))
+			.nickname(memberSignUpDto.nickname())
+			.build();
+
 		Long memberId = save(member);
+
 		return findOne(memberId);
 	}
 
 	@Override
 	public Member signIn(MemberSignInDto memberSignInDto) {
-		Member member = memberSignInDto.toEntity();
+		Member member = Member.builder()
+			.email(memberSignInDto.email())
+			.password(memberSignInDto.password())
+			.build();
+
 		Member findMember = findByEmail(member.getEmail())
 			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+
 		if (!passwordEncoder.matches(member.getPassword(), findMember.getPassword())) {
 			throw new UndefinedException("The password is incorrect.");
 		}
