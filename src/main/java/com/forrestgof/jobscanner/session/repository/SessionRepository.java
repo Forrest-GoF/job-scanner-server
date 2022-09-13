@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.forrestgof.jobscanner.member.domain.Member;
 import com.forrestgof.jobscanner.session.domain.Session;
 
 public interface SessionRepository extends JpaRepository<Session, Long> {
@@ -12,4 +13,5 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
 
 	boolean existsByAppTokenUuidAndRefreshTokenUuid(String appTokenUuid, String refreshTokenUuid);
 
+	Optional<Session> findByMember(Member member);
 }
