@@ -8,17 +8,17 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class AuthLoginResponse {
+public class AuthTokenResponse {
 
 	private MemberResponse memberResponse;
 	private String appToken;
 	private String refreshToken;
 
-	public static AuthLoginResponse of(
+	public static AuthTokenResponse of(
 		MemberResponse memberResponse,
 		String appToken,
 		String refreshToken
 	) {
-		return new AuthLoginResponse(memberResponse, appToken, refreshToken);
+		return new AuthTokenResponse(memberResponse, appToken, refreshToken);
 	}
 }
