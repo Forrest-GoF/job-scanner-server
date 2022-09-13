@@ -12,7 +12,6 @@ import com.forrestgof.jobscanner.common.exception.CustomException;
 import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.mail.service.MailService;
 import com.forrestgof.jobscanner.member.domain.Member;
-import com.forrestgof.jobscanner.member.dto.MemberResponse;
 import com.forrestgof.jobscanner.session.domain.Session;
 import com.forrestgof.jobscanner.session.service.SessionService;
 import com.forrestgof.jobscanner.socialmember.domain.SocialMember;
@@ -43,7 +42,6 @@ public class DefaultAuthService implements AuthService {
 		AuthToken authToken = authTokenProvider.createUserAuthToken(appTokenUuid, refreshTokenUuid);
 
 		return AuthTokenResponse.of(
-			MemberResponse.of(findMember),
 			authToken.getAppToken(),
 			authToken.getRefreshToken());
 	}
@@ -81,7 +79,6 @@ public class DefaultAuthService implements AuthService {
 			.getAppToken();
 
 		mailService.sendAuthenticationMail(member.getEmail(), newAppToken);
-
 	}
 
 	@Override
