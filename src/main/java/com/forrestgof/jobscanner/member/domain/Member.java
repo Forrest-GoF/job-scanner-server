@@ -5,8 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import com.forrestgof.jobscanner.common.entity.BaseTimeEntity;
 
 import lombok.AccessLevel;
@@ -48,10 +46,6 @@ public class Member extends BaseTimeEntity {
 		this.nickname = nickname;
 		this.imageUrl = imageUrl;
 		this.isAuthenticatedEmail = isAuthenticatedEmail;
-	}
-
-	public void encodePassword(PasswordEncoder passwordEncoder) {
-		this.password = passwordEncoder.encode(password);
 	}
 
 	public void authenticateEmail() {
