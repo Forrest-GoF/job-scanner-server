@@ -1,24 +1,33 @@
 package com.forrestgof.jobscanner.auth.controller;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.forrestgof.jobscanner.auth.dto.AuthLoginResponse;
 import com.forrestgof.jobscanner.auth.dto.AuthRefreshResponse;
+import com.forrestgof.jobscanner.auth.dto.AuthTokenResponse;
 import com.forrestgof.jobscanner.auth.jwt.JwtHeaderUtil;
 import com.forrestgof.jobscanner.auth.service.AuthService;
 import com.forrestgof.jobscanner.auth.social.SocialTokenValidator;
 import com.forrestgof.jobscanner.auth.social.SocialTokenValidatorFactory;
+import com.forrestgof.jobscanner.common.config.properties.DomainProperties;
 import com.forrestgof.jobscanner.common.util.CustomResponse;
 import com.forrestgof.jobscanner.member.domain.Member;
+import com.forrestgof.jobscanner.member.dto.MemberSignInDto;
+import com.forrestgof.jobscanner.member.dto.MemberSignUpDto;
 import com.forrestgof.jobscanner.member.service.MemberService;
 import com.forrestgof.jobscanner.socialmember.domain.SocialMember;
 import com.forrestgof.jobscanner.socialmember.domain.SocialType;
@@ -37,10 +46,45 @@ public class AuthController {
 	private final SocialMemberService socialMemberService;
 	private final AuthService authService;
 	private final SocialTokenValidatorFactory socialTokenValidatorFactory;
+	private final DomainProperties domainProperties;
 	private SocialTokenValidator socialTokenValidator;
 
+	@GetMapping("mail/authenticate/{email}/{appToken}")
+	public ResponseEntity<AuthTokenResponse> authenticateMail(
+		@PathVariable String email,
+		@PathVariable String appToken) throws URISyntaxException {
+
+		authService.validateMailWithAppToken(email, appToken);
+
+		memberService.authenticateEmail(email);
+
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setLocation(new URI(domainProperties.webSite()));
+
+		return ResponseEntity.status(HttpStatus.SEE_OTHER)
+			.headers(httpHeaders)
+			.body(null);
+	}
+
+	@PostMapping("signup")
+	public ResponseEntity<AuthTokenResponse> signUp(@RequestBody @Valid MemberSignUpDto memberSignUpDto) {
+		Member findMember = memberService.signUp(memberSignUpDto);
+
+		AuthTokenResponse authTokenResponse = authService.signIn(findMember);
+
+		authService.sendAuthenticationMail(findMember);
+
+		return ResponseEntity.status(HttpStatus.CREATED).body(authTokenResponse);
+	}
+
+	@PostMapping("signin")
+	public ResponseEntity<AuthTokenResponse> signIn(@RequestBody @Valid MemberSignInDto memberSignInDto) {
+		Member findMember = memberService.signIn(memberSignInDto);
+		return CustomResponse.success(authService.signIn(findMember));
+	}
+
 	@PostMapping("signin/{socialType}")
-	public ResponseEntity<AuthLoginResponse> socialSignin(
+	public ResponseEntity<AuthTokenResponse> socialSignIn(
 		@PathVariable("socialType") String type,
 		HttpServletRequest request
 	) {
@@ -54,15 +98,18 @@ public class AuthController {
 		SocialMember findSocialMember = socialMemberService.findByEmailAndSocialType(member.getEmail(), socialType)
 			.orElseGet(() -> {
 				httpStatus.set(HttpStatus.CREATED);
-				return socialSignup(member, socialType);
+				return socialSignUp(member, socialType);
 			});
 
-		return ResponseEntity.status(httpStatus.get()).body(authService.signin(findSocialMember));
+		return ResponseEntity.status(httpStatus.get()).body(authService.signIn(findSocialMember));
 	}
 
-	private SocialMember socialSignup(Member member, SocialType socialTYpe) {
+	private SocialMember socialSignUp(Member member, SocialType socialTYpe) {
 		Member findMember = memberService.findByEmail(member.getEmail())
-			.orElseGet(() -> signup(member));
+			.orElseGet(() -> {
+				Long memberId = memberService.save(member);
+				return memberService.findOne(memberId);
+			});
 
 		SocialMember socialMember = SocialMember.builder()
 			.member(findMember)
@@ -72,11 +119,6 @@ public class AuthController {
 
 		Long socialMemberId = socialMemberService.save(socialMember);
 		return socialMemberService.findOne(socialMemberId);
-	}
-
-	private Member signup(Member member) {
-		Long memberId = memberService.save(member);
-		return memberService.findOne(memberId);
 	}
 
 	@PostMapping("refresh")
