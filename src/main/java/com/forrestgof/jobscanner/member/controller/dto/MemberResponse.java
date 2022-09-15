@@ -4,12 +4,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.forrestgof.jobscanner.duty.domain.Duty;
+import com.forrestgof.jobscanner.duty.domain.MemberDuty;
 import com.forrestgof.jobscanner.member.domain.Member;
-import com.forrestgof.jobscanner.member.domain.ObjectiveCompany;
+import com.forrestgof.jobscanner.tag.domain.MemberTag;
 import com.forrestgof.jobscanner.tag.domain.Tag;
 
-import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,29 +23,23 @@ public class MemberResponse {
 	private List<String> tags;
 	private List<String> duties;
 
-	private int objectiveEmployeeCount;
-	private long objectiveSalary;
+	public static MemberResponse from(Member member) {
+		MemberResponse memberResponse = new MemberResponse();
 
-	public void updateMember(Member member) {
-		this.email = member.getEmail();
-		this.nickname = member.getNickname();
-		this.imageUrl = member.getImageUrl();
-	}
-
-	public void updateTags(List<Tag> tags) {
-		this.tags = tags.stream()
+		memberResponse.email = member.getEmail();
+		memberResponse.nickname = member.getNickname();
+		memberResponse.imageUrl = member.getImageUrl();
+		memberResponse.tags = member.getMemberTags()
+			.stream()
+			.map(MemberTag::getTag)
 			.map(Tag::getName)
 			.collect(Collectors.toList());
-	}
-
-	public void updateDuties(List<Duty> duties) {
-		this.duties = duties.stream()
+		memberResponse.duties = member.getMemberDuties()
+			.stream()
+			.map(MemberDuty::getDuty)
 			.map(Duty::getName)
 			.collect(Collectors.toList());
-	}
 
-	public void updateObjectiveCompany(ObjectiveCompany objectiveCompany) {
-		this.objectiveEmployeeCount = objectiveCompany.getEmployeeCount();
-		this.objectiveSalary = objectiveCompany.getSalary();
+		return memberResponse;
 	}
 }
