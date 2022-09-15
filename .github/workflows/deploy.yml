@@ -7,6 +7,8 @@ on:
 env:
   APPLICATION: ${{ secrets.APPLICATION }}
   RESOURCE_PATH: ./src/main/resources/application.yml
+  TEST_APPLICATION: ${{ secrets.TEST_APPLICATION }}
+  TEST_RESOURCE_PATH: ./src/test/resources/application.yml
   S3_BUCKET_NAME: job-scanner-bucket
   CODE_DEPLOY_APPLICATION_NAME: jobscanner-code-deploy
   CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: jobscanner-server
@@ -34,8 +36,10 @@ jobs:
 
       # (2) Application.yml 생성
       - uses: actions/checkout@v2
-      - run: touch ./src/main/resources/application.yml
+      - run: touch ${{env.RESOURCE_PATH}}
+      - run: touch ${{env.TEST_RESOURCE_PATH}}
       - run: echo "${{env.APPLICATION}}" > ${{env.RESOURCE_PATH}}
+      - run: echo "${{env.TEST_APPLICATION}}" > ${{env.TEST_RESOURCE_PATH}}
       - uses: actions/upload-artifact@v2
         with:
           name: application.yml
