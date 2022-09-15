@@ -1,11 +1,17 @@
 package com.forrestgof.jobscanner.member.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import com.forrestgof.jobscanner.common.entity.BaseTimeEntity;
+import com.forrestgof.jobscanner.duty.domain.MemberDuty;
+import com.forrestgof.jobscanner.tag.domain.MemberTag;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -32,6 +38,12 @@ public class Member extends BaseTimeEntity {
 	private String imageUrl;
 
 	private boolean isAuthenticatedEmail;
+
+	@OneToMany(mappedBy = "member")
+	private final List<MemberTag> memberTags = new ArrayList<>();
+
+	@OneToMany(mappedBy = "member")
+	private final List<MemberDuty> memberDuties = new ArrayList<>();
 
 	@Builder
 	public Member(
