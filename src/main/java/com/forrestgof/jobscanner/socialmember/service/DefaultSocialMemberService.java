@@ -2,13 +2,13 @@ package com.forrestgof.jobscanner.socialmember.service;
 
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.forrestgof.jobscanner.common.exception.CustomException;
-import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.socialmember.domain.SocialMember;
 import com.forrestgof.jobscanner.socialmember.domain.SocialType;
+import com.forrestgof.jobscanner.socialmember.exception.SocialMemberCustomException;
 import com.forrestgof.jobscanner.socialmember.repository.SocialMemberRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -24,8 +24,9 @@ public class DefaultSocialMemberService implements SocialMemberService {
 	@Transactional
 	public Long save(SocialMember socialMember) {
 		if (socialMemberRepository.existsByEmailAndSocialType(socialMember.getEmail(), socialMember.getSocialType())) {
-			throw new CustomException(ErrorCode.ALREADY_EXIST_MEMBER);
+			throw new SocialMemberCustomException("Already joined member", HttpStatus.CONFLICT);
 		}
+
 		SocialMember findSocialMember = socialMemberRepository.save(socialMember);
 		return findSocialMember.getId();
 	}
@@ -33,7 +34,7 @@ public class DefaultSocialMemberService implements SocialMemberService {
 	@Override
 	public SocialMember findOne(Long id) {
 		return socialMemberRepository.findById(id)
-			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+			.orElseThrow(() -> new SocialMemberCustomException("Unsigned account", HttpStatus.UNAUTHORIZED));
 	}
 
 	@Override
