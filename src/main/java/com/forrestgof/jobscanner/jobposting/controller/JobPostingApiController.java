@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.forrestgof.jobscanner.common.util.CustomResponse;
+import com.forrestgof.jobscanner.common.dto.CustomResponse;
 import com.forrestgof.jobscanner.jobposting.controller.dto.JobDto;
 import com.forrestgof.jobscanner.jobposting.controller.dto.JobPreviewDto;
 import com.forrestgof.jobscanner.jobposting.controller.dto.JobSearchCondition;

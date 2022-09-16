@@ -24,7 +24,7 @@ import com.forrestgof.jobscanner.auth.service.AuthService;
 import com.forrestgof.jobscanner.auth.social.SocialTokenValidator;
 import com.forrestgof.jobscanner.auth.social.SocialTokenValidatorFactory;
 import com.forrestgof.jobscanner.common.config.properties.DomainProperties;
-import com.forrestgof.jobscanner.common.util.CustomResponse;
+import com.forrestgof.jobscanner.common.dto.CustomResponse;
 import com.forrestgof.jobscanner.member.domain.Member;
 import com.forrestgof.jobscanner.member.dto.MemberSignInDto;
 import com.forrestgof.jobscanner.member.dto.MemberSignUpDto;
@@ -47,7 +47,6 @@ public class AuthController {
 	private final AuthService authService;
 	private final SocialTokenValidatorFactory socialTokenValidatorFactory;
 	private final DomainProperties domainProperties;
-	private SocialTokenValidator socialTokenValidator;
 
 	@GetMapping("mail/authenticate/{email}/{appToken}")
 	public ResponseEntity<AuthTokenResponse> authenticateMail(
@@ -97,7 +96,7 @@ public class AuthController {
 		AtomicReference<HttpStatus> httpStatus = new AtomicReference<>(HttpStatus.OK);
 
 		SocialType socialType = SocialType.getEnum(type);
-		socialTokenValidator = socialTokenValidatorFactory.find(socialType);
+		SocialTokenValidator socialTokenValidator = socialTokenValidatorFactory.find(socialType);
 
 		String code = JwtHeaderUtil.getCode(request);
 		Member member = socialTokenValidator.generateMemberFromCode(code);

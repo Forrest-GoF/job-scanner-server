@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.forrestgof.jobscanner.common.util.CustomResponse;
+import com.forrestgof.jobscanner.common.dto.CustomResponse;
 import com.forrestgof.jobscanner.tag.domain.Tag;
 import com.forrestgof.jobscanner.tag.service.TagService;
 

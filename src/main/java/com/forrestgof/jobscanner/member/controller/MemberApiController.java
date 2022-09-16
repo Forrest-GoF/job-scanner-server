@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.forrestgof.jobscanner.auth.jwt.JwtHeaderUtil;
 import com.forrestgof.jobscanner.auth.service.AuthService;
-import com.forrestgof.jobscanner.common.util.CustomResponse;
+import com.forrestgof.jobscanner.common.dto.CustomResponse;
 import com.forrestgof.jobscanner.member.controller.dto.MemberResponse;
 import com.forrestgof.jobscanner.member.domain.Member;
 
