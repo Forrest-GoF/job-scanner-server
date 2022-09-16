@@ -33,6 +33,16 @@ public class CustomResponse {
 			.body(customResponse);
 	}
 
+	public static ResponseEntity<CustomResponse> success(Object data, HttpStatus httpStatus) {
+		CustomResponse customResponse = CustomResponse.builder()
+			.status(true)
+			.data(data)
+			.build();
+
+		return ResponseEntity.status(httpStatus)
+			.body(customResponse);
+	}
+
 	public static ResponseEntity<CustomResponse> error(Exception e) {
 		CustomResponse customResponse = CustomResponse.builder()
 			.status(false)
