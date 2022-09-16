@@ -3,8 +3,7 @@ package com.forrestgof.jobscanner.socialmember.domain;
 import java.util.Arrays;
 import java.util.Locale;
 
-import com.forrestgof.jobscanner.common.exception.CustomException;
-import com.forrestgof.jobscanner.common.exception.ErrorCode;
+import com.forrestgof.jobscanner.auth.exception.AuthCustomException;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,6 +20,6 @@ public enum SocialType {
 		return Arrays.stream(SocialType.values())
 			.filter((socialType -> socialType.name().toLowerCase(Locale.ROOT).equals(inputType)))
 			.findFirst()
-			.orElseThrow(() -> new CustomException(ErrorCode.UNSUPPORTED_SOCIAL_TYPE_EXCEPTION));
+			.orElseThrow(() -> new AuthCustomException("Unsupported Social Type"));
 	}
 }

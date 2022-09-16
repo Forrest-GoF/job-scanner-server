@@ -1,9 +1,10 @@
 package com.forrestgof.jobscanner.auth.jwt;
 
+import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
 
-import com.forrestgof.jobscanner.common.exception.CustomException;
-import com.forrestgof.jobscanner.common.exception.ErrorCode;
+import com.forrestgof.jobscanner.auth.exception.AuthCustomException;
 
 public class JwtHeaderUtil {
 
@@ -13,26 +14,22 @@ public class JwtHeaderUtil {
 	private final static String CODE = "code";
 
 	public static String getCode(HttpServletRequest request) {
-		if (request.getHeader(CODE) == null) {
-			throw new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION);
-		}
-		return request.getHeader(CODE);
+		return Optional.ofNullable(request.getHeader(CODE))
+			.orElseThrow(() -> new AuthCustomException("The header does not contain code"));
 	}
 
 	public static String getAccessToken(HttpServletRequest request) {
 		String headerValue = request.getHeader(HEADER_AUTHORIZATION);
 
 		if (headerValue == null || !headerValue.startsWith(TOKEN_PREFIX)) {
-			throw new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION);
+			throw new AuthCustomException("The header does not contain app token or has an invalid format");
 		}
 
 		return headerValue.substring(TOKEN_PREFIX.length());
 	}
 
 	public static String getRefreshToken(HttpServletRequest request) {
-		if (request.getHeader(HEADER_REFRESH_TOKEN) == null) {
-			throw new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION);
-		}
-		return request.getHeader(HEADER_REFRESH_TOKEN);
+		return Optional.ofNullable(request.getHeader(HEADER_REFRESH_TOKEN))
+			.orElseThrow(() -> new AuthCustomException("The header does not contain refresh token"));
 	}
 }
