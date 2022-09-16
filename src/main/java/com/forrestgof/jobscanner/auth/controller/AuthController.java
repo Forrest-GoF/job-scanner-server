@@ -67,28 +67,35 @@ public class AuthController {
 	}
 
 	@PostMapping("signup")
-	public ResponseEntity<AuthTokenResponse> signUp(@RequestBody @Valid MemberSignUpDto memberSignUpDto) {
+	public ResponseEntity<CustomResponse> signUp(@RequestBody @Valid MemberSignUpDto memberSignUpDto) {
 		Member findMember = memberService.signUp(memberSignUpDto);
 
 		AuthTokenResponse authTokenResponse = authService.signIn(findMember);
 
+		CustomResponse customResponse = CustomResponse.builder()
+			.status(true)
+			.data(authTokenResponse)
+			.build();
+
 		authService.sendAuthenticationMail(findMember);
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(authTokenResponse);
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(customResponse);
 	}
 
 	@PostMapping("signin")
-	public ResponseEntity<AuthTokenResponse> signIn(@RequestBody @Valid MemberSignInDto memberSignInDto) {
+	public ResponseEntity<CustomResponse> signIn(@RequestBody @Valid MemberSignInDto memberSignInDto) {
 		Member findMember = memberService.signIn(memberSignInDto);
 		return CustomResponse.success(authService.signIn(findMember));
 	}
 
 	@PostMapping("signin/{socialType}")
-	public ResponseEntity<AuthTokenResponse> socialSignIn(
+	public ResponseEntity<CustomResponse> socialSignIn(
 		@PathVariable("socialType") String type,
 		HttpServletRequest request
 	) {
 		AtomicReference<HttpStatus> httpStatus = new AtomicReference<>(HttpStatus.OK);
+
 		SocialType socialType = SocialType.getEnum(type);
 		socialTokenValidator = socialTokenValidatorFactory.find(socialType);
 
@@ -101,7 +108,9 @@ public class AuthController {
 				return socialSignUp(member, socialType);
 			});
 
-		return ResponseEntity.status(httpStatus.get()).body(authService.signIn(findSocialMember));
+		AuthTokenResponse authTokenResponse = authService.signIn(findSocialMember);
+
+		return CustomResponse.success(authTokenResponse, httpStatus.get());
 	}
 
 	private SocialMember socialSignUp(Member member, SocialType socialTYpe) {
@@ -122,9 +131,12 @@ public class AuthController {
 	}
 
 	@PostMapping("refresh")
-	public ResponseEntity<AuthRefreshResponse> refreshToken(HttpServletRequest request) {
+	public ResponseEntity<CustomResponse> refreshToken(HttpServletRequest request) {
 		String appToken = JwtHeaderUtil.getAccessToken(request);
+
 		String refreshToken = JwtHeaderUtil.getRefreshToken(request);
-		return CustomResponse.success(authService.refreshToken(appToken, refreshToken));
+
+		AuthRefreshResponse authRefreshResponse = authService.refreshToken(appToken, refreshToken);
+		return CustomResponse.success(authRefreshResponse);
 	}
 }
