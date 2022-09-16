@@ -6,9 +6,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.forrestgof.jobscanner.common.exception.CustomException;
-import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.company.domain.Company;
+import com.forrestgof.jobscanner.company.exception.CompanyCustomException;
 import com.forrestgof.jobscanner.company.repository.CompanyRepository;
 import com.forrestgof.jobscanner.company.util.dto.NpsBassDto;
 import com.forrestgof.jobscanner.company.util.dto.NpsBassResponse;
@@ -28,8 +27,8 @@ public class DefaultCompanyService implements CompanyService {
 	@Override
 	@Transactional
 	public Company createFrom(String rawName, String thumbnail) {
-		if (existsByGoogleName(rawName)) {
-			throw new CustomException(ErrorCode.ALREADY_EXIST_COMPANY);
+		if (existsByRawName(rawName)) {
+			throw new CompanyCustomException("No Company exists by rawName");
 		}
 
 		Company company = getCompanyFromNps(rawName)
@@ -39,11 +38,6 @@ public class DefaultCompanyService implements CompanyService {
 
 		return companyRepository.findByUniqueKey(company.getUniqueKey())
 			.orElseGet(() -> companyRepository.save(company));
-	}
-
-	@Override
-	public Company findOne(Long id) {
-		return companyRepository.findById(id).orElseThrow();
 	}
 
 	@Override
@@ -67,8 +61,8 @@ public class DefaultCompanyService implements CompanyService {
 	}
 
 	@Override
-	public boolean existsByGoogleName(String googleName) {
-		return companyRepository.existsByRawName(googleName);
+	public boolean existsByRawName(String rawName) {
+		return companyRepository.existsByRawName(rawName);
 	}
 
 	private NpsDetailDto getMostRelevantData(NpsBassResponse response) {
