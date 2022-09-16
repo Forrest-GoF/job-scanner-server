@@ -11,7 +11,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.forrestgof.jobscanner.common.config.properties.DomainProperties;
-import com.forrestgof.jobscanner.common.exception.UndefinedException;
+import com.forrestgof.jobscanner.common.exception.CustomException;
 import com.forrestgof.jobscanner.mail.dto.MailDto;
 
 import lombok.RequiredArgsConstructor;
@@ -38,7 +38,7 @@ public class DefaultMailService implements MailService {
 			helper.setText(mailDto.getContent(), true);
 			helper.setTo(mailDto.getAddress());
 		} catch (MessagingException e) {
-			throw new UndefinedException("Mail Error");
+			throw new CustomException(e.getMessage());
 		}
 
 		emailSender.send(message);
