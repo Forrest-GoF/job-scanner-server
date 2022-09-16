@@ -6,10 +6,9 @@ import org.springframework.stereotype.Service;
 
 import com.forrestgof.jobscanner.auth.dto.AuthRefreshResponse;
 import com.forrestgof.jobscanner.auth.dto.AuthTokenResponse;
+import com.forrestgof.jobscanner.auth.exception.AuthCustomException;
 import com.forrestgof.jobscanner.auth.jwt.AuthToken;
 import com.forrestgof.jobscanner.auth.jwt.AuthTokenProvider;
-import com.forrestgof.jobscanner.common.exception.CustomException;
-import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.mail.service.MailService;
 import com.forrestgof.jobscanner.member.domain.Member;
 import com.forrestgof.jobscanner.session.domain.Session;
@@ -56,7 +55,7 @@ public class DefaultAuthService implements AuthService {
 	public void validateMailWithAppToken(String email, String appToken) {
 		Member findMember = getMemberFromAppToken(appToken);
 		if (!email.equals(findMember.getEmail())) {
-			throw new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION);
+			throw new AuthCustomException("Invalid email authentication");
 		}
 	}
 
@@ -112,7 +111,7 @@ public class DefaultAuthService implements AuthService {
 		String refreshTokenUuid = refreshClaims.get("jti", String.class);
 
 		if (!sessionService.existsByAppTokenUuidAndRefreshTokenUuid(appTokenUuid, refreshTokenUuid)) {
-			throw new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION);
+			throw new AuthCustomException("Unissued app token or refresh token");
 		}
 	}
 

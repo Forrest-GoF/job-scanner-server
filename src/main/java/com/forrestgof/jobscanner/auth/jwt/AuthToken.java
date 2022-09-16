@@ -4,8 +4,7 @@ import java.security.Key;
 import java.util.Date;
 
 import com.forrestgof.jobscanner.auth.RoleType;
-import com.forrestgof.jobscanner.common.exception.CustomException;
-import com.forrestgof.jobscanner.common.exception.ErrorCode;
+import com.forrestgof.jobscanner.auth.exception.AuthCustomException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -68,7 +67,7 @@ public class AuthToken {
 		} catch (ExpiredJwtException e) {
 			return e.getClaims();
 		} catch (SecurityException | JwtException | IllegalArgumentException e) {
-			throw new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION);
+			throw new AuthCustomException(e.getMessage());
 		}
 	}
 
@@ -84,7 +83,7 @@ public class AuthToken {
 				.parseClaimsJws(token)
 				.getBody();
 		} catch (SecurityException | JwtException | IllegalArgumentException e) {
-			throw new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION);
+			throw new AuthCustomException(e.getMessage());
 		}
 	}
 }

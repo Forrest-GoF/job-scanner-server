@@ -1,6 +1,7 @@
 package com.forrestgof.jobscanner.auth.social;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -9,10 +10,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.forrestgof.jobscanner.auth.exception.AuthCustomException;
 import com.forrestgof.jobscanner.auth.social.dto.GoogleOAuthResponse;
 import com.forrestgof.jobscanner.auth.social.dto.GoogleUserResponse;
 import com.forrestgof.jobscanner.common.config.properties.AuthProperties;
-import com.forrestgof.jobscanner.common.exception.CustomException;
 import com.forrestgof.jobscanner.member.domain.Member;
 
 import reactor.core.publisher.Mono;
@@ -47,11 +48,14 @@ public class GoogleTokenValidator implements SocialTokenValidator {
 				.accept(MediaType.APPLICATION_JSON)
 				.bodyValue(tokenRequest(code))
 				.retrieve()
-				.onStatus(HttpStatus::is4xxClientError, response
-					-> Mono.error(
-					new CustomException("Social Access Token is unauthorized", ErrorCode.INVALID_TOKEN_EXCEPTION)))
-				.onStatus(HttpStatus::is5xxServerError, response
-					-> Mono.error(new CustomException("Internal Server Error", ErrorCode.INVALID_TOKEN_EXCEPTION)))
+				.onStatus(
+					HttpStatus::is4xxClientError,
+					response
+						-> Mono.error(new AuthCustomException("Failed to get google token with code")))
+				.onStatus(
+					HttpStatus::is5xxServerError,
+					response
+						-> Mono.error(new AuthCustomException("Failed to get google token with code")))
 				.bodyToMono(GoogleOAuthResponse.class)
 				.block())
 			.getIdToken();
@@ -76,22 +80,23 @@ public class GoogleTokenValidator implements SocialTokenValidator {
 			.onStatus(
 				HttpStatus::is4xxClientError,
 				response
-					-> Mono.error(new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION)))
+					-> Mono.error(new AuthCustomException("Failed to get google user information with token")))
 			.onStatus(
 				HttpStatus::is5xxServerError,
 				response
-					-> Mono.error(new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION)))
+					-> Mono.error(new AuthCustomException("Failed to get google user information with token")))
 			.bodyToMono(GoogleUserResponse.class)
 			.block();
 	}
 
 	private Member generateMemberFromGoogleUser(GoogleUserResponse googleUserResponse) {
-		String email = googleUserResponse.getEmail();
-		String nickname = googleUserResponse.getName();
+		String email = Optional.ofNullable(googleUserResponse.getEmail())
+			.orElseThrow(() -> new AuthCustomException("Google email information is missing"));
+
+		String nickname = Optional.ofNullable(googleUserResponse.getName())
+			.orElseThrow(() -> new AuthCustomException("Google nickname information is missing"));
+
 		String imageUrl = googleUserResponse.getPicture();
-		if (email == null || nickname == null) {
-			throw new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION);
-		}
 
 		return Member.builder()
 			.email(email)
