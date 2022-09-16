@@ -1,4 +1,4 @@
-package com.forrestgof.jobscanner.common.util;
+package com.forrestgof.jobscanner.common.dto;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -6,8 +6,10 @@ import org.springframework.http.ResponseEntity;
 import com.forrestgof.jobscanner.common.exception.CustomException;
 
 import lombok.Builder;
+import lombok.Getter;
 
 @Builder
+@Getter
 public class CustomResponse {
 
 	boolean status;
@@ -46,7 +48,7 @@ public class CustomResponse {
 	public static ResponseEntity<CustomResponse> error(Exception e) {
 		CustomResponse customResponse = CustomResponse.builder()
 			.status(false)
-			.message(e.getClass().getName() + ": " + e.getMessage())
+			.message(e.getMessage())
 			.build();
 
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
