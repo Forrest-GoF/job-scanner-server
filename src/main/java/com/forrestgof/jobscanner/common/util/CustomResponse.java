@@ -3,25 +3,54 @@ package com.forrestgof.jobscanner.common.util;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.forrestgof.jobscanner.common.exception.ErrorCode;
+import com.forrestgof.jobscanner.common.exception.CustomException;
 
+import lombok.Builder;
+
+@Builder
 public class CustomResponse {
 
-	public static <T> ResponseEntity<T> success() {
-		return ResponseEntity.status(HttpStatus.OK).body(null);
+	boolean status;
+	String message;
+	Object data;
+
+	public static ResponseEntity<CustomResponse> success() {
+		CustomResponse customResponse = CustomResponse.builder()
+			.status(true)
+			.build();
+
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(customResponse);
 	}
 
-	public static <T> ResponseEntity<T> success(T data) {
-		return ResponseEntity.status(HttpStatus.OK).body(data);
+	public static ResponseEntity<CustomResponse> success(Object data) {
+		CustomResponse customResponse = CustomResponse.builder()
+			.status(true)
+			.data(data)
+			.build();
+
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(customResponse);
 	}
 
-	public static ResponseEntity<String> error(ErrorCode e) {
-		return ResponseEntity.status(e.getStatus())
-			.body(e.getMessage());
+	public static ResponseEntity<CustomResponse> error(Exception e) {
+		CustomResponse customResponse = CustomResponse.builder()
+			.status(false)
+			.message(e.getClass().getName() + ": " + e.getMessage())
+			.build();
+
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+			.body(customResponse);
 	}
 
-	public static ResponseEntity<String> error(String message) {
-		return ResponseEntity.status(HttpStatus.valueOf(400))
-			.body(message);
+	public static ResponseEntity<CustomResponse> customError(CustomException e) {
+		CustomResponse customResponse = CustomResponse.builder()
+			.status(false)
+			.message(e.getClass().getName() + ": " + e.getMessage())
+			.build();
+
+		return ResponseEntity.status(e.getHttpStatus())
+			.body(customResponse);
 	}
 }
+
