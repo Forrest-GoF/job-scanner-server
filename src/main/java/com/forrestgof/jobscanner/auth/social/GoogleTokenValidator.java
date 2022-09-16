@@ -13,7 +13,6 @@ import com.forrestgof.jobscanner.auth.social.dto.GoogleOAuthResponse;
 import com.forrestgof.jobscanner.auth.social.dto.GoogleUserResponse;
 import com.forrestgof.jobscanner.common.config.properties.AuthProperties;
 import com.forrestgof.jobscanner.common.exception.CustomException;
-import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.member.domain.Member;
 
 import reactor.core.publisher.Mono;
