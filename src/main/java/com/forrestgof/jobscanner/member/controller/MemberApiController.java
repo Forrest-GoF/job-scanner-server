@@ -21,8 +21,9 @@ import lombok.RequiredArgsConstructor;
 public class MemberApiController {
 
 	private final AuthService authService;
+
 	@GetMapping("")
-	public ResponseEntity<MemberResponse> getMember(HttpServletRequest request) {
+	public ResponseEntity<CustomResponse> getMember(HttpServletRequest request) {
 		String appToken = JwtHeaderUtil.getAccessToken(request);
 
 		Member member = authService.getMemberFromAppToken(appToken);
