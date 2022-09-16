@@ -1,19 +1,26 @@
 package com.forrestgof.jobscanner.common.exception;
 
+import org.springframework.http.HttpStatus;
+
 import lombok.Getter;
 
 @Getter
 public class CustomException extends RuntimeException {
 
-	private ErrorCode errorCode;
+	private final HttpStatus httpStatus;
 
-	public CustomException(String message, ErrorCode errorCode) {
-		super(message);
-		this.errorCode = errorCode;
+	public CustomException() {
+		super();
+		this.httpStatus = HttpStatus.BAD_REQUEST;
 	}
 
-	public CustomException(ErrorCode errorCode) {
-		super(errorCode.getMessage());
-		this.errorCode = errorCode;
+	public CustomException(String message) {
+		super(message);
+		this.httpStatus = HttpStatus.BAD_REQUEST;
+	}
+
+	public CustomException(String message, HttpStatus httpStatus) {
+		super(message);
+		this.httpStatus = httpStatus;
 	}
 }
