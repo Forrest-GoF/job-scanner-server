@@ -12,21 +12,15 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class GlobalExceptionHandler {
 
-	@ExceptionHandler(CustomException.class)
-	public ResponseEntity customExceptionHandle(CustomException e) {
-		log.error(e);
-		return CustomResponse.error(e.getErrorCode());
-	}
-
-	@ExceptionHandler(UndefinedException.class)
-	public ResponseEntity undefinedExceptionHandle(UndefinedException e) {
-		log.error(e);
-		return CustomResponse.error(e.getMessage());
+	@ExceptionHandler
+	public ResponseEntity<CustomResponse> handleUnExpectedException(Exception e) {
+		log.error("UnExpected Exception", e);
+		return CustomResponse.error(e);
 	}
 
 	@ExceptionHandler
-	public ResponseEntity unexpectedExceptionHandle(Exception e) {
-		log.error(e);
-		return CustomResponse.error(ErrorCode.UNEXPECTED_EXCEPTION);
+	public ResponseEntity<CustomResponse> handleCustomException(CustomException e) {
+		log.error("Custom Exception", e);
+		return CustomResponse.customError(e);
 	}
 }
