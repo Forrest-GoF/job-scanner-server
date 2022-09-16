@@ -6,12 +6,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.forrestgof.jobscanner.common.exception.CustomException;
-import com.forrestgof.jobscanner.common.exception.ErrorCode;
-import com.forrestgof.jobscanner.common.exception.UndefinedException;
 import com.forrestgof.jobscanner.member.domain.Member;
 import com.forrestgof.jobscanner.member.dto.MemberSignInDto;
 import com.forrestgof.jobscanner.member.dto.MemberSignUpDto;
+import com.forrestgof.jobscanner.member.exception.MemberCustomException;
 import com.forrestgof.jobscanner.member.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -30,7 +28,7 @@ public class DefaultMemberService implements MemberService {
 	@Transactional
 	public Long save(Member member) {
 		if (memberRepository.existsByEmail(member.getEmail())) {
-			throw new CustomException(ErrorCode.ALREADY_EXIST_MEMBER);
+			throw new MemberCustomException("Email already exists");
 		}
 		Member findMember = memberRepository.save(member);
 		return findMember.getId();
@@ -39,7 +37,7 @@ public class DefaultMemberService implements MemberService {
 	@Override
 	public Member findOne(Long id) {
 		return memberRepository.findById(id)
-			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
+			.orElseThrow(MemberCustomException::notfound);
 	}
 
 	@Override
@@ -62,17 +60,13 @@ public class DefaultMemberService implements MemberService {
 
 	@Override
 	public Member signIn(MemberSignInDto memberSignInDto) {
-		Member member = Member.builder()
-			.email(memberSignInDto.email())
-			.password(memberSignInDto.password())
-			.build();
+		Member findMember = findByEmail(memberSignInDto.email())
+			.orElseThrow(MemberCustomException::notfound);
 
-		Member findMember = findByEmail(member.getEmail())
-			.orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_MEMBER));
-
-		if (!passwordEncoder.matches(member.getPassword(), findMember.getPassword())) {
-			throw new UndefinedException("The password is incorrect.");
+		if (!passwordEncoder.matches(memberSignInDto.password(), findMember.getPassword())) {
+			throw new MemberCustomException("The password is incorrect");
 		}
+
 		return findMember;
 	}
 
