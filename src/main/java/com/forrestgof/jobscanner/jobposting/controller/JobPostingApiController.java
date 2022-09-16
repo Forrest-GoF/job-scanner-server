@@ -26,7 +26,7 @@ public class JobPostingApiController {
 	private final JobPostingService jobPostingService;
 
 	@GetMapping("")
-	public ResponseEntity<Result> getFilterJobs(JobSearchCondition jobSearchCondition) {
+	public ResponseEntity<CustomResponse> getFilterJobs(JobSearchCondition jobSearchCondition) {
 		List<JobPosting> findJobs = jobPostingService.findFilterJobs(jobSearchCondition);
 		List<JobPreviewDto> previewDtos = parseToDtoList(findJobs);
 
@@ -34,7 +34,7 @@ public class JobPostingApiController {
 	}
 
 	@GetMapping("{id}")
-	public ResponseEntity<JobDto> getJob(
+	public ResponseEntity<CustomResponse> getJob(
 		@PathVariable Long id
 	) {
 		JobPosting findOne = jobPostingService.findOne(id);
@@ -48,7 +48,7 @@ public class JobPostingApiController {
 			.collect(Collectors.toList());
 	}
 
-	static record Result(
+	record Result(
 		List<JobPreviewDto> jobs,
 		int length
 	) {
