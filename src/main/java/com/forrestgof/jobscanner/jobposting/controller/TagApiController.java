@@ -24,7 +24,7 @@ public class TagApiController {
 
 	@GetMapping
 	@ResponseBody
-	public ResponseEntity<List<String>> getTags() {
+	public ResponseEntity<CustomResponse> getTags() {
 		List<Tag> all = tagService.findAll();
 		List<String> tags = all.stream()
 			.map(Tag::getName)
