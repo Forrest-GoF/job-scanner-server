@@ -8,11 +8,9 @@ public interface CompanyService {
 
 	Company createFrom(String searchName, String thumbnail);
 
-	Company findOne(Long id);
-
 	Optional<Company> findByRawName(String rawName);
 
 	Optional<Company> getCompanyFromNps(String companyName);
 
-	boolean existsByGoogleName(String googleName);
+	boolean existsByRawName(String googleName);
 }
