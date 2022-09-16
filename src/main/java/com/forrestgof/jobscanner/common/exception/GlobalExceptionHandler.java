@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.forrestgof.jobscanner.common.util.CustomResponse;
+import com.forrestgof.jobscanner.common.dto.CustomResponse;
 
 import lombok.extern.log4j.Log4j2;
 
