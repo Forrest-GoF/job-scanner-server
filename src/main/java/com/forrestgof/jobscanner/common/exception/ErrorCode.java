@@ -15,10 +15,6 @@ public enum ErrorCode {
 	EXPIRED_CODE(HttpStatus.valueOf(400), "Expired Code"),
 	UNEXPECTED_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected exception"),
 
-	//AUTH
-	INVALID_TOKEN_EXCEPTION(HttpStatus.UNAUTHORIZED, "Invalid token"),
-	UNSUPPORTED_SOCIAL_TYPE_EXCEPTION(HttpStatus.BAD_REQUEST, "Unsupported Social Type"),
-
 	// MEMBER
 	NOT_FOUND_MEMBER(HttpStatus.UNAUTHORIZED, "Unsigned account"),
 	ALREADY_EXIST_MEMBER(HttpStatus.CONFLICT, "Already joined member"),

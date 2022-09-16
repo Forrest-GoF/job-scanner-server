@@ -3,6 +3,7 @@ package com.forrestgof.jobscanner.auth.social;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,11 +12,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.forrestgof.jobscanner.auth.exception.AuthException;
 import com.forrestgof.jobscanner.auth.social.dto.KakaoOAuthResponse;
 import com.forrestgof.jobscanner.auth.social.dto.KakaoUserResponse;
 import com.forrestgof.jobscanner.common.config.properties.AuthProperties;
-import com.forrestgof.jobscanner.common.exception.CustomException;
-import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.member.domain.Member;
 
 import reactor.core.publisher.Mono;
@@ -57,11 +57,11 @@ public class KakaoTokenValidator implements SocialTokenValidator {
 				.onStatus(
 					HttpStatus::is4xxClientError,
 					response
-						-> Mono.error(new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION)))
+						-> Mono.error(new AuthException("Failed to get kakao token with code")))
 				.onStatus(
 					HttpStatus::is5xxServerError,
 					response
-						-> Mono.error(new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION)))
+						-> Mono.error(new AuthException("Failed to get kakao token with code")))
 				.bodyToMono(KakaoOAuthResponse.class)
 				.block())
 			.getAccessToken();
@@ -83,22 +83,26 @@ public class KakaoTokenValidator implements SocialTokenValidator {
 			.uri("https://kapi.kakao.com/v2/user/me")
 			.headers(h -> h.setBearerAuth(accessToken))
 			.retrieve()
-			.onStatus(HttpStatus::is4xxClientError, response
-				-> Mono.error(
-				new CustomException("Social Access Token is unauthorized", ErrorCode.INVALID_TOKEN_EXCEPTION)))
-			.onStatus(HttpStatus::is5xxServerError, response
-				-> Mono.error(new CustomException("Internal Server Error", ErrorCode.INVALID_TOKEN_EXCEPTION)))
+			.onStatus(
+				HttpStatus::is4xxClientError,
+				response
+					-> Mono.error(new AuthException("Failed to get kakao user information with token")))
+			.onStatus(
+				HttpStatus::is5xxServerError,
+				response
+					-> Mono.error(new AuthException("Failed to get kakao user information with token")))
 			.bodyToMono(KakaoUserResponse.class)
 			.block();
 	}
 
 	private Member generateMemberFromKakaoUser(KakaoUserResponse kakaoUserResponse) {
-		String email = kakaoUserResponse.getKakaoAccount().getEmail();
-		String nickname = kakaoUserResponse.getProperties().getNickname();
+		String email = Optional.ofNullable(kakaoUserResponse.getKakaoAccount().getEmail())
+			.orElseThrow(() -> new AuthException("Kakao email information is missing"));
+
+		String nickname = Optional.ofNullable(kakaoUserResponse.getProperties().getNickname())
+			.orElseThrow(() -> new AuthException("Kakao nickname information is missing"));
+
 		String imageUrl = kakaoUserResponse.getProperties().getProfileImage();
-		if (email == null || nickname == null) {
-			throw new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION);
-		}
 
 		return Member.builder()
 			.email(email)

@@ -1,6 +1,7 @@
 package com.forrestgof.jobscanner.auth.social;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -10,11 +11,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.forrestgof.jobscanner.auth.exception.AuthException;
 import com.forrestgof.jobscanner.auth.social.dto.GithubOAuthResponse;
 import com.forrestgof.jobscanner.auth.social.dto.GithubUserResponse;
 import com.forrestgof.jobscanner.common.config.properties.AuthProperties;
-import com.forrestgof.jobscanner.common.exception.CustomException;
-import com.forrestgof.jobscanner.common.exception.ErrorCode;
 import com.forrestgof.jobscanner.member.domain.Member;
 
 import reactor.core.publisher.Mono;
@@ -52,11 +52,11 @@ public class GithubTokenValidator implements SocialTokenValidator {
 				.onStatus(
 					HttpStatus::is4xxClientError,
 					response
-						-> Mono.error(new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION)))
+						-> Mono.error(new AuthException("Failed to get github token with code")))
 				.onStatus(
 					HttpStatus::is5xxServerError,
 					response
-						-> Mono.error(new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION)))
+						-> Mono.error(new AuthException("Failed to get github token with code")))
 				.bodyToMono(GithubOAuthResponse.class)
 				.block())
 			.getTokenTypeAndAccessToken();
@@ -77,22 +77,26 @@ public class GithubTokenValidator implements SocialTokenValidator {
 			.accept(MediaType.APPLICATION_JSON)
 			.header(HttpHeaders.AUTHORIZATION, accessToken)
 			.retrieve()
-			.onStatus(HttpStatus::is4xxClientError, response
-				-> Mono.error(
-				new CustomException("Social Access Token is unauthorized", ErrorCode.INVALID_TOKEN_EXCEPTION)))
-			.onStatus(HttpStatus::is5xxServerError, response
-				-> Mono.error(new CustomException("Internal Server Error", ErrorCode.INVALID_TOKEN_EXCEPTION)))
+			.onStatus(
+				HttpStatus::is4xxClientError,
+				response
+					-> Mono.error(new AuthException("Failed to get github user information with token")))
+			.onStatus(
+				HttpStatus::is5xxServerError,
+				response
+					-> Mono.error(new AuthException("Failed to get github user information with token")))
 			.bodyToMono(GithubUserResponse.class)
 			.block();
 	}
 
 	private Member generateMemberFromGithubUser(GithubUserResponse githubUserResponse) {
-		String email = githubUserResponse.getEmail(); //null 일 수 있음
-		String nickname = githubUserResponse.getLogin();
+		String email = Optional.ofNullable(githubUserResponse.getEmail())
+			.orElseThrow(() -> new AuthException("Github email information is missing")); //null 일 수 있음
+
+		String nickname = Optional.ofNullable(githubUserResponse.getLogin())
+			.orElseThrow(() -> new AuthException("Github nickname information is missing"));
+
 		String imageUrl = githubUserResponse.getAvatarUrl();
-		if (email == null || nickname == null) {
-			throw new CustomException(ErrorCode.INVALID_TOKEN_EXCEPTION);
-		}
 
 		return Member.builder()
 			.email(email)
