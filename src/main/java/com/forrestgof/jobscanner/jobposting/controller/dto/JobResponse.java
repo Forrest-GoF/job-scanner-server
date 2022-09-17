@@ -27,6 +27,8 @@ public class JobResponse {
 	List<String> tags;
 	JobDetailDto jobDetail;
 
+	boolean like;
+
 	public JobResponse(JobPosting jobPosting) {
 		id = jobPosting.getId();
 		title = jobPosting.getTitle();
