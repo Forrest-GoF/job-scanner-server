@@ -3,6 +3,7 @@ package com.forrestgof.jobscanner.member.controller;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +33,7 @@ public class MemberApiController {
 		String appToken = JwtHeaderUtil.getAccessToken(request);
 
 		Member member = authService.getMemberFromAppToken(appToken);
+
 		MemberResponse memberResponse = MemberResponse.from(member);
 
 		return CustomResponse.success(memberResponse);
@@ -45,7 +47,20 @@ public class MemberApiController {
 		String appToken = JwtHeaderUtil.getAccessToken(request);
 
 		Member member = authService.getMemberFromAppToken(appToken);
+
 		memberService.updateMember(member.getId(), memberUpdateRequest);
+
+		return CustomResponse.success();
+	}
+
+	@DeleteMapping("")
+	public ResponseEntity<CustomResponse> deleteMember(HttpServletRequest request) {
+		String appToken = JwtHeaderUtil.getAccessToken(request);
+
+		Member member = authService.getMemberFromAppToken(appToken);
+
+		authService.deleteSession(member);
+		memberService.deleteMember(member.getId());
 
 		return CustomResponse.success();
 	}
