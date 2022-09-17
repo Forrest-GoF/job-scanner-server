@@ -1,5 +1,7 @@
 package com.forrestgof.jobscanner.auth.service;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -12,6 +14,7 @@ import com.forrestgof.jobscanner.auth.jwt.AuthTokenProvider;
 import com.forrestgof.jobscanner.mail.service.MailService;
 import com.forrestgof.jobscanner.member.domain.Member;
 import com.forrestgof.jobscanner.session.domain.Session;
+import com.forrestgof.jobscanner.session.repository.SessionRepository;
 import com.forrestgof.jobscanner.session.service.SessionService;
 import com.forrestgof.jobscanner.socialmember.domain.SocialMember;
 
@@ -23,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class DefaultAuthService implements AuthService {
 
 	private final SessionService sessionService;
+	private final SessionRepository sessionRepository;
 	private final AuthTokenProvider authTokenProvider;
 	private final MailService mailService;
 
@@ -143,5 +147,11 @@ public class DefaultAuthService implements AuthService {
 	}
 
 	private void deleteAuthToken(AuthToken authToken) {
+	}
+
+	@Override
+	public void deleteSession(Member member) {
+		List<Session> sessions = sessionRepository.findByMember(member);
+		sessionRepository.deleteAll(sessions);
 	}
 }

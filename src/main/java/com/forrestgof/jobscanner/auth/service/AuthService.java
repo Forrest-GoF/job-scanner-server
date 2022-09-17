@@ -18,4 +18,6 @@ public interface AuthService {
 	AuthRefreshResponse refreshToken(String appToken, String refreshToken);
 
 	Member getMemberFromAppToken(String appToken);
+
+	void deleteSession(Member member);
 }
