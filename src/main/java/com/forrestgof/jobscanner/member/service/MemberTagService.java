@@ -23,21 +23,11 @@ public class MemberTagService {
 	private final MemberTagRepository memberTagRepository;
 	private final TagRepository tagRepository;
 
-	public List<Tag> findTagsFromMember(Member member) {
-		List<MemberTag> memberTags = memberTagRepository.findByMember(member);
-
-		return memberTags.stream()
-			.map(MemberTag::getTag)
-			.collect(Collectors.toList());
-	}
-
 	@Transactional
 	public void updateMemberTag(Member member, List<String> tags) {
-		List<MemberTag> memberTags = memberTagRepository.findByMember(member);
+		deleteMemberTag(member);
 
-		memberTagRepository.deleteAll(memberTags);
-
-		List<MemberTag> updatedMemberTags = tags.stream()
+		List<MemberTag> memberTags = tags.stream()
 			.map(tagRepository::findByName)
 			.map(Optional::orElseThrow)
 			.map(tag -> MemberTag.of(member, tag))
@@ -45,5 +35,12 @@ public class MemberTagService {
 			.toList();
 
 		member.updateMemberTags(memberTags);
+	}
+
+	@Transactional
+	public void deleteMemberTag(Member member) {
+		List<MemberTag> memberTags = memberTagRepository.findByMember(member);
+
+		memberTagRepository.deleteAll(memberTags);
 	}
 }
