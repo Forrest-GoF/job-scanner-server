@@ -10,7 +10,7 @@ import com.forrestgof.jobscanner.tag.domain.Tag;
 import lombok.Data;
 
 @Data
-public class JobDto {
+public class JobResponse {
 	Long id;
 	String title;
 	CompanyDto company;
@@ -27,7 +27,7 @@ public class JobDto {
 	List<String> tags;
 	JobDetailDto jobDetail;
 
-	public JobDto(JobPosting jobPosting) {
+	public JobResponse(JobPosting jobPosting) {
 		id = jobPosting.getId();
 		title = jobPosting.getTitle();
 		company = new CompanyDto(jobPosting.getCompany());

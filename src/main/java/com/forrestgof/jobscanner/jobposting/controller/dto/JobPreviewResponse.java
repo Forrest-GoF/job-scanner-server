@@ -10,7 +10,7 @@ import com.forrestgof.jobscanner.tag.domain.Tag;
 import lombok.Data;
 
 @Data
-public class JobPreviewDto {
+public class JobPreviewResponse {
 	Long id;
 	String title;
 	String companyName;
@@ -21,7 +21,7 @@ public class JobPreviewDto {
 	String expiredAt;
 	List<String> tags;
 
-	public JobPreviewDto(JobPosting jobPosting) {
+	public JobPreviewResponse(JobPosting jobPosting) {
 		id = jobPosting.getId();
 		title = jobPosting.getTitle();
 		companyName = jobPosting.getCompany().getName();
