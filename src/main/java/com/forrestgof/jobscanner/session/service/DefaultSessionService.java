@@ -39,6 +39,6 @@ public class DefaultSessionService implements SessionService {
 	@Override
 	public Session findByMember(Member member) {
 		return sessionRepository.findByMember(member)
-			.orElseThrow();
+			.get(0);
 	}
 }
