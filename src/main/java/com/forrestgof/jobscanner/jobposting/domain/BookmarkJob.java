@@ -18,11 +18,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class JobLike extends BaseTimeEntity {
+public class BookmarkJob extends BaseTimeEntity {
 
 	@Id
 	@GeneratedValue
-	@Column(name = "job_like_id")
+	@Column(name = "bookmark_job_id")
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -35,13 +35,13 @@ public class JobLike extends BaseTimeEntity {
 
 	private boolean activated;
 
-	public static JobLike of(JobPosting jobPosting, Member member) {
-		JobLike jobLike = new JobLike();
+	public static BookmarkJob of(JobPosting jobPosting, Member member) {
+		BookmarkJob bookmarkJob = new BookmarkJob();
 
-		jobLike.jobPosting = jobPosting;
-		jobLike.member = member;
+		bookmarkJob.jobPosting = jobPosting;
+		bookmarkJob.member = member;
 
-		return jobLike;
+		return bookmarkJob;
 	}
 
 	public void update(boolean activated) {

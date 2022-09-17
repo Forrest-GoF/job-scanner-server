@@ -27,7 +27,7 @@ public class JobResponse {
 	List<String> tags;
 	JobDetailDto jobDetail;
 
-	boolean like;
+	boolean bookmarkActivated;
 
 	public JobResponse(JobPosting jobPosting) {
 		id = jobPosting.getId();
