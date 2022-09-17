@@ -58,6 +58,9 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    //Logging
+    implementation group: 'ca.pjer', name: 'logback-awslogs-appender', version: '1.6.0'
+
     //Etc...
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
