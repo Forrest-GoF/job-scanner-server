@@ -11,7 +11,6 @@ import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
 import com.forrestgof.jobscanner.common.entity.BaseTimeEntity;
-import com.forrestgof.jobscanner.duty.domain.MemberDuty;
 
 import lombok.AccessLevel;
 import lombok.Builder;
