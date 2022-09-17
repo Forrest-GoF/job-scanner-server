@@ -6,14 +6,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.forrestgof.jobscanner.duty.service.MemberDutyService;
 import com.forrestgof.jobscanner.member.controller.dto.MemberPatchRequest;
 import com.forrestgof.jobscanner.member.domain.Member;
 import com.forrestgof.jobscanner.member.dto.MemberSignInDto;
 import com.forrestgof.jobscanner.member.dto.MemberSignUpDto;
 import com.forrestgof.jobscanner.member.exception.MemberCustomException;
 import com.forrestgof.jobscanner.member.repository.MemberRepository;
-import com.forrestgof.jobscanner.tag.service.MemberTagService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

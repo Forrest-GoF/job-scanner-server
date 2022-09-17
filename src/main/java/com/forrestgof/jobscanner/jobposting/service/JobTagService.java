@@ -1,10 +1,10 @@
-package com.forrestgof.jobscanner.tag.service;
+package com.forrestgof.jobscanner.jobposting.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.forrestgof.jobscanner.tag.domain.JobTag;
-import com.forrestgof.jobscanner.tag.repository.JobTagRepository;
+import com.forrestgof.jobscanner.jobposting.domain.JobTag;
+import com.forrestgof.jobscanner.jobposting.repository.JobTagRepository;
 
 import lombok.RequiredArgsConstructor;
 
