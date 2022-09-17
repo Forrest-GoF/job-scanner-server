@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import com.forrestgof.jobscanner.duty.domain.Duty;
 import com.forrestgof.jobscanner.duty.domain.MemberDuty;
 import com.forrestgof.jobscanner.member.domain.Member;
-import com.forrestgof.jobscanner.tag.domain.MemberTag;
+import com.forrestgof.jobscanner.member.domain.MemberTag;
 import com.forrestgof.jobscanner.tag.domain.Tag;
 
 import lombok.Getter;

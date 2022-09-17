@@ -1,11 +1,11 @@
-package com.forrestgof.jobscanner.tag.repository;
+package com.forrestgof.jobscanner.member.repository;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.forrestgof.jobscanner.member.domain.Member;
-import com.forrestgof.jobscanner.tag.domain.MemberTag;
+import com.forrestgof.jobscanner.member.domain.MemberTag;
 
 public interface MemberTagRepository extends JpaRepository<MemberTag, Long> {
 
