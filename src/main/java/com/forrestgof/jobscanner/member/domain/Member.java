@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
 
 import com.forrestgof.jobscanner.common.entity.BaseTimeEntity;
 import com.forrestgof.jobscanner.duty.domain.MemberDuty;
@@ -62,5 +63,24 @@ public class Member extends BaseTimeEntity {
 
 	public void authenticateEmail() {
 		this.isAuthenticatedEmail = true;
+	}
+
+	public void updateMember(
+		@NotNull String nickname,
+		@NotNull String imageUrl
+	) {
+		this.nickname = nickname;
+		this.imageUrl = imageUrl;
+	}
+
+	public void updateMemberTags(List<MemberTag> memberTags) {
+
+		this.memberTags.clear();
+		this.memberTags.addAll(memberTags);
+	}
+
+	public void updateMemberDuties(List<MemberDuty> memberDuties) {
+		this.memberDuties.clear();
+		this.memberDuties.addAll(memberDuties);
 	}
 }
