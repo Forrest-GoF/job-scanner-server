@@ -1,4 +1,4 @@
-package com.forrestgof.jobscanner.duty.repository;
+package com.forrestgof.jobscanner.member.repository;
 
 import java.util.List;
 

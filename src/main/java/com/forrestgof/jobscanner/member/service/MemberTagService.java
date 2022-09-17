@@ -1,17 +1,16 @@
-package com.forrestgof.jobscanner.tag.service;
+package com.forrestgof.jobscanner.member.service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.forrestgof.jobscanner.member.domain.Member;
-import com.forrestgof.jobscanner.tag.domain.MemberTag;
+import com.forrestgof.jobscanner.member.domain.MemberTag;
 import com.forrestgof.jobscanner.tag.domain.Tag;
-import com.forrestgof.jobscanner.tag.repository.MemberTagRepository;
+import com.forrestgof.jobscanner.member.repository.MemberTagRepository;
 import com.forrestgof.jobscanner.tag.repository.TagRepository;
 
 import lombok.RequiredArgsConstructor;
