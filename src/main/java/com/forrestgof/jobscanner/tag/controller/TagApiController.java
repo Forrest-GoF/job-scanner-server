@@ -1,4 +1,4 @@
-package com.forrestgof.jobscanner.jobposting.controller;
+package com.forrestgof.jobscanner.tag.controller;
 
 import java.util.List;
 import java.util.stream.Collectors;
