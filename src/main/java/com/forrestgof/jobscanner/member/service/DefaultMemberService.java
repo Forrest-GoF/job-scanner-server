@@ -102,4 +102,15 @@ public class DefaultMemberService implements MemberService {
 		memberUpdateRequest.duties()
 				.ifPresent(duties -> memberDutyService.updateMemberDuty(findMember, duties));
 	}
+
+	@Override
+	@Transactional
+	public void deleteMember(Long memberId) {
+		Member findMember = memberRepository.findById(memberId)
+			.orElseThrow(MemberCustomException::notfound);
+
+		memberTagService.deleteMemberTag(findMember);
+		memberDutyService.deleteMemberDuty(findMember);
+		memberRepository.delete(findMember);
+	}
 }
