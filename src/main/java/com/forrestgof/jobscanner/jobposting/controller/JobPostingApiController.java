@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.forrestgof.jobscanner.common.dto.CustomResponse;
-import com.forrestgof.jobscanner.jobposting.controller.dto.JobDto;
-import com.forrestgof.jobscanner.jobposting.controller.dto.JobPreviewDto;
+import com.forrestgof.jobscanner.jobposting.controller.dto.JobResponse;
+import com.forrestgof.jobscanner.jobposting.controller.dto.JobPreviewResponse;
 import com.forrestgof.jobscanner.jobposting.controller.dto.JobSearchCondition;
 import com.forrestgof.jobscanner.jobposting.domain.JobPosting;
 import com.forrestgof.jobscanner.jobposting.service.JobPostingService;
@@ -28,7 +28,7 @@ public class JobPostingApiController {
 	@GetMapping("")
 	public ResponseEntity<CustomResponse> getFilterJobs(JobSearchCondition jobSearchCondition) {
 		List<JobPosting> findJobs = jobPostingService.findFilterJobs(jobSearchCondition);
-		List<JobPreviewDto> previewDtos = parseToDtoList(findJobs);
+		List<JobPreviewResponse> previewDtos = parseToDtoList(findJobs);
 
 		return CustomResponse.success(new Result(previewDtos, previewDtos.size()));
 	}
@@ -39,17 +39,17 @@ public class JobPostingApiController {
 	) {
 		JobPosting findOne = jobPostingService.findOne(id);
 
-		return CustomResponse.success(new JobDto(findOne));
+		return CustomResponse.success(new JobResponse(findOne));
 	}
 
-	private List<JobPreviewDto> parseToDtoList(List<JobPosting> find) {
+	private List<JobPreviewResponse> parseToDtoList(List<JobPosting> find) {
 		return find.stream()
-			.map(JobPreviewDto::new)
+			.map(JobPreviewResponse::new)
 			.collect(Collectors.toList());
 	}
 
 	record Result(
-		List<JobPreviewDto> jobs,
+		List<JobPreviewResponse> jobs,
 		int length
 	) {
 
