@@ -23,10 +23,9 @@ public class TagApiController {
 	private final TagService tagService;
 
 	@GetMapping
-	@ResponseBody
 	public ResponseEntity<CustomResponse> getTags() {
-		List<Tag> all = tagService.findAll();
-		List<String> tags = all.stream()
+		List<String> tags = tagService.findAll()
+			.stream()
 			.map(Tag::getName)
 			.collect(Collectors.toList());
 
