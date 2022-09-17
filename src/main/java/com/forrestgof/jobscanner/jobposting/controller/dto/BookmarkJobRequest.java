@@ -1,6 +1,6 @@
 package com.forrestgof.jobscanner.jobposting.controller.dto;
 
-public record JobLikeRequest (
+public record BookmarkJobRequest(
 	boolean activated
 ) {
 

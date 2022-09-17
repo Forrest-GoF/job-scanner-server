@@ -5,13 +5,13 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.forrestgof.jobscanner.jobposting.domain.JobLike;
+import com.forrestgof.jobscanner.jobposting.domain.BookmarkJob;
 import com.forrestgof.jobscanner.jobposting.domain.JobPosting;
 import com.forrestgof.jobscanner.member.domain.Member;
 
-public interface JobLikeRepository extends JpaRepository<JobLike, Long> {
+public interface BookmarkJobRepository extends JpaRepository<BookmarkJob, Long> {
 
-	List<JobLike> findByMember(Member member);
+	List<BookmarkJob> findByMember(Member member);
 
-	Optional<JobLike> findByJobPostingAndMember(JobPosting jobPosting, Member member);
+	Optional<BookmarkJob> findByJobPostingAndMember(JobPosting jobPosting, Member member);
 }

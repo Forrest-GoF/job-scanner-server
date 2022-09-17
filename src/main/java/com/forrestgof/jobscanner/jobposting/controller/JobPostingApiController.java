@@ -17,12 +17,12 @@ import com.forrestgof.jobscanner.auth.exception.AuthCustomException;
 import com.forrestgof.jobscanner.auth.jwt.JwtHeaderUtil;
 import com.forrestgof.jobscanner.auth.service.AuthService;
 import com.forrestgof.jobscanner.common.dto.CustomResponse;
-import com.forrestgof.jobscanner.jobposting.controller.dto.JobLikeRequest;
+import com.forrestgof.jobscanner.jobposting.controller.dto.BookmarkJobRequest;
 import com.forrestgof.jobscanner.jobposting.controller.dto.JobResponse;
 import com.forrestgof.jobscanner.jobposting.controller.dto.JobPreviewResponse;
 import com.forrestgof.jobscanner.jobposting.controller.dto.JobSearchCondition;
 import com.forrestgof.jobscanner.jobposting.domain.JobPosting;
-import com.forrestgof.jobscanner.jobposting.service.JobLikeService;
+import com.forrestgof.jobscanner.jobposting.service.BookmarkJobService;
 import com.forrestgof.jobscanner.jobposting.service.JobPostingService;
 import com.forrestgof.jobscanner.member.domain.Member;
 
@@ -34,7 +34,7 @@ import lombok.RequiredArgsConstructor;
 public class JobPostingApiController {
 
 	private final JobPostingService jobPostingService;
-	private final JobLikeService jobLikeService;
+	private final BookmarkJobService bookmarkJobService;
 	private final AuthService authService;
 
 	@GetMapping("")
@@ -62,36 +62,36 @@ public class JobPostingApiController {
 
 		try {
 			Member member = getMember(request);
-			boolean activated = jobLikeService.isActivated(jobPosting, member);
-			jobResponse.setLike(activated);
+			boolean activated = bookmarkJobService.checkActivation(jobPosting, member);
+			jobResponse.setBookmarkActivated(activated);
 		} catch (AuthCustomException ignored) { }
 
 		return CustomResponse.success(jobResponse);
 	}
 
 
-	@GetMapping("like")
+	@GetMapping("bookmarks")
 	public ResponseEntity<CustomResponse> getLike(
 		HttpServletRequest request
 	) {
 		Member member = getMember(request);
 
-		List<JobPosting> likeJobs = jobLikeService.findLikeJobs(member);
+		List<JobPosting> likeJobs = bookmarkJobService.findBookmarkJobPosting(member);
 		List<JobPreviewResponse> jobPreviewResponses = parseToDtoList(likeJobs);
 
 		return CustomResponse.success(jobPreviewResponses);
 	}
 
-	@PutMapping("like/{jobPostingId}")
+	@PutMapping("bookmarks/{jobPostingId}")
 	public ResponseEntity<CustomResponse> updateLike(
 		HttpServletRequest request,
 		@PathVariable Long jobPostingId,
-		@RequestBody JobLikeRequest jobLikeRequest
+		@RequestBody BookmarkJobRequest bookmarkJobRequest
 	) {
 		Member member = getMember(request);
 		JobPosting jobPosting = jobPostingService.findOne(jobPostingId);
 
-		jobLikeService.updateLike(jobPosting, member, jobLikeRequest);
+		bookmarkJobService.updateLike(jobPosting, member, bookmarkJobRequest);
 
 		return CustomResponse.success();
 	}
