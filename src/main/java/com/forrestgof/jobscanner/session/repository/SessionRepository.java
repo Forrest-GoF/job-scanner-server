@@ -1,5 +1,6 @@
 package com.forrestgof.jobscanner.session.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,5 +14,5 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
 
 	boolean existsByAppTokenUuidAndRefreshTokenUuid(String appTokenUuid, String refreshTokenUuid);
 
-	Optional<Session> findByMember(Member member);
+	List<Session> findByMember(Member member);
 }
