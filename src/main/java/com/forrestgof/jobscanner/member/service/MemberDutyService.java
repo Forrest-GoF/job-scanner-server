@@ -23,27 +23,24 @@ public class MemberDutyService {
 	private final MemberDutyRepository memberDutyRepository;
 	private final DutyRepository dutyRepository;
 
-	public List<Duty> findDutiesFromMember(Member member) {
-		List<MemberDuty> memberDuties = memberDutyRepository.findByMember(member);
-
-		return memberDuties.stream()
-			.map(MemberDuty::getDuty)
-			.collect(Collectors.toList());
-	}
-
 	@Transactional
 	public void updateMemberDuty(Member member, List<String> duties) {
-		List<MemberDuty> findDuties = memberDutyRepository.findByMember(member);
+		deleteMemberDuty(member);
 
-		memberDutyRepository.deleteAll(findDuties);
-
-		List<MemberDuty> updatedMemberDuties = duties.stream()
+		List<MemberDuty> memberDuties = duties.stream()
 			.map(dutyRepository::findByName)
 			.map(Optional::orElseThrow)
 			.map(duty -> MemberDuty.of(member, duty))
 			.map(memberDutyRepository::save)
 			.toList();
 
-		member.updateMemberDuties(updatedMemberDuties);
+		member.updateMemberDuties(memberDuties);
+	}
+
+	@Transactional
+	public void deleteMemberDuty(Member member) {
+		List<MemberDuty> findDuties = memberDutyRepository.findByMember(member);
+
+		memberDutyRepository.deleteAll(findDuties);
 	}
 }

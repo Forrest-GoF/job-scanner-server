@@ -22,4 +22,6 @@ public interface MemberService {
 	void authenticateEmail(String email);
 
 	void updateMember(Long id, MemberPatchRequest memberUpdateRequest);
+
+	void deleteMember(Long memberId);
 }
