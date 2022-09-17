@@ -30,4 +30,13 @@ public class MemberTag extends BaseTimeEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "tag_id")
 	private Tag tag;
+
+	public static MemberTag of(Member member, Tag tag) {
+		MemberTag memberTag = new MemberTag();
+
+		memberTag.member = member;
+		memberTag.tag = tag;
+
+		return memberTag;
+	}
 }

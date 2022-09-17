@@ -30,4 +30,13 @@ public class MemberDuty extends BaseTimeEntity  {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "duty_id")
 	private Duty duty;
+
+	public static MemberDuty of(Member member, Duty duty) {
+		MemberDuty memberDuty = new MemberDuty();
+
+		memberDuty.member = member;
+		memberDuty.duty = duty;
+
+		return memberDuty;
+	}
 }
