@@ -1,8 +1,5 @@
 package com.forrestgof.jobscanner.common.dto;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
 import com.forrestgof.jobscanner.common.exception.CustomException;
 
 import lombok.Getter;
@@ -31,16 +28,6 @@ public class CustomResponse<T> {
 		customResponse.data = data;
 
 		return customResponse;
-	}
-
-	public static <T> ResponseEntity<CustomResponse<T>> success(T data, HttpStatus httpStatus) {
-		CustomResponse<T> customResponse = new CustomResponse<>();
-
-		customResponse.status = true;
-		customResponse.data = data;
-
-		return ResponseEntity.status(httpStatus)
-			.body(customResponse);
 	}
 
 	public static CustomResponse<?> error(Exception e) {

@@ -1,14 +1,13 @@
 package com.forrestgof.jobscanner.auth.controller;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.forrestgof.jobscanner.auth.controller.dto.SignInRequest;
 import com.forrestgof.jobscanner.auth.controller.dto.SignUpRequest;
+import com.forrestgof.jobscanner.auth.exception.SocialMemberException;
 import com.forrestgof.jobscanner.auth.jwt.JwtHeaderUtil;
 import com.forrestgof.jobscanner.auth.service.AuthService;
 import com.forrestgof.jobscanner.auth.service.dto.AuthRefreshResponse;
@@ -89,26 +89,32 @@ public class AuthController {
 	}
 
 	@GetMapping("signin/callback/{socialType}")
-	public ResponseEntity<CustomResponse<AuthTokenResponse>> socialSignIn(
+	@ResponseStatus(HttpStatus.OK)
+	public CustomResponse<AuthTokenResponse> socialSignIn(
 		@PathVariable("socialType") String type,
 		@RequestParam String code
 	) {
-		AtomicReference<HttpStatus> httpStatus = new AtomicReference<>(HttpStatus.OK);
-
 		SocialType socialType = SocialType.getEnum(type);
 		SocialService socialService = socialServiceFactory.find(socialType);
 
 		Member member = socialService.generateMemberFromCode(code);
 
 		SocialMember findSocialMember = socialMemberService.findByEmailAndSocialType(member.getEmail(), socialType)
-			.orElseGet(() -> {
-				httpStatus.set(HttpStatus.CREATED);
-				return socialSignUp(member, socialType);
-			});
+			.orElseThrow(() -> new SocialMemberException(member, socialType));
 
 		AuthTokenResponse authTokenResponse = authService.signIn(findSocialMember);
 
-		return CustomResponse.success(authTokenResponse, httpStatus.get());
+		return CustomResponse.success(authTokenResponse);
+	}
+
+	@ExceptionHandler(SocialMemberException.class)
+	@ResponseStatus(HttpStatus.CREATED)
+	public CustomResponse<AuthTokenResponse> handleException(SocialMemberException e) {
+		SocialMember findSocialMember = socialSignUp(e.getMember(), e.getSocialType());
+
+		AuthTokenResponse authTokenResponse = authService.signIn(findSocialMember);
+
+		return CustomResponse.success(authTokenResponse);
 	}
 
 	@GetMapping("mail/authenticate/{email}/{appToken}")
