@@ -5,64 +5,60 @@ import org.springframework.http.ResponseEntity;
 
 import com.forrestgof.jobscanner.common.exception.CustomException;
 
-import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Builder
 @Getter
-public class CustomResponse {
+@NoArgsConstructor
+public class CustomResponse<T> {
 
 	boolean status;
 	String message;
-	Object data;
+	T data;
 
-	public static ResponseEntity<CustomResponse> success() {
-		CustomResponse customResponse = CustomResponse.builder()
-			.status(true)
-			.build();
+	public static CustomResponse<?> success() {
+		CustomResponse<?> customResponse = new CustomResponse<>();
 
-		return ResponseEntity.status(HttpStatus.OK)
-			.body(customResponse);
+		customResponse.status = true;
+
+		return customResponse;
 	}
 
-	public static ResponseEntity<CustomResponse> success(Object data) {
-		CustomResponse customResponse = CustomResponse.builder()
-			.status(true)
-			.data(data)
-			.build();
+	public static <T> CustomResponse<T> success(T data) {
+		CustomResponse<T> customResponse = new CustomResponse<>();
 
-		return ResponseEntity.status(HttpStatus.OK)
-			.body(customResponse);
+		customResponse.status = true;
+		customResponse.data = data;
+
+		return customResponse;
 	}
 
-	public static ResponseEntity<CustomResponse> success(Object data, HttpStatus httpStatus) {
-		CustomResponse customResponse = CustomResponse.builder()
-			.status(true)
-			.data(data)
-			.build();
+	public static <T> ResponseEntity<CustomResponse<T>> success(T data, HttpStatus httpStatus) {
+		CustomResponse<T> customResponse = new CustomResponse<>();
+
+		customResponse.status = true;
+		customResponse.data = data;
 
 		return ResponseEntity.status(httpStatus)
 			.body(customResponse);
 	}
 
-	public static ResponseEntity<CustomResponse> error(Exception e) {
-		CustomResponse customResponse = CustomResponse.builder()
-			.status(false)
-			.message(e.getClass().getSimpleName())
-			.build();
+	public static CustomResponse<?> error(Exception e) {
+		CustomResponse<?> customResponse = new CustomResponse<>();
 
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-			.body(customResponse);
+		customResponse.status = false;
+		customResponse.message = e.getClass().getSimpleName();
+
+		return customResponse;
 	}
 
-	public static ResponseEntity<CustomResponse> customError(CustomException e) {
-		CustomResponse customResponse = CustomResponse.builder()
-			.status(false)
-			.message(e.getClass().getSimpleName() + ": " + e.getMessage())
-			.build();
+	public static CustomResponse<?> customError(CustomException e) {
+		CustomResponse<?> customResponse = new CustomResponse<>();
 
-		return ResponseEntity.status(e.getHttpStatus())
-			.body(customResponse);
+		customResponse.status = false;
+		customResponse.message = e.getClass().getSimpleName() + ": " + e.getMessage();
+
+		return customResponse;
 	}
 }
 
