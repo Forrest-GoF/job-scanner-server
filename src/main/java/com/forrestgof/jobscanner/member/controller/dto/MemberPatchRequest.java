@@ -7,7 +7,9 @@ public record MemberPatchRequest(
 	Optional<String> nickname,
 	Optional<String> imageUrl,
 	Optional<List<String>> tags,
-	Optional<List<String>> duties
+	Optional<List<String>> duties,
+
+	Optional<Boolean> promotionAgreement
 ) {
 
 }

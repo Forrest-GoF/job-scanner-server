@@ -23,22 +23,30 @@ public class MemberResponse {
 	private List<String> tags;
 	private List<String> duties;
 
+	boolean isAuthenticatedEmail;
+	boolean promotionAgreement;
+
 	public static MemberResponse from(Member member) {
 		MemberResponse memberResponse = new MemberResponse();
 
 		memberResponse.email = member.getEmail();
 		memberResponse.nickname = member.getNickname();
 		memberResponse.imageUrl = member.getImageUrl();
+
 		memberResponse.tags = member.getMemberTags()
 			.stream()
 			.map(MemberTag::getTag)
 			.map(Tag::getName)
 			.collect(Collectors.toList());
+
 		memberResponse.duties = member.getMemberDuties()
 			.stream()
 			.map(MemberDuty::getDuty)
 			.map(Duty::getName)
 			.collect(Collectors.toList());
+
+		memberResponse.isAuthenticatedEmail = member.isAuthenticatedEmail();
+		memberResponse.promotionAgreement = member.isPromotionAgreement();
 
 		return memberResponse;
 	}
