@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.forrestgof.jobscanner.member.controller.dto.MemberPatchRequest;
 import com.forrestgof.jobscanner.member.domain.Member;
-import com.forrestgof.jobscanner.member.dto.MemberSignInDto;
-import com.forrestgof.jobscanner.member.dto.MemberSignUpDto;
+import com.forrestgof.jobscanner.auth.controller.dto.SignInRequest;
+import com.forrestgof.jobscanner.auth.controller.dto.SignUpRequest;
 import com.forrestgof.jobscanner.member.exception.MemberCustomException;
 import com.forrestgof.jobscanner.member.repository.MemberRepository;
 
@@ -49,11 +49,12 @@ public class DefaultMemberService implements MemberService {
 	}
 
 	@Override
-	public Member signUp(MemberSignUpDto memberSignUpDto) {
+	public Member signUp(SignUpRequest signUpRequest) {
 		Member member = Member.builder()
-			.email(memberSignUpDto.email())
-			.password(passwordEncoder.encode(memberSignUpDto.password()))
-			.nickname(memberSignUpDto.nickname())
+			.email(signUpRequest.email())
+			.password(passwordEncoder.encode(signUpRequest.password()))
+			.nickname(signUpRequest.nickname())
+			.promotionAgreement(signUpRequest.promotionAgreement())
 			.build();
 
 		Long memberId = save(member);
@@ -62,7 +63,7 @@ public class DefaultMemberService implements MemberService {
 	}
 
 	@Override
-	public Member signIn(MemberSignInDto memberSignInDto) {
+	public Member signIn(SignInRequest memberSignInDto) {
 		Member findMember = findByEmail(memberSignInDto.email())
 			.orElseThrow(MemberCustomException::notfound);
 
@@ -94,7 +95,14 @@ public class DefaultMemberService implements MemberService {
 		String imageUrl = memberUpdateRequest.imageUrl()
 			.orElseGet(findMember::getImageUrl);
 
-		findMember.updateMember(nickName, imageUrl);
+		boolean promotionAgreement = memberUpdateRequest.promotionAgreement()
+			.orElseGet(findMember::isPromotionAgreement);
+
+		findMember.updateMember(
+			nickName,
+			imageUrl,
+			promotionAgreement
+		);
 
 		memberUpdateRequest.tags()
 				.ifPresent(tags -> memberTagService.updateMemberTag(findMember, tags));

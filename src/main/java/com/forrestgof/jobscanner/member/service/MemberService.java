@@ -4,8 +4,8 @@ import java.util.Optional;
 
 import com.forrestgof.jobscanner.member.controller.dto.MemberPatchRequest;
 import com.forrestgof.jobscanner.member.domain.Member;
-import com.forrestgof.jobscanner.member.dto.MemberSignInDto;
-import com.forrestgof.jobscanner.member.dto.MemberSignUpDto;
+import com.forrestgof.jobscanner.auth.controller.dto.SignInRequest;
+import com.forrestgof.jobscanner.auth.controller.dto.SignUpRequest;
 
 public interface MemberService {
 
@@ -15,9 +15,9 @@ public interface MemberService {
 
 	Optional<Member> findByEmail(String email);
 
-	Member signUp(MemberSignUpDto memberSignUpDto);
+	Member signUp(SignUpRequest signUpRequest);
 
-	Member signIn(MemberSignInDto memberSignInDto);
+	Member signIn(SignInRequest memberSignInDto);
 
 	void authenticateEmail(String email);
 
