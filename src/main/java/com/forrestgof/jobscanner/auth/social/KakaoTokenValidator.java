@@ -2,8 +2,11 @@ package com.forrestgof.jobscanner.auth.social;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -34,6 +37,21 @@ public class KakaoTokenValidator implements SocialTokenValidator {
 		this.redirectUrl = kakaoClient.redirectUrl();
 		this.clientId = kakaoClient.clientId();
 		this.clientSecret = kakaoClient.clientSecret();
+	}
+
+	@Override
+	public String getRedirectUrl() {
+		Map<String, Object> params = new HashMap<>();
+		params.put("client_id", clientId);
+		params.put("redirect_uri", redirectUrl);
+		params.put("response_type", "code");
+
+		String parameterString = params.entrySet()
+			.stream()
+			.map(param -> param.getKey() + "=" + param.getValue())
+			.collect(Collectors.joining("&"));
+
+		return "https://kauth.kakao.com/oauth/authorize" + "?" + parameterString;
 	}
 
 	@Override
