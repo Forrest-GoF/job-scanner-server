@@ -22,14 +22,14 @@ import com.forrestgof.jobscanner.member.domain.Member;
 import reactor.core.publisher.Mono;
 
 @Component
-public class GoogleTokenValidator implements SocialTokenValidator {
+public class GoogleService implements SocialService {
 
 	private final String tokenUrl;
 	private final String redirectUrl;
 	private final String clientId;
 	private final String clientSecret;
 
-	public GoogleTokenValidator(AuthProperties authProperties) {
+	public GoogleService(AuthProperties authProperties) {
 		AuthProperties.Client.Google googleClient = authProperties.client().google();
 		this.tokenUrl = googleClient.tokenUrl();
 		this.redirectUrl = googleClient.redirectUrl();

@@ -10,13 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class SocialTokenValidatorFactory {
+public class SocialServiceFactory {
 
-	private final KakaoTokenValidator kakaoTokenValidator;
-	private final GoogleTokenValidator googleTokenValidator;
-	private final GithubTokenValidator githubTokenValidator;
+	private final KakaoService kakaoTokenValidator;
+	private final GoogleService googleTokenValidator;
+	private final GithubService githubTokenValidator;
 
-	public SocialTokenValidator find(SocialType socialType) {
+	public SocialService find(SocialType socialType) {
 		return switch (socialType) {
 			case KAKAO -> kakaoTokenValidator;
 			case GOOGLE -> googleTokenValidator;

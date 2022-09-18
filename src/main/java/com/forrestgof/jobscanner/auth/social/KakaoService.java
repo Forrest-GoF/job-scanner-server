@@ -24,14 +24,14 @@ import com.forrestgof.jobscanner.member.domain.Member;
 import reactor.core.publisher.Mono;
 
 @Component
-public class KakaoTokenValidator implements SocialTokenValidator {
+public class KakaoService implements SocialService {
 
 	private final String tokenUrl;
 	private final String redirectUrl;
 	private final String clientId; // JavaScript 키
 	private final String clientSecret;
 
-	public KakaoTokenValidator(AuthProperties authProperties) {
+	public KakaoService(AuthProperties authProperties) {
 		AuthProperties.Client.Kakao kakaoClient = authProperties.client().kakao();
 		this.tokenUrl = kakaoClient.tokenUrl();
 		this.redirectUrl = kakaoClient.redirectUrl();

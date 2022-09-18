@@ -23,14 +23,14 @@ import com.forrestgof.jobscanner.member.domain.Member;
 import reactor.core.publisher.Mono;
 
 @Component
-public class GithubTokenValidator implements SocialTokenValidator {
+public class GithubService implements SocialService {
 
 	private final String tokenUrl;
 	private final String redirectUrl;
 	private final String clientId;
 	private final String clientSecret;
 
-	public GithubTokenValidator(AuthProperties authProperties) {
+	public GithubService(AuthProperties authProperties) {
 		AuthProperties.Client.Github githubClient = authProperties.client().github();
 		this.tokenUrl = githubClient.tokenUrl();
 		this.redirectUrl = githubClient.redirectUrl();
