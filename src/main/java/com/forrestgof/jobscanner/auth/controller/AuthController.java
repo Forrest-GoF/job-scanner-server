@@ -21,8 +21,8 @@ import com.forrestgof.jobscanner.auth.dto.AuthRefreshResponse;
 import com.forrestgof.jobscanner.auth.dto.AuthTokenResponse;
 import com.forrestgof.jobscanner.auth.jwt.JwtHeaderUtil;
 import com.forrestgof.jobscanner.auth.service.AuthService;
-import com.forrestgof.jobscanner.auth.social.SocialTokenValidator;
-import com.forrestgof.jobscanner.auth.social.SocialTokenValidatorFactory;
+import com.forrestgof.jobscanner.auth.social.SocialService;
+import com.forrestgof.jobscanner.auth.social.SocialServiceFactory;
 import com.forrestgof.jobscanner.common.config.properties.DomainProperties;
 import com.forrestgof.jobscanner.common.dto.CustomResponse;
 import com.forrestgof.jobscanner.member.domain.Member;
@@ -45,7 +45,7 @@ public class AuthController {
 	private final MemberService memberService;
 	private final SocialMemberService socialMemberService;
 	private final AuthService authService;
-	private final SocialTokenValidatorFactory socialTokenValidatorFactory;
+	private final SocialServiceFactory socialServiceFactory;
 	private final DomainProperties domainProperties;
 
 	@PostMapping("signup")
@@ -90,9 +90,9 @@ public class AuthController {
 		HttpServletResponse httpServletResponse) throws IOException {
 
 		SocialType socialType = SocialType.getEnum(type);
-		SocialTokenValidator socialTokenValidator = socialTokenValidatorFactory.find(socialType);
+		SocialService socialService = socialServiceFactory.find(socialType);
 
-		httpServletResponse.sendRedirect(socialTokenValidator.getRedirectUrl());
+		httpServletResponse.sendRedirect(socialService.getRedirectUrl());
 	}
 
 	@GetMapping("signin/callback/{socialType}")
@@ -103,9 +103,9 @@ public class AuthController {
 		AtomicReference<HttpStatus> httpStatus = new AtomicReference<>(HttpStatus.OK);
 
 		SocialType socialType = SocialType.getEnum(type);
-		SocialTokenValidator socialTokenValidator = socialTokenValidatorFactory.find(socialType);
+		SocialService socialService = socialServiceFactory.find(socialType);
 
-		Member member = socialTokenValidator.generateMemberFromCode(code);
+		Member member = socialService.generateMemberFromCode(code);
 
 		SocialMember findSocialMember = socialMemberService.findByEmailAndSocialType(member.getEmail(), socialType)
 			.orElseGet(() -> {
