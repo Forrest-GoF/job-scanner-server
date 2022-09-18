@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -53,11 +54,14 @@ public class JobPostingApiController {
 	}
 
 	@GetMapping("{id}")
+	@Transactional
 	public ResponseEntity<CustomResponse> getJob(
 		HttpServletRequest request,
 		@PathVariable Long id
 	) {
 		JobPosting jobPosting = jobPostingService.findOne(id);
+		jobPosting.increaseViews();
+
 		JobResponse jobResponse = new JobResponse(jobPosting);
 
 		try {

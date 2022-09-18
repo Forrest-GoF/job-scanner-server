@@ -71,11 +71,10 @@ public class JobPosting extends BaseTimeEntity {
 	private JobDetail jobDetail;
 
 	@OneToMany(mappedBy = "jobPosting")
-	private List<JobTag> jobTags = new ArrayList<>();
+	private final List<JobTag> jobTags = new ArrayList<>();
 
-	public void addJobTag(JobTag jobTag) {
-		jobTags.add(jobTag);
-	}
+	private int views;
+	private int viewsPerWeek;
 
 	@Builder
 	public JobPosting(
@@ -112,6 +111,10 @@ public class JobPosting extends BaseTimeEntity {
 		this.jobDetail = jobDetail;
 	}
 
+	public void addJobTag(JobTag jobTag) {
+		jobTags.add(jobTag);
+	}
+
 	public void updateFromPlatform(
 		String location,
 		LocalDate expiredAt,
@@ -124,5 +127,10 @@ public class JobPosting extends BaseTimeEntity {
 
 	public void expire() {
 		isExpired = true;
+	}
+
+	public void increaseViews() {
+		views++;
+		viewsPerWeek++;
 	}
 }
