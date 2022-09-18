@@ -1,7 +1,10 @@
 package com.forrestgof.jobscanner.auth.social;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -33,6 +36,20 @@ public class GithubTokenValidator implements SocialTokenValidator {
 		this.redirectUrl = githubClient.redirectUrl();
 		this.clientId = githubClient.clientId();
 		this.clientSecret = githubClient.clientSecret();
+	}
+
+	@Override
+	public String getRedirectUrl() {
+		Map<String, Object> params = new HashMap<>();
+		params.put("client_id", clientId);
+		params.put("redirect_uri", redirectUrl);
+
+		String parameterString = params.entrySet()
+			.stream()
+			.map(param -> param.getKey() + "=" + param.getValue())
+			.collect(Collectors.joining("&"));
+
+		return "https://github.com/login/oauth/authorize" + "?" + parameterString;
 	}
 
 	@Override

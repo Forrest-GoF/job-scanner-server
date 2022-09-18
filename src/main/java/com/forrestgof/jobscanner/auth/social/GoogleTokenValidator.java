@@ -1,7 +1,10 @@
 package com.forrestgof.jobscanner.auth.social;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,6 +35,22 @@ public class GoogleTokenValidator implements SocialTokenValidator {
 		this.redirectUrl = googleClient.redirectUrl();
 		this.clientId = googleClient.clientId();
 		this.clientSecret = googleClient.clientSecret();
+	}
+
+	@Override
+	public String getRedirectUrl() {
+		Map<String, Object> params = new HashMap<>();
+		params.put("client_id", clientId);
+		params.put("redirect_uri", redirectUrl);
+		params.put("response_type", "code");
+		params.put("scope", "email%20profile%20openid");
+
+		String parameterString = params.entrySet()
+			.stream()
+			.map(param -> param.getKey() + "=" + param.getValue())
+			.collect(Collectors.joining("&"));
+
+		return "https://accounts.google.com/o/oauth2/v2/auth" + "?" + parameterString;
 	}
 
 	@Override
