@@ -48,7 +48,7 @@ public class CustomResponse {
 	public static ResponseEntity<CustomResponse> error(Exception e) {
 		CustomResponse customResponse = CustomResponse.builder()
 			.status(false)
-			.message(e.getClass().getSimpleName() + ": " + e.getMessage())
+			.message(e.getClass().getSimpleName())
 			.build();
 
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
