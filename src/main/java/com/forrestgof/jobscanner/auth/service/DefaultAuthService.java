@@ -5,11 +5,11 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.forrestgof.jobscanner.auth.dto.AuthRefreshResponse;
-import com.forrestgof.jobscanner.auth.dto.AuthTokenResponse;
 import com.forrestgof.jobscanner.auth.exception.AuthCustomException;
 import com.forrestgof.jobscanner.auth.jwt.AuthToken;
 import com.forrestgof.jobscanner.auth.jwt.AuthTokenProvider;
+import com.forrestgof.jobscanner.auth.service.dto.AuthRefreshResponse;
+import com.forrestgof.jobscanner.auth.service.dto.AuthTokenResponse;
 import com.forrestgof.jobscanner.mail.service.MailService;
 import com.forrestgof.jobscanner.member.domain.Member;
 import com.forrestgof.jobscanner.session.domain.Session;

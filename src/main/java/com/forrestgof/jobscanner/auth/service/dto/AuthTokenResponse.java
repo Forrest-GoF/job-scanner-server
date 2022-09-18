@@ -1,4 +1,4 @@
-package com.forrestgof.jobscanner.auth.dto;
+package com.forrestgof.jobscanner.auth.service.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
