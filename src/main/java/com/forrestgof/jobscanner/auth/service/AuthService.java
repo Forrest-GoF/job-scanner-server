@@ -1,7 +1,7 @@
 package com.forrestgof.jobscanner.auth.service;
 
-import com.forrestgof.jobscanner.auth.dto.AuthRefreshResponse;
-import com.forrestgof.jobscanner.auth.dto.AuthTokenResponse;
+import com.forrestgof.jobscanner.auth.service.dto.AuthRefreshResponse;
+import com.forrestgof.jobscanner.auth.service.dto.AuthTokenResponse;
 import com.forrestgof.jobscanner.member.domain.Member;
 import com.forrestgof.jobscanner.socialmember.domain.SocialMember;
 

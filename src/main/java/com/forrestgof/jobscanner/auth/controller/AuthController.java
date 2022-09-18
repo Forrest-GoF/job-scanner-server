@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.forrestgof.jobscanner.auth.dto.AuthRefreshResponse;
-import com.forrestgof.jobscanner.auth.dto.AuthTokenResponse;
 import com.forrestgof.jobscanner.auth.jwt.JwtHeaderUtil;
 import com.forrestgof.jobscanner.auth.service.AuthService;
+import com.forrestgof.jobscanner.auth.service.dto.AuthRefreshResponse;
+import com.forrestgof.jobscanner.auth.service.dto.AuthTokenResponse;
 import com.forrestgof.jobscanner.auth.social.SocialService;
 import com.forrestgof.jobscanner.auth.social.SocialServiceFactory;
 import com.forrestgof.jobscanner.common.config.properties.DomainProperties;
