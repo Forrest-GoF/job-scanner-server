@@ -9,13 +9,14 @@ import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.forrestgof.jobscanner.auth.controller.dto.SignInRequest;
 import com.forrestgof.jobscanner.auth.controller.dto.SignUpRequest;
@@ -37,7 +38,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Controller
+@RestController
 @RequestMapping("auth")
 @RequiredArgsConstructor
 public class AuthController {
@@ -49,7 +50,8 @@ public class AuthController {
 	private final DomainProperties domainProperties;
 
 	@PostMapping("signup")
-	public ResponseEntity<CustomResponse> signUp(
+	@ResponseStatus(HttpStatus.CREATED)
+	public CustomResponse<AuthTokenResponse> signUp(
 		@RequestBody
 		@Valid
 		SignUpRequest signUpRequest
@@ -58,53 +60,36 @@ public class AuthController {
 
 		AuthTokenResponse authTokenResponse = authService.signIn(createdMember);
 
-		CustomResponse customResponse = CustomResponse.builder()
-			.status(true)
-			.data(authTokenResponse)
-			.build();
-
 		authService.sendAuthenticationMail(createdMember);
 
-		return ResponseEntity.status(HttpStatus.CREATED)
-			.body(customResponse);
+		return CustomResponse.success(authTokenResponse);
 	}
 
 	@PostMapping("signin")
-	public ResponseEntity<CustomResponse> signIn(
+	@ResponseStatus(HttpStatus.OK)
+	public CustomResponse<?> signIn(
 		@RequestBody
 		@Valid
 		SignInRequest signInRequest
 	) {
-		Member findMember = memberService.signIn(signInRequest);
-		return CustomResponse.success(authService.signIn(findMember));
+		memberService.signIn(signInRequest);
+
+		return CustomResponse.success();
 	}
 
-	@GetMapping("mail/authenticate/{email}/{appToken}")
-	public void authenticateMail(
-		@PathVariable String email,
-		@PathVariable String appToken,
-		HttpServletResponse httpServletResponse) throws IOException {
+	@PostMapping("refresh")
+	@ResponseStatus(HttpStatus.OK)
+	public CustomResponse<AuthRefreshResponse> refreshToken(HttpServletRequest request) {
+		String appToken = JwtHeaderUtil.getAccessToken(request);
+		String refreshToken = JwtHeaderUtil.getRefreshToken(request);
 
-		authService.validateMailWithAppToken(email, appToken);
+		AuthRefreshResponse authRefreshResponse = authService.refreshToken(appToken, refreshToken);
 
-		memberService.authenticateEmail(email);
-
-		httpServletResponse.sendRedirect(domainProperties.webSite());
-	}
-
-	@GetMapping("signin/{socialType}")
-	public void socialRedirect(
-		@PathVariable("socialType") String type,
-		HttpServletResponse httpServletResponse) throws IOException {
-
-		SocialType socialType = SocialType.getEnum(type);
-		SocialService socialService = socialServiceFactory.find(socialType);
-
-		httpServletResponse.sendRedirect(socialService.getRedirectUrl());
+		return CustomResponse.success(authRefreshResponse);
 	}
 
 	@GetMapping("signin/callback/{socialType}")
-	public ResponseEntity<CustomResponse> socialSignIn(
+	public ResponseEntity<CustomResponse<AuthTokenResponse>> socialSignIn(
 		@PathVariable("socialType") String type,
 		@RequestParam String code
 	) {
@@ -126,6 +111,31 @@ public class AuthController {
 		return CustomResponse.success(authTokenResponse, httpStatus.get());
 	}
 
+	@GetMapping("mail/authenticate/{email}/{appToken}")
+	public void authenticateMail(
+		@PathVariable String email,
+		@PathVariable String appToken,
+		HttpServletResponse httpServletResponse
+	)throws IOException {
+
+		authService.validateMailWithAppToken(email, appToken);
+		memberService.authenticateEmail(email);
+
+		httpServletResponse.sendRedirect(domainProperties.webSite());
+	}
+
+	@GetMapping("signin/{socialType}")
+	public void socialRedirect(
+		@PathVariable("socialType") String type,
+		HttpServletResponse httpServletResponse
+	) throws IOException {
+
+		SocialType socialType = SocialType.getEnum(type);
+		SocialService socialService = socialServiceFactory.find(socialType);
+
+		httpServletResponse.sendRedirect(socialService.getRedirectUrl());
+	}
+
 	private SocialMember socialSignUp(Member member, SocialType socialTYpe) {
 		Member findMember = memberService.findByEmail(member.getEmail())
 			.orElseGet(() -> {
@@ -140,16 +150,7 @@ public class AuthController {
 			.build();
 
 		Long socialMemberId = socialMemberService.save(socialMember);
+
 		return socialMemberService.findOne(socialMemberId);
-	}
-
-	@PostMapping("refresh")
-	public ResponseEntity<CustomResponse> refreshToken(HttpServletRequest request) {
-		String appToken = JwtHeaderUtil.getAccessToken(request);
-
-		String refreshToken = JwtHeaderUtil.getRefreshToken(request);
-
-		AuthRefreshResponse authRefreshResponse = authService.refreshToken(appToken, refreshToken);
-		return CustomResponse.success(authRefreshResponse);
 	}
 }

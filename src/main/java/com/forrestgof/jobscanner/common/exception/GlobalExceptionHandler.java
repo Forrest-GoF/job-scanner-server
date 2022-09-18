@@ -1,6 +1,5 @@
 package com.forrestgof.jobscanner.common.exception;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -13,13 +12,13 @@ import lombok.extern.log4j.Log4j2;
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler
-	public ResponseEntity<CustomResponse> handleUnExpectedException(Exception e) {
+	public CustomResponse<?> handleUnExpectedException(Exception e) {
 		log.error("UnExpected Exception", e);
 		return CustomResponse.error(e);
 	}
 
 	@ExceptionHandler
-	public ResponseEntity<CustomResponse> handleCustomException(CustomException e) {
+	public CustomResponse<?> handleCustomException(CustomException e) {
 		log.error("Custom Exception", e);
 		return CustomResponse.customError(e);
 	}
