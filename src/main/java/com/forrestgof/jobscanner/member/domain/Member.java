@@ -38,6 +38,8 @@ public class Member extends BaseTimeEntity {
 
 	private boolean isAuthenticatedEmail;
 
+	private boolean promotionAgreement;
+
 	@OneToMany(mappedBy = "member")
 	private final List<MemberTag> memberTags = new ArrayList<>();
 
@@ -50,13 +52,15 @@ public class Member extends BaseTimeEntity {
 		String password,
 		String nickname,
 		String imageUrl,
-		boolean isAuthenticatedEmail
+		boolean isAuthenticatedEmail,
+		boolean promotionAgreement
 	) {
 		this.email = email;
 		this.password = password;
 		this.nickname = nickname;
 		this.imageUrl = imageUrl;
 		this.isAuthenticatedEmail = isAuthenticatedEmail;
+		this.promotionAgreement = promotionAgreement;
 	}
 
 	public void authenticateEmail() {
@@ -65,10 +69,12 @@ public class Member extends BaseTimeEntity {
 
 	public void updateMember(
 		@NotNull String nickname,
-		String imageUrl
+		String imageUrl,
+		@NotNull boolean promotionAgreement
 	) {
 		this.nickname = nickname;
 		this.imageUrl = imageUrl;
+		this.promotionAgreement = promotionAgreement;
 	}
 
 	public void updateMemberTags(List<MemberTag> memberTags) {
