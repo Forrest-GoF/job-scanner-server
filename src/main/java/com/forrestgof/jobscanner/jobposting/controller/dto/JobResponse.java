@@ -29,6 +29,10 @@ public class JobResponse {
 
 	boolean bookmarkActivated;
 
+	int views;
+
+	int viewsPerWeek;
+
 	public JobResponse(JobPosting jobPosting) {
 		id = jobPosting.getId();
 		title = jobPosting.getTitle();
@@ -51,5 +55,7 @@ public class JobResponse {
 			.collect(Collectors.toList());
 		if (jobPosting.getJobDetail() != null)
 			jobDetail = new JobDetailDto(jobPosting.getJobDetail());
+		views = jobPosting.getViews();
+		viewsPerWeek = jobPosting.getViewsPerWeek();
 	}
 }
