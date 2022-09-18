@@ -1,10 +1,12 @@
 package com.forrestgof.jobscanner.auth.controller;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpHeaders;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.forrestgof.jobscanner.auth.dto.AuthRefreshResponse;
 import com.forrestgof.jobscanner.auth.dto.AuthTokenResponse;
@@ -88,17 +91,27 @@ public class AuthController {
 		return CustomResponse.success(authService.signIn(findMember));
 	}
 
-	@PostMapping("signin/{socialType}")
+	@GetMapping("signin/{socialType}")
+	public void socialRedirect(
+		@PathVariable("socialType") String type,
+		HttpServletResponse httpServletResponse) throws IOException {
+
+		SocialType socialType = SocialType.getEnum(type);
+		SocialTokenValidator socialTokenValidator = socialTokenValidatorFactory.find(socialType);
+
+		httpServletResponse.sendRedirect(socialTokenValidator.getRedirectUrl());
+	}
+
+	@GetMapping("signin/callback/{socialType}")
 	public ResponseEntity<CustomResponse> socialSignIn(
 		@PathVariable("socialType") String type,
-		HttpServletRequest request
+		@RequestParam String code
 	) {
 		AtomicReference<HttpStatus> httpStatus = new AtomicReference<>(HttpStatus.OK);
 
 		SocialType socialType = SocialType.getEnum(type);
 		SocialTokenValidator socialTokenValidator = socialTokenValidatorFactory.find(socialType);
 
-		String code = JwtHeaderUtil.getCode(request);
 		Member member = socialTokenValidator.generateMemberFromCode(code);
 
 		SocialMember findSocialMember = socialMemberService.findByEmailAndSocialType(member.getEmail(), socialType)
