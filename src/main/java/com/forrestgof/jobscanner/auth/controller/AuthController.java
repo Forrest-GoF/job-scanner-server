@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.forrestgof.jobscanner.auth.controller.dto.SignInRequest;
+import com.forrestgof.jobscanner.auth.controller.dto.SignUpRequest;
 import com.forrestgof.jobscanner.auth.jwt.JwtHeaderUtil;
 import com.forrestgof.jobscanner.auth.service.AuthService;
 import com.forrestgof.jobscanner.auth.service.dto.AuthRefreshResponse;
@@ -26,8 +28,6 @@ import com.forrestgof.jobscanner.auth.social.SocialServiceFactory;
 import com.forrestgof.jobscanner.common.config.properties.DomainProperties;
 import com.forrestgof.jobscanner.common.dto.CustomResponse;
 import com.forrestgof.jobscanner.member.domain.Member;
-import com.forrestgof.jobscanner.member.dto.MemberSignInDto;
-import com.forrestgof.jobscanner.member.dto.MemberSignUpDto;
 import com.forrestgof.jobscanner.member.service.MemberService;
 import com.forrestgof.jobscanner.socialmember.domain.SocialMember;
 import com.forrestgof.jobscanner.socialmember.domain.SocialType;
@@ -49,25 +49,33 @@ public class AuthController {
 	private final DomainProperties domainProperties;
 
 	@PostMapping("signup")
-	public ResponseEntity<CustomResponse> signUp(@RequestBody @Valid MemberSignUpDto memberSignUpDto) {
-		Member findMember = memberService.signUp(memberSignUpDto);
+	public ResponseEntity<CustomResponse> signUp(
+		@RequestBody
+		@Valid
+		SignUpRequest signUpRequest
+	) {
+		Member createdMember = memberService.signUp(signUpRequest);
 
-		AuthTokenResponse authTokenResponse = authService.signIn(findMember);
+		AuthTokenResponse authTokenResponse = authService.signIn(createdMember);
 
 		CustomResponse customResponse = CustomResponse.builder()
 			.status(true)
 			.data(authTokenResponse)
 			.build();
 
-		authService.sendAuthenticationMail(findMember);
+		authService.sendAuthenticationMail(createdMember);
 
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(customResponse);
 	}
 
 	@PostMapping("signin")
-	public ResponseEntity<CustomResponse> signIn(@RequestBody @Valid MemberSignInDto memberSignInDto) {
-		Member findMember = memberService.signIn(memberSignInDto);
+	public ResponseEntity<CustomResponse> signIn(
+		@RequestBody
+		@Valid
+		SignInRequest signInRequest
+	) {
+		Member findMember = memberService.signIn(signInRequest);
 		return CustomResponse.success(authService.signIn(findMember));
 	}
 
