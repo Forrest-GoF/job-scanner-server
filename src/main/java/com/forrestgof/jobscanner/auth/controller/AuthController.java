@@ -1,15 +1,12 @@
 package com.forrestgof.jobscanner.auth.controller;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -51,23 +48,6 @@ public class AuthController {
 	private final SocialTokenValidatorFactory socialTokenValidatorFactory;
 	private final DomainProperties domainProperties;
 
-	@GetMapping("mail/authenticate/{email}/{appToken}")
-	public ResponseEntity<AuthTokenResponse> authenticateMail(
-		@PathVariable String email,
-		@PathVariable String appToken) throws URISyntaxException {
-
-		authService.validateMailWithAppToken(email, appToken);
-
-		memberService.authenticateEmail(email);
-
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setLocation(new URI(domainProperties.webSite()));
-
-		return ResponseEntity.status(HttpStatus.SEE_OTHER)
-			.headers(httpHeaders)
-			.body(null);
-	}
-
 	@PostMapping("signup")
 	public ResponseEntity<CustomResponse> signUp(@RequestBody @Valid MemberSignUpDto memberSignUpDto) {
 		Member findMember = memberService.signUp(memberSignUpDto);
@@ -89,6 +69,19 @@ public class AuthController {
 	public ResponseEntity<CustomResponse> signIn(@RequestBody @Valid MemberSignInDto memberSignInDto) {
 		Member findMember = memberService.signIn(memberSignInDto);
 		return CustomResponse.success(authService.signIn(findMember));
+	}
+
+	@GetMapping("mail/authenticate/{email}/{appToken}")
+	public void authenticateMail(
+		@PathVariable String email,
+		@PathVariable String appToken,
+		HttpServletResponse httpServletResponse) throws IOException {
+
+		authService.validateMailWithAppToken(email, appToken);
+
+		memberService.authenticateEmail(email);
+
+		httpServletResponse.sendRedirect(domainProperties.webSite());
 	}
 
 	@GetMapping("signin/{socialType}")
