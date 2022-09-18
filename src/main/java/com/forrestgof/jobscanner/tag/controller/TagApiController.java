@@ -3,10 +3,10 @@ package com.forrestgof.jobscanner.tag.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.forrestgof.jobscanner.common.dto.CustomResponse;
@@ -23,7 +23,8 @@ public class TagApiController {
 	private final TagService tagService;
 
 	@GetMapping
-	public ResponseEntity<CustomResponse> getTags() {
+	@ResponseStatus(HttpStatus.OK)
+	public CustomResponse<List<String>> getTags() {
 		List<String> tags = tagService.findAll()
 			.stream()
 			.map(Tag::getName)

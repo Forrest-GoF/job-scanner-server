@@ -5,13 +5,13 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.forrestgof.jobscanner.auth.exception.AuthCustomException;
@@ -39,11 +39,15 @@ public class JobPostingApiController {
 	private final AuthService authService;
 
 	@GetMapping("")
-	public ResponseEntity<CustomResponse> getFilterJobs(JobSearchCondition jobSearchCondition) {
+	@ResponseStatus(HttpStatus.OK)
+	public CustomResponse<Result> getFilterJobs(JobSearchCondition jobSearchCondition) {
 		List<JobPosting> findJobs = jobPostingService.findFilterJobs(jobSearchCondition);
+
 		List<JobPreviewResponse> previewDtos = parseToDtoList(findJobs);
 
-		return CustomResponse.success(new Result(previewDtos, previewDtos.size()));
+		Result result = new Result(previewDtos, previewDtos.size());
+
+		return CustomResponse.success(result);
 	}
 
 	record Result(
@@ -54,13 +58,14 @@ public class JobPostingApiController {
 	}
 
 	@GetMapping("{id}")
-	@Transactional
-	public ResponseEntity<CustomResponse> getJob(
+	@ResponseStatus(HttpStatus.OK)
+	public CustomResponse<JobResponse> getJob(
 		HttpServletRequest request,
 		@PathVariable Long id
 	) {
 		JobPosting jobPosting = jobPostingService.findOne(id);
 		jobPosting.increaseViews();
+		jobPostingService.save(jobPosting);
 
 		JobResponse jobResponse = new JobResponse(jobPosting);
 
@@ -75,7 +80,8 @@ public class JobPostingApiController {
 
 
 	@GetMapping("bookmarks")
-	public ResponseEntity<CustomResponse> getLike(
+	@ResponseStatus(HttpStatus.OK)
+	public CustomResponse<List<JobPreviewResponse>> getLike(
 		HttpServletRequest request
 	) {
 		Member member = getMember(request);
@@ -87,7 +93,8 @@ public class JobPostingApiController {
 	}
 
 	@PutMapping("bookmarks/{jobPostingId}")
-	public ResponseEntity<CustomResponse> updateLike(
+	@ResponseStatus(HttpStatus.OK)
+	public CustomResponse<?> updateLike(
 		HttpServletRequest request,
 		@PathVariable Long jobPostingId,
 		@RequestBody BookmarkJobRequest bookmarkJobRequest
