@@ -20,6 +20,12 @@ public class JobPreviewResponse {
 	String postedAt;
 	String expiredAt;
 	List<String> tags;
+	int views;
+	boolean bookmarkActivated;
+
+	public void activateBookmark() {
+		this.bookmarkActivated = true;
+	}
 
 	public JobPreviewResponse(JobPosting jobPosting) {
 		id = jobPosting.getId();
@@ -36,5 +42,6 @@ public class JobPreviewResponse {
 			.map(JobTag::getTag)
 			.map(Tag::getName)
 			.collect(Collectors.toList());
+		views = jobPosting.getViews();
 	}
 }
