@@ -68,18 +68,16 @@ public class AuthController {
 
 	@PostMapping("signin")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public CustomResponse<?> signIn(
+	public void signIn(
 		@RequestBody
 		@Valid
 		SignInRequest signInRequest
 	) {
 		memberService.signIn(signInRequest);
-
-		return CustomResponse.success();
 	}
 
 	@PostMapping("refresh")
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.CREATED)
 	public CustomResponse<AuthRefreshResponse> refreshToken(HttpServletRequest request) {
 		String appToken = JwtHeaderUtil.getAccessToken(request);
 		String refreshToken = JwtHeaderUtil.getRefreshToken(request);
@@ -91,11 +89,12 @@ public class AuthController {
 
 	@GetMapping("signin/callback/{socialType}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public CustomResponse<?> socialSignIn(
+	public void socialSignIn(
 		@PathVariable("socialType") String type,
 		@RequestParam String code,
 		HttpServletResponse response
 	) throws IOException {
+
 		SocialType socialType = SocialType.getEnum(type);
 		SocialService socialService = socialServiceFactory.find(socialType);
 
@@ -111,8 +110,6 @@ public class AuthController {
 		response.sendRedirect(domainProperties.webSite() +
 			"/oauth/callback/" + socialType.getName() +
 			"?appToken=" + authTokenResponse.getAppToken());
-
-		return CustomResponse.success();
 	}
 
 	@ExceptionHandler(SocialMemberException.class)
@@ -131,7 +128,7 @@ public class AuthController {
 
 	@GetMapping("mail/authenticate/{email}/{appToken}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public CustomResponse<?> authenticateMail(
+	public void authenticateMail(
 		@PathVariable String email,
 		@PathVariable String appToken,
 		HttpServletResponse response
@@ -141,13 +138,11 @@ public class AuthController {
 		memberService.authenticateEmail(email);
 
 		response.sendRedirect(domainProperties.webSite());
-
-		return CustomResponse.success();
 	}
 
 	@GetMapping("signin/{socialType}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public CustomResponse<?> socialRedirect(
+	public void socialRedirect(
 		@PathVariable("socialType") String type,
 		HttpServletResponse response
 	) throws IOException {
@@ -156,8 +151,6 @@ public class AuthController {
 		SocialService socialService = socialServiceFactory.find(socialType);
 
 		response.sendRedirect(socialService.getRedirectUrl());
-
-		return CustomResponse.success();
 	}
 
 	private SocialMember socialSignUp(Member member, SocialType socialTYpe) {

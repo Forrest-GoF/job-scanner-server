@@ -111,8 +111,8 @@ public class JobPostingApiController {
 	}
 
 	@PutMapping("bookmarks/{jobPostingId}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public CustomResponse<?> updateBookmark(
+	@ResponseStatus(HttpStatus.CREATED)
+	public CustomResponse<BookmarkJobRequest> updateBookmark(
 		HttpServletRequest request,
 		@PathVariable Long jobPostingId,
 		@RequestBody BookmarkJobRequest bookmarkJobRequest
@@ -124,7 +124,7 @@ public class JobPostingApiController {
 
 		bookmarkJobService.updateLike(jobPosting, member, bookmarkJobRequest);
 
-		return CustomResponse.success();
+		return CustomResponse.success(bookmarkJobRequest);
 	}
 
 	private List<JobPreviewResponse> parseToDtoList(List<JobPosting> find) {
