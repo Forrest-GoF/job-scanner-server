@@ -81,7 +81,7 @@ public class JobPostingApiController {
 
 	@GetMapping("bookmarks")
 	@ResponseStatus(HttpStatus.OK)
-	public CustomResponse<List<JobPreviewResponse>> getLike(
+	public CustomResponse<List<JobPreviewResponse>> getBookmark(
 		HttpServletRequest request
 	) {
 		Member member = getMember(request);
@@ -94,7 +94,7 @@ public class JobPostingApiController {
 
 	@PutMapping("bookmarks/{jobPostingId}")
 	@ResponseStatus(HttpStatus.OK)
-	public CustomResponse<?> updateLike(
+	public CustomResponse<?> updateBookmark(
 		HttpServletRequest request,
 		@PathVariable Long jobPostingId,
 		@RequestBody BookmarkJobRequest bookmarkJobRequest
