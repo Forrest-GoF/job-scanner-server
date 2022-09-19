@@ -92,27 +92,34 @@ public class AuthController {
 	@ResponseStatus(HttpStatus.OK)
 	public CustomResponse<AuthTokenResponse> socialSignIn(
 		@PathVariable("socialType") String type,
-		@RequestParam String code
-	) {
+		@RequestParam String code,
+		HttpServletResponse httpServletResponse
+	) throws IOException {
 		SocialType socialType = SocialType.getEnum(type);
 		SocialService socialService = socialServiceFactory.find(socialType);
 
 		Member member = socialService.generateMemberFromCode(code);
 
 		SocialMember findSocialMember = socialMemberService.findByEmailAndSocialType(member.getEmail(), socialType)
-			.orElseThrow(() -> new SocialMemberException(member, socialType));
+			.orElseThrow(() -> new SocialMemberException(member, socialType, httpServletResponse));
 
 		AuthTokenResponse authTokenResponse = authService.signIn(findSocialMember);
+
+		httpServletResponse.sendRedirect(domainProperties.webSite() + "/oauth/callback/" + type);
 
 		return CustomResponse.success(authTokenResponse);
 	}
 
 	@ExceptionHandler(SocialMemberException.class)
 	@ResponseStatus(HttpStatus.CREATED)
-	public CustomResponse<AuthTokenResponse> handleException(SocialMemberException e) {
+	public CustomResponse<AuthTokenResponse> handleException(SocialMemberException e) throws IOException {
 		SocialMember findSocialMember = socialSignUp(e.getMember(), e.getSocialType());
 
 		AuthTokenResponse authTokenResponse = authService.signIn(findSocialMember);
+
+		HttpServletResponse httpServletResponse = e.getHttpServletResponse();
+		httpServletResponse.sendRedirect(
+			domainProperties.webSite() + "/oauth/callback/" + e.getSocialType().getName());
 
 		return CustomResponse.success(authTokenResponse);
 	}
@@ -122,7 +129,7 @@ public class AuthController {
 		@PathVariable String email,
 		@PathVariable String appToken,
 		HttpServletResponse httpServletResponse
-	)throws IOException {
+	) throws IOException {
 
 		authService.validateMailWithAppToken(email, appToken);
 		memberService.authenticateEmail(email);
