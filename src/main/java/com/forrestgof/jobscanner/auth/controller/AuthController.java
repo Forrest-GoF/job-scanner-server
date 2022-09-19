@@ -2,6 +2,7 @@ package com.forrestgof.jobscanner.auth.controller;
 
 import java.io.IOException;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -90,7 +91,7 @@ public class AuthController {
 
 	@GetMapping("signin/callback/{socialType}")
 	@ResponseStatus(HttpStatus.OK)
-	public CustomResponse<AuthTokenResponse> socialSignIn(
+	public void socialSignIn(
 		@PathVariable("socialType") String type,
 		@RequestParam String code,
 		HttpServletResponse httpServletResponse
@@ -105,9 +106,11 @@ public class AuthController {
 
 		AuthTokenResponse authTokenResponse = authService.signIn(findSocialMember);
 
-		httpServletResponse.sendRedirect(domainProperties.webSite() + "/oauth/callback/" + type);
-
-		return CustomResponse.success(authTokenResponse);
+		Cookie refreshTokenCookie = new Cookie("refreshToken", authTokenResponse.getRefreshToken());
+		httpServletResponse.addCookie(refreshTokenCookie);
+		httpServletResponse.sendRedirect(domainProperties.webSite() +
+			"/oauth/callback/" + socialType.getName() +
+			"?appToken=" + authTokenResponse.getAppToken());
 	}
 
 	@ExceptionHandler(SocialMemberException.class)
