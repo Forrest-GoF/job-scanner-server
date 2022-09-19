@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -21,7 +21,7 @@ import com.forrestgof.jobscanner.member.domain.Member;
 
 import reactor.core.publisher.Mono;
 
-@Component
+@Service
 public class GoogleService implements SocialService {
 
 	private final String tokenUrl;
