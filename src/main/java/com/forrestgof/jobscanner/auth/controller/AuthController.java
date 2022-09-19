@@ -91,7 +91,7 @@ public class AuthController {
 
 	@GetMapping("signin/callback/{socialType}")
 	@ResponseStatus(HttpStatus.OK)
-	public void socialSignIn(
+	public CustomResponse socialSignIn(
 		@PathVariable("socialType") String type,
 		@RequestParam String code,
 		HttpServletResponse response
@@ -111,6 +111,8 @@ public class AuthController {
 		response.sendRedirect(domainProperties.webSite() +
 			"/oauth/callback/" + socialType.getName() +
 			"?appToken=" + authTokenResponse.getAppToken());
+
+		return CustomResponse.success();
 	}
 
 	@ExceptionHandler(SocialMemberException.class)
