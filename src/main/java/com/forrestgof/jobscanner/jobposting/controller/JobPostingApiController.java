@@ -1,7 +1,9 @@
 package com.forrestgof.jobscanner.jobposting.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,10 +44,25 @@ public class JobPostingApiController {
 
 	@GetMapping("")
 	@ResponseStatus(HttpStatus.OK)
-	public CustomResponse<Result> getFilterJobs(JobSearchCondition jobSearchCondition) {
+	public CustomResponse<Result> getFilterJobs(
+		HttpServletRequest request,
+		JobSearchCondition jobSearchCondition
+	) {
 		List<JobPosting> findJobs = jobPostingService.findFilterJobs(jobSearchCondition);
 
 		List<JobPreviewResponse> previewDtos = parseToDtoList(findJobs);
+
+		Set<Long> bookmarkJobs = getMember(request)
+			.map(bookmarkJobService::findBookmarkJobPosting)
+			.orElseGet(ArrayList::new)
+			.stream()
+			.map(JobPosting::getId)
+			.collect(Collectors.toSet());
+
+		previewDtos.stream()
+			.filter(jobPreviewResponse ->
+				bookmarkJobs.contains(jobPreviewResponse.getId()))
+			.forEach(JobPreviewResponse::activateBookmark);
 
 		Result result = new Result(previewDtos, previewDtos.size());
 
