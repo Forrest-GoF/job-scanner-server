@@ -50,7 +50,7 @@ public class JobPostingApiController {
 	) {
 		List<JobPosting> findJobs = jobPostingService.findFilterJobs(jobSearchCondition);
 
-		List<JobPreviewResponse> previewDtos = parseToDtoList(findJobs);
+		List<JobPreviewResponse> jobPreviewResponses = parseToDtoList(findJobs);
 
 		Set<Long> bookmarkJobs = getMember(request)
 			.map(bookmarkJobService::findBookmarkJobPosting)
@@ -59,12 +59,12 @@ public class JobPostingApiController {
 			.map(JobPosting::getId)
 			.collect(Collectors.toSet());
 
-		previewDtos.stream()
+		jobPreviewResponses.stream()
 			.filter(jobPreviewResponse ->
 				bookmarkJobs.contains(jobPreviewResponse.getId()))
 			.forEach(JobPreviewResponse::activateBookmark);
 
-		Result result = new Result(previewDtos, previewDtos.size());
+		Result result = new Result(jobPreviewResponses, jobPreviewResponses.size());
 
 		return CustomResponse.success(result);
 	}
