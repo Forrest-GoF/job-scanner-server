@@ -94,7 +94,7 @@ public class AuthController {
 	public void socialSignIn(
 		@PathVariable("socialType") String type,
 		@RequestParam String code,
-		HttpServletResponse httpServletResponse
+		HttpServletResponse response
 	) throws IOException {
 		SocialType socialType = SocialType.getEnum(type);
 		SocialService socialService = socialServiceFactory.find(socialType);
@@ -102,13 +102,13 @@ public class AuthController {
 		Member member = socialService.generateMemberFromCode(code);
 
 		SocialMember findSocialMember = socialMemberService.findByEmailAndSocialType(member.getEmail(), socialType)
-			.orElseThrow(() -> new SocialMemberException(member, socialType, httpServletResponse));
+			.orElseThrow(() -> new SocialMemberException(member, socialType, response));
 
 		AuthTokenResponse authTokenResponse = authService.signIn(findSocialMember);
 
 		Cookie refreshTokenCookie = new Cookie("refreshToken", authTokenResponse.getRefreshToken());
-		httpServletResponse.addCookie(refreshTokenCookie);
-		httpServletResponse.sendRedirect(domainProperties.webSite() +
+		response.addCookie(refreshTokenCookie);
+		response.sendRedirect(domainProperties.webSite() +
 			"/oauth/callback/" + socialType.getName() +
 			"?appToken=" + authTokenResponse.getAppToken());
 	}
@@ -120,8 +120,8 @@ public class AuthController {
 
 		AuthTokenResponse authTokenResponse = authService.signIn(findSocialMember);
 
-		HttpServletResponse httpServletResponse = e.getHttpServletResponse();
-		httpServletResponse.sendRedirect(
+		HttpServletResponse response = e.getResponse();
+		response.sendRedirect(
 			domainProperties.webSite() + "/oauth/callback/" + e.getSocialType().getName());
 
 		return CustomResponse.success(authTokenResponse);
@@ -131,25 +131,25 @@ public class AuthController {
 	public void authenticateMail(
 		@PathVariable String email,
 		@PathVariable String appToken,
-		HttpServletResponse httpServletResponse
+		HttpServletResponse response
 	) throws IOException {
 
 		authService.validateMailWithAppToken(email, appToken);
 		memberService.authenticateEmail(email);
 
-		httpServletResponse.sendRedirect(domainProperties.webSite());
+		response.sendRedirect(domainProperties.webSite());
 	}
 
 	@GetMapping("signin/{socialType}")
 	public void socialRedirect(
 		@PathVariable("socialType") String type,
-		HttpServletResponse httpServletResponse
+		HttpServletResponse response
 	) throws IOException {
 
 		SocialType socialType = SocialType.getEnum(type);
 		SocialService socialService = socialServiceFactory.find(socialType);
 
-		httpServletResponse.sendRedirect(socialService.getRedirectUrl());
+		response.sendRedirect(socialService.getRedirectUrl());
 	}
 
 	private SocialMember socialSignUp(Member member, SocialType socialTYpe) {
