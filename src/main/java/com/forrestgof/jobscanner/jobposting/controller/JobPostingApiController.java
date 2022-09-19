@@ -93,7 +93,7 @@ public class JobPostingApiController {
 	}
 
 	@PutMapping("bookmarks/{jobPostingId}")
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public CustomResponse<?> updateBookmark(
 		HttpServletRequest request,
 		@PathVariable Long jobPostingId,
