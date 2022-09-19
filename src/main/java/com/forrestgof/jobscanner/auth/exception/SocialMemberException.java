@@ -13,5 +13,5 @@ import lombok.Getter;
 public class SocialMemberException extends RuntimeException {
 	Member member;
 	SocialType socialType;
-	HttpServletResponse httpServletResponse;
+	HttpServletResponse response;
 }
