@@ -39,5 +39,14 @@ public class CustomResponse<T> {
 
 		return customResponse;
 	}
+
+	public static CustomResponse<?> errorWithMessage(String message) {
+		CustomResponse<?> customResponse = new CustomResponse<>();
+
+		customResponse.status = false;
+		customResponse.message = message;
+
+		return customResponse;
+	}
 }
 
