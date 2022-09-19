@@ -26,12 +26,13 @@ public class JobResponse {
 	String summary;
 	List<String> tags;
 	JobDetailDto jobDetail;
-
+	int views;
+	int viewsPerWeek;
 	boolean bookmarkActivated;
 
-	int views;
-
-	int viewsPerWeek;
+	public void activateBookmark() {
+		this.bookmarkActivated = true;
+	}
 
 	public JobResponse(JobPosting jobPosting) {
 		id = jobPosting.getId();
