@@ -1,5 +1,7 @@
 package com.forrestgof.jobscanner.member.exception;
 
+import org.springframework.http.HttpStatus;
+
 import com.forrestgof.jobscanner.common.exception.CustomException;
 
 public class MemberCustomException extends CustomException {
@@ -7,7 +9,11 @@ public class MemberCustomException extends CustomException {
 		super(message);
 	}
 
+	public MemberCustomException(String message, HttpStatus httpStatus) {
+		super(message, httpStatus);
+	}
+
 	public static MemberCustomException notfound() {
-		return new MemberCustomException("Not found Member");
+		return new MemberCustomException("Not found Member", HttpStatus.NOT_FOUND);
 	}
 }
