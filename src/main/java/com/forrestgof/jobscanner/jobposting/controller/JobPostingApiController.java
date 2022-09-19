@@ -1,6 +1,7 @@
 package com.forrestgof.jobscanner.jobposting.controller;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +27,7 @@ import com.forrestgof.jobscanner.jobposting.domain.JobPosting;
 import com.forrestgof.jobscanner.jobposting.service.BookmarkJobService;
 import com.forrestgof.jobscanner.jobposting.service.JobPostingService;
 import com.forrestgof.jobscanner.member.domain.Member;
+import com.forrestgof.jobscanner.member.exception.MemberCustomException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -69,11 +71,8 @@ public class JobPostingApiController {
 
 		JobResponse jobResponse = new JobResponse(jobPosting);
 
-		try {
-			Member member = getMember(request);
-			boolean activated = bookmarkJobService.checkActivation(jobPosting, member);
-			jobResponse.setBookmarkActivated(activated);
-		} catch (AuthCustomException ignored) { }
+		getMember(request)
+			.ifPresent(member -> jobResponse.activateBookmark());
 
 		return CustomResponse.success(jobResponse);
 	}
@@ -84,10 +83,12 @@ public class JobPostingApiController {
 	public CustomResponse<List<JobPreviewResponse>> getBookmark(
 		HttpServletRequest request
 	) {
-		Member member = getMember(request);
+		Member member = getMember(request)
+			.orElseThrow(MemberCustomException::notfound);
 
 		List<JobPosting> likeJobs = bookmarkJobService.findBookmarkJobPosting(member);
 		List<JobPreviewResponse> jobPreviewResponses = parseToDtoList(likeJobs);
+		jobPreviewResponses.forEach(JobPreviewResponse::activateBookmark);
 
 		return CustomResponse.success(jobPreviewResponses);
 	}
@@ -99,7 +100,9 @@ public class JobPostingApiController {
 		@PathVariable Long jobPostingId,
 		@RequestBody BookmarkJobRequest bookmarkJobRequest
 	) {
-		Member member = getMember(request);
+		Member member = getMember(request)
+			.orElseThrow(MemberCustomException::notfound);
+
 		JobPosting jobPosting = jobPostingService.findOne(jobPostingId);
 
 		bookmarkJobService.updateLike(jobPosting, member, bookmarkJobRequest);
@@ -113,8 +116,13 @@ public class JobPostingApiController {
 			.collect(Collectors.toList());
 	}
 
-	private Member getMember(HttpServletRequest request) {
-		String appToken = JwtHeaderUtil.getAccessToken(request);
-		return authService.getMemberFromAppToken(appToken);
+	private Optional<Member> getMember(HttpServletRequest request) {
+		try {
+			String appToken = JwtHeaderUtil.getAccessToken(request);
+			Member member = authService.getMemberFromAppToken(appToken);
+			return Optional.of(member);
+		} catch (AuthCustomException e) {
+			return Optional.empty();
+		}
 	}
 }
