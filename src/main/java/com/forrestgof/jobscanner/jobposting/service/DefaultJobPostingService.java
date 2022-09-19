@@ -1,13 +1,13 @@
 package com.forrestgof.jobscanner.jobposting.service;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.forrestgof.jobscanner.jobposting.controller.dto.JobSearchCondition;
 import com.forrestgof.jobscanner.jobposting.domain.JobPosting;
+import com.forrestgof.jobscanner.jobposting.exception.JobPostingCustomException;
 import com.forrestgof.jobscanner.jobposting.repository.JobPostingRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class DefaultJobPostingService implements JobPostingService {
 	@Override
 	public JobPosting findOne(Long id) {
 		return jobPostingRepository.findById(id)
-			.orElseThrow();
+			.orElseThrow(JobPostingCustomException::notfound);
 	}
 
 	@Override
