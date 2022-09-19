@@ -1,6 +1,7 @@
 package com.forrestgof.jobscanner.common.exception;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -17,13 +18,15 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	public CustomResponse<?> handleUnExpectedException(Exception e) {
 		log.error("UnExpected Exception", e);
+
 		return CustomResponse.error(e);
 	}
 
 	@ExceptionHandler
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	public CustomResponse<?> handleCustomException(CustomException e) {
+	public ResponseEntity<CustomResponse<?>> handleCustomException(CustomException e) {
 		log.error("Custom Exception", e);
-		return CustomResponse.customError(e);
+
+		return ResponseEntity.status(e.getHttpStatus())
+			.body(CustomResponse.customError(e));
 	}
 }
