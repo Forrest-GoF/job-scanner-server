@@ -42,7 +42,7 @@ public class MemberApiController {
 	}
 
 	@PatchMapping("")
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public CustomResponse<?> patchMember(
 		HttpServletRequest request,
 		@RequestBody MemberPatchRequest memberUpdateRequest
@@ -57,7 +57,7 @@ public class MemberApiController {
 	}
 
 	@DeleteMapping("")
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public CustomResponse<?> deleteMember(HttpServletRequest request) {
 		String appToken = JwtHeaderUtil.getAccessToken(request);
 

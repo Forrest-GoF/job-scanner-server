@@ -67,7 +67,7 @@ public class AuthController {
 	}
 
 	@PostMapping("signin")
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public CustomResponse<?> signIn(
 		@RequestBody
 		@Valid
@@ -90,8 +90,8 @@ public class AuthController {
 	}
 
 	@GetMapping("signin/callback/{socialType}")
-	@ResponseStatus(HttpStatus.OK)
-	public CustomResponse socialSignIn(
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public CustomResponse<?> socialSignIn(
 		@PathVariable("socialType") String type,
 		@RequestParam String code,
 		HttpServletResponse response
@@ -130,8 +130,8 @@ public class AuthController {
 	}
 
 	@GetMapping("mail/authenticate/{email}/{appToken}")
-	@ResponseStatus(HttpStatus.OK)
-	public CustomResponse authenticateMail(
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public CustomResponse<?> authenticateMail(
 		@PathVariable String email,
 		@PathVariable String appToken,
 		HttpServletResponse response
@@ -146,8 +146,8 @@ public class AuthController {
 	}
 
 	@GetMapping("signin/{socialType}")
-	@ResponseStatus(HttpStatus.OK)
-	public CustomResponse socialRedirect(
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public CustomResponse<?> socialRedirect(
 		@PathVariable("socialType") String type,
 		HttpServletResponse response
 	) throws IOException {
