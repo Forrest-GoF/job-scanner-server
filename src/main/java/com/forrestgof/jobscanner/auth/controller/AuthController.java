@@ -130,7 +130,8 @@ public class AuthController {
 	}
 
 	@GetMapping("mail/authenticate/{email}/{appToken}")
-	public void authenticateMail(
+	@ResponseStatus(HttpStatus.OK)
+	public CustomResponse authenticateMail(
 		@PathVariable String email,
 		@PathVariable String appToken,
 		HttpServletResponse response
@@ -140,10 +141,13 @@ public class AuthController {
 		memberService.authenticateEmail(email);
 
 		response.sendRedirect(domainProperties.webSite());
+
+		return CustomResponse.success();
 	}
 
 	@GetMapping("signin/{socialType}")
-	public void socialRedirect(
+	@ResponseStatus(HttpStatus.OK)
+	public CustomResponse socialRedirect(
 		@PathVariable("socialType") String type,
 		HttpServletResponse response
 	) throws IOException {
@@ -152,6 +156,8 @@ public class AuthController {
 		SocialService socialService = socialServiceFactory.find(socialType);
 
 		response.sendRedirect(socialService.getRedirectUrl());
+
+		return CustomResponse.success();
 	}
 
 	private SocialMember socialSignUp(Member member, SocialType socialTYpe) {
