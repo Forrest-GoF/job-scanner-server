@@ -13,14 +13,6 @@ public class CustomResponse<T> {
 	String message;
 	T data;
 
-	public static CustomResponse<?> success() {
-		CustomResponse<?> customResponse = new CustomResponse<>();
-
-		customResponse.status = true;
-
-		return customResponse;
-	}
-
 	public static <T> CustomResponse<T> success(T data) {
 		CustomResponse<T> customResponse = new CustomResponse<>();
 

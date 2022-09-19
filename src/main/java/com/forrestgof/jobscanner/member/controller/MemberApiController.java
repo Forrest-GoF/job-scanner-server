@@ -42,8 +42,8 @@ public class MemberApiController {
 	}
 
 	@PatchMapping("")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public CustomResponse<?> patchMember(
+	@ResponseStatus(HttpStatus.CREATED)
+	public CustomResponse<MemberResponse> patchMember(
 		HttpServletRequest request,
 		@RequestBody MemberPatchRequest memberUpdateRequest
 	) {
@@ -53,19 +53,19 @@ public class MemberApiController {
 
 		memberService.updateMember(member.getId(), memberUpdateRequest);
 
-		return CustomResponse.success();
+		MemberResponse memberResponse = MemberResponse.from(member);
+
+		return CustomResponse.success(memberResponse);
 	}
 
 	@DeleteMapping("")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public CustomResponse<?> deleteMember(HttpServletRequest request) {
+	public void deleteMember(HttpServletRequest request) {
 		String appToken = JwtHeaderUtil.getAccessToken(request);
 
 		Member member = authService.getMemberFromAppToken(appToken);
 
 		authService.deleteSession(member);
 		memberService.deleteMember(member.getId());
-
-		return CustomResponse.success();
 	}
 }
