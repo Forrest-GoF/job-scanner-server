@@ -35,7 +35,7 @@ public class DefaultAuthService implements AuthService {
 	private final SessionRepository sessionRepository;
 	private final AuthTokenProvider authTokenProvider;
 	private final AuthProperties authProperties;
-	
+
 	private final MailService mailService;
 	private final TemplateEngine templateEngine;
 	private final DomainProperties domainProperties;

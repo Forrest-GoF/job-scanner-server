@@ -3,6 +3,7 @@ package com.forrestgof.jobscanner.common.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -37,5 +38,17 @@ public class GlobalExceptionHandler {
 		log.error("Http Request Method Not Supported Exception", e);
 
 		return CustomResponse.errorWithMessage("Http request method is not supported");
+	}
+
+	@ExceptionHandler
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public CustomResponse<?> handlerMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+		log.error("MethodArgumentNotValidException", e);
+
+		return CustomResponse.errorWithMessage(
+			e.getBindingResult()
+				.getAllErrors()
+				.get(0)
+				.getDefaultMessage());
 	}
 }
