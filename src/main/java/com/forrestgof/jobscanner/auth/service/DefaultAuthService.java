@@ -6,6 +6,8 @@ import java.util.UUID;
 import javax.servlet.http.Cookie;
 
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import com.forrestgof.jobscanner.auth.exception.AuthCustomException;
 import com.forrestgof.jobscanner.auth.jwt.AuthToken;
@@ -13,6 +15,8 @@ import com.forrestgof.jobscanner.auth.jwt.AuthTokenProvider;
 import com.forrestgof.jobscanner.auth.service.dto.AuthRefreshResponse;
 import com.forrestgof.jobscanner.auth.service.dto.AuthTokenResponse;
 import com.forrestgof.jobscanner.common.config.properties.AuthProperties;
+import com.forrestgof.jobscanner.common.config.properties.DomainProperties;
+import com.forrestgof.jobscanner.mail.dto.MailDto;
 import com.forrestgof.jobscanner.mail.service.MailService;
 import com.forrestgof.jobscanner.member.domain.Member;
 import com.forrestgof.jobscanner.session.domain.Session;
@@ -30,8 +34,11 @@ public class DefaultAuthService implements AuthService {
 	private final SessionService sessionService;
 	private final SessionRepository sessionRepository;
 	private final AuthTokenProvider authTokenProvider;
-	private final MailService mailService;
 	private final AuthProperties authProperties;
+	
+	private final MailService mailService;
+	private final TemplateEngine templateEngine;
+	private final DomainProperties domainProperties;
 
 	@Override
 	public AuthTokenResponse signIn(Member findMember) {
@@ -68,6 +75,24 @@ public class DefaultAuthService implements AuthService {
 
 	@Override
 	public void sendAuthenticationMail(Member member) {
+		String appToken = createAppTokenWithMember(member);
+
+		Context context = new Context();
+		context.setVariable("link",
+			domainProperties.apiServer() + "/auth/mail/authenticate/" + member.getEmail() + "/" + appToken);
+
+		String authenticationMailTemplate = templateEngine.process("authenticationMailTemplate", context);
+
+		MailDto mailDto = MailDto.builder()
+			.title("[JobScanner]가입을 환영합니다.")
+			.address(member.getEmail())
+			.content(authenticationMailTemplate)
+			.build();
+
+		mailService.send(mailDto);
+	}
+
+	private String createAppTokenWithMember(Member member) {
 		Session session = sessionService.findByMember(member);
 
 		String newAppTokenUuid = UUID.randomUUID().toString();
@@ -81,10 +106,8 @@ public class DefaultAuthService implements AuthService {
 
 		sessionService.save(newSession);
 
-		String newAppToken = authTokenProvider.createUserAuthToken(newAppTokenUuid, refreshTokenUuid)
+		return authTokenProvider.createUserAuthToken(newAppTokenUuid, refreshTokenUuid)
 			.getAppToken();
-
-		mailService.sendAuthenticationMail(member.getEmail(), newAppToken);
 	}
 
 	@Override
