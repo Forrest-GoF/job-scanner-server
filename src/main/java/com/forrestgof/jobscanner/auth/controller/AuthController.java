@@ -105,7 +105,7 @@ public class AuthController {
 
 		AuthTokenResponse authTokenResponse = authService.signIn(findSocialMember);
 
-		Cookie refreshTokenCookie = new Cookie("refreshToken", authTokenResponse.getRefreshToken());
+		Cookie refreshTokenCookie = authService.getCookieFromRefreshToken(authTokenResponse.getRefreshToken());
 		response.addCookie(refreshTokenCookie);
 		response.sendRedirect(domainProperties.webSite() +
 			"/oauth/callback/" + socialType.getName() +
