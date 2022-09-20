@@ -3,6 +3,8 @@ package com.forrestgof.jobscanner.auth.service;
 import java.util.List;
 import java.util.UUID;
 
+import javax.servlet.http.Cookie;
+
 import org.springframework.stereotype.Service;
 
 import com.forrestgof.jobscanner.auth.exception.AuthCustomException;
@@ -10,6 +12,7 @@ import com.forrestgof.jobscanner.auth.jwt.AuthToken;
 import com.forrestgof.jobscanner.auth.jwt.AuthTokenProvider;
 import com.forrestgof.jobscanner.auth.service.dto.AuthRefreshResponse;
 import com.forrestgof.jobscanner.auth.service.dto.AuthTokenResponse;
+import com.forrestgof.jobscanner.common.config.properties.AuthProperties;
 import com.forrestgof.jobscanner.mail.service.MailService;
 import com.forrestgof.jobscanner.member.domain.Member;
 import com.forrestgof.jobscanner.session.domain.Session;
@@ -28,6 +31,7 @@ public class DefaultAuthService implements AuthService {
 	private final SessionRepository sessionRepository;
 	private final AuthTokenProvider authTokenProvider;
 	private final MailService mailService;
+	private final AuthProperties authProperties;
 
 	@Override
 	public AuthTokenResponse signIn(Member findMember) {
@@ -146,6 +150,20 @@ public class DefaultAuthService implements AuthService {
 	}
 
 	private void deleteAuthToken(AuthToken authToken) {
+	}
+
+	@Override
+	public Cookie getCookieFromRefreshToken(String refreshToken) {
+		Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+
+		String refreshTokenExpiry = authProperties.jwt().refreshTokenExpiry();
+		refreshTokenCookie.setMaxAge(Integer.parseInt(refreshTokenExpiry) / 1000);
+
+		refreshTokenCookie.setPath("/");
+
+		refreshTokenCookie.setHttpOnly(true);
+
+		return refreshTokenCookie;
 	}
 
 	@Override
