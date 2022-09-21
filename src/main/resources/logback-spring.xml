@@ -7,10 +7,7 @@
                     converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
     <property name="LOG_PATTERN"
               value="${LOG_PATTERN:-%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}}){blue} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
-
-    <springProperty name="AWS_ACCESS_KEY" source="cloud.aws.credentials.access-key"/>
-    <springProperty name="AWS_SECRET_KEY" source="cloud.aws.credentials.secret-key"/>
-
+    
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>${LOG_PATTERN}</Pattern>
@@ -19,10 +16,10 @@
 
     <appender name="aws_cloud_watch_log" class="ca.pjer.logback.AwsLogsAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>ERROR</level>
+            <level>INFO</level>
         </filter>
         <layout>
-            <pattern>[%thread] [%date] [%level] [%file:%line] - %msg%n</pattern>
+            <pattern>[%thread] [traceId=%X{traceId}] %highlight(%-5level) %msg%n</pattern>
         </layout>
         <logGroupName>jobscanner-log</logGroupName>
         <logStreamUuidPrefix>jobscanner-log-</logStreamUuidPrefix>
@@ -31,14 +28,35 @@
         <maxFlushTimeMillis>30000</maxFlushTimeMillis>
         <maxBlockTimeMillis>5000</maxBlockTimeMillis>
         <retentionTimeDays>0</retentionTimeDays>
-        <accessKeyId>${AWS_ACCESS_KEY}</accessKeyId>
-        <secretAccessKey>${AWS_SECRET_KEY}</secretAccessKey>
     </appender>
+
+    <appender name="aws_cloud_watch_error" class="ca.pjer.logback.AwsLogsAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <layout>
+            <pattern>[%thread] [traceId=%X{traceId}] %highlight(%-5level) %msg%n</pattern>
+        </layout>
+        <logGroupName>jobscanner-error</logGroupName>
+        <logStreamUuidPrefix>jobscanner-error-</logStreamUuidPrefix>
+        <logRegion>ap-northeast-2</logRegion>
+        <maxBatchLogEvents>10</maxBatchLogEvents>
+        <maxFlushTimeMillis>30000</maxFlushTimeMillis>
+        <maxBlockTimeMillis>5000</maxBlockTimeMillis>
+        <retentionTimeDays>0</retentionTimeDays>
+    </appender>
+
+    <springProfile name="local">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
 
     <springProfile name="default">
         <root level="INFO">
-            <appender-ref ref="CONSOLE"/>
             <appender-ref ref="aws_cloud_watch_log"/>
+            <appender-ref ref="aws_cloud_watch_error"/>
         </root>
     </springProfile>
+
 </configuration>
