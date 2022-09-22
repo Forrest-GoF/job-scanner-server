@@ -67,13 +67,16 @@ public class AuthApiController {
 	}
 
 	@PostMapping("signin")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void signIn(
+	public CustomResponse<AuthTokenResponse> signIn(
 		@RequestBody
 		@Valid
 		SignInRequest signInRequest
 	) {
-		memberService.signIn(signInRequest);
+		Member findMember = memberService.signIn(signInRequest);
+
+		AuthTokenResponse authTokenResponse = authService.signIn(findMember);
+
+		return CustomResponse.success(authTokenResponse);
 	}
 
 	@PostMapping("refresh")
