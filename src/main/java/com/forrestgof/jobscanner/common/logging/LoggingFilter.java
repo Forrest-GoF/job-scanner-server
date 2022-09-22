@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -13,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
@@ -31,7 +29,7 @@ public class LoggingFilter extends OncePerRequestFilter {
 		FilterChain filterChain
 	) throws ServletException, IOException {
 
-		MDC.put("traceId", UUID.randomUUID().toString());
+		// MDC.put("traceId", UUID.randomUUID().toString());
 
 		if (isAsyncDispatch(request)) {
 			filterChain.doFilter(request, response);
@@ -42,7 +40,7 @@ public class LoggingFilter extends OncePerRequestFilter {
 				filterChain);
 		}
 
-		MDC.clear();
+		// MDC.clear();
 	}
 
 	protected void doFilterWrapped(
