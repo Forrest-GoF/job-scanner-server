@@ -13,12 +13,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
-@Component
+// @Component
 public class LoggingFilter extends OncePerRequestFilter {
 	protected static final Logger log = LoggerFactory.getLogger(LoggingFilter.class);
 
