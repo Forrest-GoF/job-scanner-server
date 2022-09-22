@@ -66,6 +66,20 @@ public class AuthApiController {
 		return CustomResponse.success(authTokenResponse);
 	}
 
+	@GetMapping("mail/authenticate/{email}/{appToken}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void authenticateMail(
+		@PathVariable String email,
+		@PathVariable String appToken,
+		HttpServletResponse response
+	) throws IOException {
+
+		authService.validateMailWithAppToken(email, appToken);
+		memberService.authenticateEmail(email);
+
+		response.sendRedirect(domainProperties.webSite());
+	}
+
 	@PostMapping("signin")
 	public CustomResponse<AuthTokenResponse> signIn(
 		@RequestBody
@@ -79,15 +93,17 @@ public class AuthApiController {
 		return CustomResponse.success(authTokenResponse);
 	}
 
-	@PostMapping("refresh")
-	@ResponseStatus(HttpStatus.CREATED)
-	public CustomResponse<AuthRefreshResponse> refreshToken(HttpServletRequest request) {
-		String appToken = JwtHeaderUtil.getAccessToken(request);
-		String refreshToken = JwtHeaderUtil.getRefreshToken(request);
+	@GetMapping("signin/{socialType}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void socialRedirect(
+		@PathVariable("socialType") String type,
+		HttpServletResponse response
+	) throws IOException {
 
-		AuthRefreshResponse authRefreshResponse = authService.refreshToken(appToken, refreshToken);
+		SocialType socialType = SocialType.getEnum(type);
+		SocialService socialService = socialServiceFactory.find(socialType);
 
-		return CustomResponse.success(authRefreshResponse);
+		response.sendRedirect(socialService.getRedirectUrl());
 	}
 
 	@GetMapping("signin/callback/{socialType}")
@@ -129,33 +145,6 @@ public class AuthApiController {
 		return CustomResponse.success(authTokenResponse);
 	}
 
-	@GetMapping("mail/authenticate/{email}/{appToken}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void authenticateMail(
-		@PathVariable String email,
-		@PathVariable String appToken,
-		HttpServletResponse response
-	) throws IOException {
-
-		authService.validateMailWithAppToken(email, appToken);
-		memberService.authenticateEmail(email);
-
-		response.sendRedirect(domainProperties.webSite());
-	}
-
-	@GetMapping("signin/{socialType}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void socialRedirect(
-		@PathVariable("socialType") String type,
-		HttpServletResponse response
-	) throws IOException {
-
-		SocialType socialType = SocialType.getEnum(type);
-		SocialService socialService = socialServiceFactory.find(socialType);
-
-		response.sendRedirect(socialService.getRedirectUrl());
-	}
-
 	private SocialMember socialSignUp(Member member, SocialType socialTYpe) {
 		Member findMember = memberService.findByEmail(member.getEmail())
 			.orElseGet(() -> {
@@ -172,5 +161,16 @@ public class AuthApiController {
 		Long socialMemberId = socialMemberService.save(socialMember);
 
 		return socialMemberService.findOne(socialMemberId);
+	}
+
+	@PostMapping("refresh")
+	@ResponseStatus(HttpStatus.CREATED)
+	public CustomResponse<AuthRefreshResponse> refreshToken(HttpServletRequest request) {
+		String appToken = JwtHeaderUtil.getAccessToken(request);
+		String refreshToken = JwtHeaderUtil.getRefreshToken(request);
+
+		AuthRefreshResponse authRefreshResponse = authService.refreshToken(appToken, refreshToken);
+
+		return CustomResponse.success(authRefreshResponse);
 	}
 }
