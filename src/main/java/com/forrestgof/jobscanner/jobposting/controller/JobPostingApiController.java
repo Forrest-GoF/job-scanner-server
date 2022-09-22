@@ -89,6 +89,7 @@ public class JobPostingApiController {
 		JobResponse jobResponse = new JobResponse(jobPosting);
 
 		getMember(request)
+			.filter(member -> bookmarkJobService.checkActivation(jobPosting, member))
 			.ifPresent(member -> jobResponse.activateBookmark());
 
 		return CustomResponse.success(jobResponse);
