@@ -42,7 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("auth")
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthApiController {
 
 	private final MemberService memberService;
 	private final SocialMemberService socialMemberService;
