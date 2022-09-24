@@ -15,6 +15,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.forrestgof.jobscanner.auth.exception.AuthCustomException;
+import com.forrestgof.jobscanner.auth.social.dto.GithubEmailResponse;
 import com.forrestgof.jobscanner.auth.social.dto.GithubOAuthResponse;
 import com.forrestgof.jobscanner.auth.social.dto.GithubUserResponse;
 import com.forrestgof.jobscanner.common.config.properties.AuthProperties;
@@ -43,6 +44,7 @@ public class GithubService implements SocialService {
 		Map<String, Object> params = new HashMap<>();
 		params.put("client_id", clientId);
 		params.put("redirect_uri", redirectUrl);
+		params.put("scope", "user:email");
 
 		String parameterString = params.entrySet()
 			.stream()
@@ -60,22 +62,23 @@ public class GithubService implements SocialService {
 	}
 
 	private String getAccessTokenFromCode(String code) {
-		return Objects.requireNonNull(WebClient.create()
-				.post()
-				.uri(tokenUrl)
-				.accept(MediaType.APPLICATION_JSON)
-				.bodyValue(tokenRequest(code))
-				.retrieve()
-				.onStatus(
-					HttpStatus::is4xxClientError,
-					response
-						-> Mono.error(new AuthCustomException("Failed to get github token with code")))
-				.onStatus(
-					HttpStatus::is5xxServerError,
-					response
-						-> Mono.error(new AuthCustomException("Failed to get github token with code")))
-				.bodyToMono(GithubOAuthResponse.class)
-				.block())
+		return Objects.requireNonNull(
+				WebClient.create()
+					.post()
+					.uri(tokenUrl)
+					.accept(MediaType.APPLICATION_JSON)
+					.bodyValue(tokenRequest(code))
+					.retrieve()
+					.onStatus(
+						HttpStatus::is4xxClientError,
+						response
+							-> Mono.error(new AuthCustomException("Failed to get github token with code")))
+					.onStatus(
+						HttpStatus::is5xxServerError,
+						response
+							-> Mono.error(new AuthCustomException("Failed to get github token with code")))
+					.bodyToMono(GithubOAuthResponse.class)
+					.block())
 			.getTokenTypeAndAccessToken();
 	}
 
@@ -88,7 +91,7 @@ public class GithubService implements SocialService {
 	}
 
 	private GithubUserResponse getGithubUserFromAccessToken(String accessToken) {
-		return WebClient.create()
+		GithubUserResponse githubUserResponse = WebClient.create()
 			.get()
 			.uri("https://api.github.com/user")
 			.accept(MediaType.APPLICATION_JSON)
@@ -104,6 +107,34 @@ public class GithubService implements SocialService {
 					-> Mono.error(new AuthCustomException("Failed to get github user information with token")))
 			.bodyToMono(GithubUserResponse.class)
 			.block();
+
+		if (githubUserResponse != null && githubUserResponse.getEmail() == null) {
+			githubUserResponse.setEmail(getEmailFromAccessToken(accessToken));
+		}
+
+		return githubUserResponse;
+	}
+
+	private String getEmailFromAccessToken(String accessToken) {
+		GithubEmailResponse[] githubEmailResponse = Objects.requireNonNull(
+			WebClient.create()
+				.get()
+				.uri("https://api.github.com/user/emails")
+				.accept(MediaType.APPLICATION_JSON)
+				.header(HttpHeaders.AUTHORIZATION, accessToken)
+				.retrieve()
+				.onStatus(
+					HttpStatus::is4xxClientError,
+					response
+						-> Mono.error(new AuthCustomException("Failed to get github email with token")))
+				.onStatus(
+					HttpStatus::is5xxServerError,
+					response
+						-> Mono.error(new AuthCustomException("Failed to get github email with token")))
+				.bodyToMono(GithubEmailResponse[].class)
+				.block());
+
+		return githubEmailResponse[0].getEmail();
 	}
 
 	private Member generateMemberFromGithubUser(GithubUserResponse githubUserResponse) {
