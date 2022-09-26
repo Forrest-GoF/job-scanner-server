@@ -18,6 +18,9 @@
     </appender>
 
     <appender name="aws_cloud_watch_log" class="ca.pjer.logback.AwsLogsAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
         <layout>
             <pattern>[%thread] [%level] [%file:%line] - %msg%n</pattern>
         </layout>
