@@ -13,13 +13,22 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
-// @Component
+import com.forrestgof.jobscanner.common.config.properties.AwsProperties;
+
+@Component
 public class LoggingFilter extends OncePerRequestFilter {
+
 	protected static final Logger log = LoggerFactory.getLogger(LoggingFilter.class);
+	private final String healthCheckPath;
+
+	public LoggingFilter(AwsProperties awsProperties) {
+		healthCheckPath = awsProperties.loadbalancer().healthCheckPath();
+	}
 
 	@Override
 	protected void doFilterInternal(
@@ -30,7 +39,7 @@ public class LoggingFilter extends OncePerRequestFilter {
 
 		// MDC.put("traceId", UUID.randomUUID().toString());
 
-		if (isAsyncDispatch(request)) {
+		if (isAsyncDispatch(request) || isAwsHealthCheck(request)) {
 			filterChain.doFilter(request, response);
 		} else {
 			doFilterWrapped(
@@ -40,6 +49,10 @@ public class LoggingFilter extends OncePerRequestFilter {
 		}
 
 		// MDC.clear();
+	}
+
+	private boolean isAwsHealthCheck(HttpServletRequest request) {
+		return request.getRequestURI().equals(healthCheckPath);
 	}
 
 	protected void doFilterWrapped(
