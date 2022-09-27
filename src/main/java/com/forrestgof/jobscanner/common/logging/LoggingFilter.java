@@ -39,7 +39,7 @@ public class LoggingFilter extends OncePerRequestFilter {
 
 		// MDC.put("traceId", UUID.randomUUID().toString());
 
-		if (isAsyncDispatch(request) || isAwsHealthCheck(request)) {
+		if (isAsyncDispatch(request) || isAwsHealthCheck(request) || isHomeUri(request)) {
 			filterChain.doFilter(request, response);
 		} else {
 			doFilterWrapped(
@@ -53,6 +53,10 @@ public class LoggingFilter extends OncePerRequestFilter {
 
 	private boolean isAwsHealthCheck(HttpServletRequest request) {
 		return request.getRequestURI().equals(healthCheckPath);
+	}
+
+	private boolean isHomeUri(HttpServletRequest request) {
+		return request.getRequestURI().equals("/");
 	}
 
 	protected void doFilterWrapped(
