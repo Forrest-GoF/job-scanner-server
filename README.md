@@ -1,6 +1,8 @@
 # 세상의 모든 IT 채용 공고, 잡스캐너
+<img width="1511" alt="KakaoTalk_Photo_2022-10-06-06-34-10" src="https://user-images.githubusercontent.com/67721382/194168445-068545eb-cb4e-4597-970c-a5a4f069d657.png">
 
-## 백엔드 팀 소개
+
+## <img height="25px" src="https://user-images.githubusercontent.com/67721382/193444690-021f38d3-5976-4395-872d-b68a195e16e8.png"> 백엔드 팀 소개
 <table>
   <tr>
     <td>
