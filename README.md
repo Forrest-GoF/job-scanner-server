@@ -40,21 +40,9 @@
 ## <img height="25px" src="https://user-images.githubusercontent.com/67721382/193444690-021f38d3-5976-4395-872d-b68a195e16e8.png"> 프로젝트 구조도
 
 ### Architecture
-<img width="739" alt="스크린샷 2022-11-06 18 27 56" src="https://user-images.githubusercontent.com/67721382/200163426-c88de71c-07f3-4569-97f1-05242cf97835.png">
+<img width="766" alt="아키텍쳐" src="https://user-images.githubusercontent.com/67721382/200163941-f8b9e7cc-1dbc-4201-9471-ee914b92284a.png">
 
 <img width="1146" alt="스크린샷 2022-11-06 18 27 26" src="https://user-images.githubusercontent.com/67721382/200163429-5dd5bbd8-180c-4f03-bb81-f13649e273a5.png">
-
-
-
-
-
-
-
-
-
-
-
-
 
 ### ERD
 ![ERD](https://user-images.githubusercontent.com/67721382/193444981-478a6bff-6945-405c-af64-4c81f21e53f7.png)
