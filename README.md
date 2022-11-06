@@ -39,8 +39,22 @@
 
 ## <img height="25px" src="https://user-images.githubusercontent.com/67721382/193444690-021f38d3-5976-4395-872d-b68a195e16e8.png"> 프로젝트 구조도
 
-### BackEnd
-![시스템 구성도](https://user-images.githubusercontent.com/67721382/193444957-e3e89acc-90d3-46ca-83c2-5e758a67e10a.png)
+### Architecture
+<img width="739" alt="스크린샷 2022-11-06 18 27 56" src="https://user-images.githubusercontent.com/67721382/200163426-c88de71c-07f3-4569-97f1-05242cf97835.png">
+
+<img width="1146" alt="스크린샷 2022-11-06 18 27 26" src="https://user-images.githubusercontent.com/67721382/200163429-5dd5bbd8-180c-4f03-bb81-f13649e273a5.png">
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### ERD
 ![ERD](https://user-images.githubusercontent.com/67721382/193444981-478a6bff-6945-405c-af64-4c81f21e53f7.png)
